@@ -1,15 +1,16 @@
 const express = require('express')
 const cors = require('cors')
-// const sql = require("msnodesqlv8")
-
-
+const sql = require("msnodesqlv8")
+const connection = require("./database/connect")
 const app = express()
+
+
 app.use(cors())
 
-// const connectionString = "server=.;Database=QLNK;Trusted_Connection=Yes;Driver={SQL Server}";
+// test sql connection
 // const query = "SELECT * FROM dbo.BACSI WHERE MA_BS = 000003";
 
-// sql.queryRaw(connectionString, query, (err, result) => {
+// sql.queryRaw(connection, query, (err, result) => {
 //   if (err) {
 //       console.error("Error executing query:", err);
 //       return;
@@ -18,10 +19,12 @@ app.use(cors())
 //   console.log("Result:", rows);
 // });
 
+
 app.get('/', function (req, res) {
   res.send('Hello World')
 })
 
+//test front-end connection
 app.get('/getData', function (req, res) {
   res.send('Successful connect to backend ')
 })
