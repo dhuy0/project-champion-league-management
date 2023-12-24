@@ -20,35 +20,35 @@ const Nav = () => {
         <p>V - League</p>
       </div>
 
-      <div className={getRowClassName(1)} onClick={() => handleRowClick(1)}>
-      <i class="ri-home-2-line"></i>
+      <a href='http://localhost:3000/' className={getRowClassName(1)} onClick={() => handleRowClick(1)}>
+        <i class="ri-home-2-line"></i>
         <p>Trang chủ</p>
-      </div>
+      </a>
 
-      <div className={getRowClassName(2)} onClick={() => handleRowClick(2)}>
+      <a href='http://localhost:3000/register' className={getRowClassName(2)} onClick={() => handleRowClick(2)}>
         <i class="ri-user-add-line"></i>
         <p>Đăng ký đội bóng</p>
-      </div>
+      </a>
 
-      <div className={getRowClassName(3)} onClick={() => handleRowClick(3)}>
+      <a href='http://localhost:3000/team-edit' className={getRowClassName(3)} onClick={() => handleRowClick(3)}>
         <p><i class="ri-edit-box-line"></i></p>
         Chỉnh sửa hồ sơ đội bóng
-      </div>
+      </a>
 
-      <div className={getRowClassName(4)} onClick={() => handleRowClick(4)}>
+      <a href='http://localhost:3000/player-search' className={getRowClassName(4)} onClick={() => handleRowClick(4)}>
         <i class="ri-menu-search-line"></i>
         <p>Tra cứu thông tin cầu thủ</p>
-      </div>
+      </a>
 
-      <div className={getRowClassName(5)} onClick={() => handleRowClick(5)}>
+      <a href='http://localhost:3000/schedule-edit' className={getRowClassName(5)} onClick={() => handleRowClick(5)}>
         <i class="ri-calendar-2-fill"></i>
         <p>Quản lý lịch thi đấu</p>
-      </div>
+      </a>
 
-      <div className={getRowClassName(6)} onClick={() => handleRowClick(6)}>
+      <a href='http://localhost:3000/result-record' className={getRowClassName(6)} onClick={() => handleRowClick(6)}>
         <i class="ri-flag-2-fill"></i>
         <p>Ghi nhận kết quả</p>
-      </div>
+      </a>
 
       <div className={getRowClassName(7)} onClick={() => handleRowClick(7)}>
         <i class="ri-numbers-line"></i>

@@ -10,3 +10,10 @@
       font-family: "Fira Sans", system-ui, sans-serif;
     }
   }
+
+  td, th {
+    border: 1px solid black;
+    text-align: center;
+    font-weight: 300 ;
+    height: 35px;
+  }

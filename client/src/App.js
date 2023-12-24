@@ -4,6 +4,12 @@ import {Routes, Route, useNavigate} from 'react-router-dom'
 import Home from './components/Home';
 import NotFound from './container/NotFound';
 import Register from './components/Register';
+import SelectTeam from './components/SelectTeam'
+import TeamEdit from './components/TeamEdit';
+import Search from './components/Search';
+import ScheduleEdit from './components/ScheduleEdit';
+import ScheduleView from './components/ScheduleView';
+import ResultRecord from './components/ResultRecord';
 
 const App = () => {
   // const [data, setData]=useState("")
@@ -21,6 +27,12 @@ const App = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/team-select" element={<SelectTeam />} />
+      <Route path="/team-edit" element={<TeamEdit />} />
+      <Route path="/player-search" element={<Search />} />
+      <Route path="/schedule-view" element={<ScheduleView />} />
+      <Route path="/schedule-edit" element={<ScheduleEdit />} />
+      <Route path="/result-record" element={<ResultRecord/>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

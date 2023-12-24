@@ -1,7 +1,7 @@
 import React from 'react'
-import Nav from '../container/Nav'
-
-const Register = () => {
+import Nav 
+from '../container/Nav'
+const TeamEdit = () => {
   return (
     <div className='flex flex-row h-screen'>
       <div className='basis-1/5'>
@@ -23,9 +23,12 @@ const Register = () => {
           <div className='text-xl bg-sky-200 text-center w-48 py-2 mt-2'>
             Danh sách cầu thủ
           </div>
-          <div className='flex flex-row text-xl justify-between'>
-            <p className='w-64'>Số thứ tự cầu thủ</p>
-            <input type='text' className=' bg-stone-200 w-5/6' />
+          <div className='flex flex-row text-xl items-center'>
+            <p className='w-[222px]'>Số thứ tự cầu thủ</p>
+            <input type='text' className=' bg-stone-200 w-1/3' />
+            <button className='ml-64 bg-white text-2xl rounded-full w-10 h-10 border-solid border-2 border-black'>
+              <div className="flex items-center justify-center">-</div>
+            </button>
           </div>
           <div className='flex flex-row text-xl justify-between'>
             <p className='w-64'>Tên cầu thủ</p>
@@ -33,7 +36,7 @@ const Register = () => {
           </div>
           <div className='flex flex-row text-xl'>
             <p className='w-[222px]'>Loại cầu thủ</p>
-            <select name="playerType" className='bg-stone-200 w-2/6'>
+            <select name="playerType" className='bg-stone-200 w-64 pl-4'>
               <option value="domestic">Trong nước</option>
               <option value="foreign">Nước ngoài</option>
             </select>
@@ -51,10 +54,15 @@ const Register = () => {
               <div className="flex items-center justify-center">+</div>
             </button>
           </div>
-          <div className='flex justify-center'>
+          <div className='flex justify-center gap-32'>
             <button className='mt-4 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
               <div className="flex items-center justify-center">
                 Lưu
+              </div>
+            </button>
+            <button className='mt-4 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
+              <div className="flex items-center justify-center">
+                Xóa
               </div>
             </button>
           </div>
@@ -64,4 +72,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default TeamEdit
