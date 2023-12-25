@@ -31,7 +31,7 @@ const App = () => {
       <Route path="/" element={<Home />} />
       <Route path="/register" element={<Register />} />
       <Route path="/team-select" element={<SelectTeam />} />
-      <Route path="/team-edit" element={<TeamEdit />} />
+      <Route path="/team-edit/:teamName" element={<TeamEdit />} />
       <Route path="/player-search" element={<Search />} />
       <Route path="/schedule-view" element={<ScheduleView />} />
       <Route path="/schedule-edit" element={<ScheduleEdit />} />

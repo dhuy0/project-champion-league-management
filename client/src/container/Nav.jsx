@@ -14,7 +14,7 @@ const Nav = () => {
   };
 
   return (
-    <div className="grid grid-cols-1">
+    <div className="grid grid-cols-1 fixed w-[310px]">
       <div className='flex flex-row items-center justify-center gap-4 text-2xl font-roboto text-center py-10 bg-gray-600 text-white font-bold'>
         <i class="ri-trophy-line"></i>
         <p>V - League</p>
@@ -30,7 +30,7 @@ const Nav = () => {
         <p>Đăng ký đội bóng</p>
       </a>
 
-      <a href='http://localhost:3000/team-edit' className={getRowClassName(3)} onClick={() => handleRowClick(3)}>
+      <a href='http://localhost:3000/team-select' className={getRowClassName(3)} onClick={() => handleRowClick(3)}>
         <p><i class="ri-edit-box-line"></i></p>
         Chỉnh sửa hồ sơ đội bóng
       </a>

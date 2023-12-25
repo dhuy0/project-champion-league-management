@@ -1,6 +1,7 @@
 import React from 'react'
 import Nav from '../container/Nav'
 import { useEffect, useState } from 'react'
+import axios from 'axios';
 
 const Register = () => {
   const [teamName, setTeamName] = useState("");
@@ -12,7 +13,7 @@ const Register = () => {
   const [note, setNote] = useState("");
   const [players, setPlayers] = useState([]);
 
-  const handleAddPlayer = async () => {
+  const handleAddPlayer =  () => {
     const newPlayer = {
       playerNumber,
       playerType,
@@ -22,7 +23,7 @@ const Register = () => {
     };
 
     // Lưu cầu thủ vào danh sách
-    await setPlayers((prevPlayers) => [...prevPlayers, newPlayer]);
+     setPlayers((prevPlayers) => [...prevPlayers, newPlayer]);
     // Đặt các trường về giá trị mặc định
     setPlayerNumber('');
     setPlayerName('');
@@ -31,18 +32,24 @@ const Register = () => {
     setNote('');
   };
 
-  const handleRegister = async  (event) => {
+  const handleRegister =  () => {
 
-    event.preventDefault();
-    await handleAddPlayer();
+    // event.preventDefault();
+    setPlayers((prevPlayers) => {
+      // Call handleAddPlayer to add the current player data to the players array
+      handleAddPlayer();
+
+      // Return the updated players array
+      return prevPlayers;
+    });
     
     sendDataToServer()
 
     resetForm();
   };
 
-  useEffect(() => {
-  }, [players]);
+  // useEffect(() => {
+  // }, [players]);
   
   const sendDataToServer = () => {
     const registrationData = {
@@ -50,7 +57,10 @@ const Register = () => {
       stadium,
       players,
     };
-    console.log('Sending data to server:', registrationData);
+    axios.post('api', {
+      registrationData
+    })
+    console.log('>>>> sending data to server: ', registrationData)
   };
 
   const resetForm = () => {
@@ -131,7 +141,7 @@ const Register = () => {
             </button>
           </div>
           <div className='flex justify-center'>
-            <button onClick={(event) => handleRegister(event)} className='mt-4 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
+            <button type='button' onClick={() => handleRegister()} className='mt-4 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
               <div className="flex items-center justify-center">
                 Lưu
               </div>
