@@ -3,13 +3,6 @@ import Nav from '../container/Nav'
 import { useEffect, useState } from 'react'
 
 const Register = () => {
-  const handleRegister = (event) => {
-    event.preventDefault();
-    
-    let teamData = [teamName, stadium, playerNumber, playerName, birthday, note]
-    console.log(">>>>> check team data ", teamData)
-  }
-
   const [teamName, setTeamName] = useState("");
   const [stadium, setStadium] = useState("");
   const [playerNumber, setPlayerNumber] = useState("");
@@ -17,6 +10,57 @@ const Register = () => {
   const [playerType, setPlayerType] = useState("");
   const [birthday, setBirthday] = useState("")
   const [note, setNote] = useState("");
+  const [players, setPlayers] = useState([]);
+
+  const handleAddPlayer = async () => {
+    const newPlayer = {
+      playerNumber,
+      playerType,
+      playerName,
+      birthday,
+      note,
+    };
+
+    // Lưu cầu thủ vào danh sách
+    await setPlayers((prevPlayers) => [...prevPlayers, newPlayer]);
+    // Đặt các trường về giá trị mặc định
+    setPlayerNumber('');
+    setPlayerName('');
+    setPlayerType('');
+    setBirthday('');
+    setNote('');
+  };
+
+  const handleRegister = async  (event) => {
+
+    event.preventDefault();
+    await handleAddPlayer();
+    
+    sendDataToServer()
+
+    resetForm();
+  };
+
+  useEffect(() => {
+  }, [players]);
+  
+  const sendDataToServer = () => {
+    const registrationData = {
+      teamName,
+      stadium,
+      players,
+    };
+    console.log('Sending data to server:', registrationData);
+  };
+
+  const resetForm = () => {
+    // Optionally, you can reset the form fields or navigate to another page
+    setTeamName('');
+    setStadium('');
+    setPlayers([]);
+    // ... reset other form fields
+  };
+  
 
   return (
     <div className='flex flex-row h-screen'>
@@ -39,8 +83,8 @@ const Register = () => {
           {/* Nhập sân nhà */}
           <div className='flex flex-row text-xl justify-between'>
             <p className='w-24'>Sân nhà</p>
-            <input type='text' value={stadium} onChange={(event) => setStadium(event.target.value)} 
-            className='bg-stone-200 w-5/6' />
+            <input type='text' value={stadium} onChange={(event) => setStadium(event.target.value)}
+              className='bg-stone-200 w-5/6' />
           </div>
           {/* Nhập danh sách các cầu thủ */}
           <div className='text-xl bg-sky-200 text-center w-48 py-2 mt-2'>
@@ -49,19 +93,21 @@ const Register = () => {
           {/* Nhập số thứ tự cầu thủ */}
           <div className='flex flex-row text-xl justify-between'>
             <p className='w-64'>Số thứ tự cầu thủ</p>
-            <input type='text' value={playerNumber} onChange={(event) => setPlayerNumber(event.target.value)} 
-            className=' bg-stone-200 w-5/6' />
+            <input type='text' value={playerNumber} onChange={(event) => setPlayerNumber(event.target.value)}
+              className=' bg-stone-200 w-5/6' />
           </div>
           {/* Nhập tên cầu thủ */}
           <div className='flex flex-row text-xl justify-between'>
             <p className='w-64'>Tên cầu thủ</p>
-            <input type='text' value={playerName} onChange={(event) => setPlayerName(event.target.value)} 
-            className=' bg-stone-200 w-5/6' />
+            <input type='text' value={playerName} onChange={(event) => setPlayerName(event.target.value)}
+              className=' bg-stone-200 w-5/6' />
           </div>
           {/* Nhập loại cầu thủ */}
           <div className='flex flex-row text-xl'>
             <p className='w-[222px]'>Loại cầu thủ</p>
-            <select name="playerType" className='bg-stone-200 w-2/6'>
+            <select value={playerType} onChange={(event) => setPlayerType(event.target.value)}
+              defaultValue="" name="playerType" className='bg-stone-200 w-2/6' >
+              <option value="" disabled   >Chọn loại cầu thủ</option>
               <option value="domestic">Trong nước</option>
               <option value="foreign">Nước ngoài</option>
             </select>
@@ -69,18 +115,19 @@ const Register = () => {
           {/* Nhập ngày sinh cho cầu thủ */}
           <div className='flex flex-row text-xl justify-between'>
             <p className='w-64'>Ngày sinh</p>
-            <input type='text' value={birthday} onChange={(event) => setBirthday(event.target.value)} 
-            className=' bg-stone-200 w-5/6' />
+            <input type='text' value={birthday} onChange={(event) => setBirthday(event.target.value)}
+              className=' bg-stone-200 w-5/6' />
           </div>
           {/* Nhập ghi chú */}
           <div className='flex flex-row text-xl justify-between'>
             <p className='w-64'>Ghi chú</p>
-            <input type='text' value={note} onChange={(event) => setNote(event.target.value)} 
-            className=' bg-stone-200 w-5/6' />
+            <input type='text' value={note} onChange={(event) => setNote(event.target.value)}
+              className=' bg-stone-200 w-5/6' />
           </div>
+          {/* Thêm một cầu thủ */}
           <div>
-            <button className='mt-4 bg-white text-2xl rounded-full w-10 h-10 border-solid border-2 border-black'>
-              <div className="flex items-center justify-center">+</div>
+            <button type='button' className='mt-4 bg-white text-2xl rounded-full w-10 h-10 border-solid border-2 border-black'>
+              <div onClick={handleAddPlayer} className="flex items-center justify-center">+</div>
             </button>
           </div>
           <div className='flex justify-center'>
