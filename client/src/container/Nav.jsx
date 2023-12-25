@@ -50,15 +50,15 @@ const Nav = () => {
         <p>Ghi nhận kết quả</p>
       </a>
 
-      <div className={getRowClassName(7)} onClick={() => handleRowClick(7)}>
+      <a href='http://localhost:3000/report-ranking' className={getRowClassName(7)} onClick={() => handleRowClick(7)}>
         <i class="ri-numbers-line"></i>
         <p>Lập báo cáo giải</p>
-      </div>
+      </a>
 
-      <div className={getRowClassName(8)} onClick={() => handleRowClick(8)}>
+      <a href='http://localhost:3000/rule-edit' className={getRowClassName(8)} onClick={() => handleRowClick(8)}>
         <i class="ri-edit-2-line"></i>
         <p>Chỉnh sửa quy định</p>
-      </div>
+      </a>
     </div>
   )
 }

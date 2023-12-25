@@ -10,6 +10,9 @@ import Search from './components/Search';
 import ScheduleEdit from './components/ScheduleEdit';
 import ScheduleView from './components/ScheduleView';
 import ResultRecord from './components/ResultRecord';
+import RankingReport from './components/RankingReport';
+import ScorerList from './components/ScorerList';
+import RuleEdit from './components/RuleEdit';
 
 const App = () => {
   // const [data, setData]=useState("")
@@ -33,6 +36,9 @@ const App = () => {
       <Route path="/schedule-view" element={<ScheduleView />} />
       <Route path="/schedule-edit" element={<ScheduleEdit />} />
       <Route path="/result-record" element={<ResultRecord/>} />
+      <Route path="/report-ranking" element={<RankingReport/>} />
+      <Route path="/report-scorer" element={<ScorerList/>} />
+      <Route path="/rule-edit" element={<RuleEdit/>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
