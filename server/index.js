@@ -1,11 +1,10 @@
-const express = require('express')
-const cors = require('cors')
-const sql = require("msnodesqlv8")
-const connection = require("./database/connect")
-const app = express()
+const express = require("express");
+const cors = require("cors");
+const sql = require("msnodesqlv8");
+const connection = require("./database/connect");
+const app = express();
 
-
-app.use(cors())
+app.use(cors());
 
 // test sql connection
 // const query = "SELECT * FROM dbo.BACSI WHERE MA_BS = 000003";
@@ -19,16 +18,15 @@ app.use(cors())
 //   console.log("Result:", rows);
 // });
 
-
-app.get('/', function (req, res) {
-  res.send('Hello World')
-})
+app.get("/", function (req, res) {
+  res.send("Hello World");
+});
 
 //test front-end connection
-app.get('/getData', function (req, res) {
-  res.send('Successful connect to backend ')
-})
+app.get("/getData", function (req, res) {
+  res.send("Successful connect to backend ");
+});
 
 app.listen(3001, () => {
-    console.log("server is running on port 3001")
-})
+  console.log("server is running on port 3001");
+});
