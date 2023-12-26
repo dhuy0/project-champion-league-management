@@ -54,11 +54,11 @@ const handleReg = async (req, res) => {
         .input("varName", sql.VarChar(255), data.stadium)
         .query(sqlString);
       console.log(result.rowsAffected);
-      if (result.rowsAffected == 1) {
-        return res.status(200).json({ message: "Thêm thành công" });
-      } else {
-        return res.status(500).json({ message: "Không thành công" });
-      }
+      // if (result.rowsAffected == 1) {
+      //   return res.status(200).json({ message: "Thêm thành công" });
+      // } else {
+      //   return res.status(500).json({ message: "Không thành công" });
+      // }
     } catch (error) {
       //console.error("Có lỗi xảy ra khi lấy thông tin bệnh nhân:", error);
       console.log(error.message);
@@ -125,19 +125,51 @@ const handleReg = async (req, res) => {
 };
 
 // const handleUpdate
-
+// Làm tạm
 const handleUpdateTeam = async (req, res) => {
   try {
     const data = req.body;
     var pool = await conn;
-    var sqlString = `UPDATE LOPHOC
-    SET malop = '${data.malop}', tenlop = '${data.tenlop}', nam = '${data.nam}', gvcn = '${data.gvcn}', lop_tr = '${data.lop_tr}' 
-    WHERE tenlop = '${data.tenlop}'`;
+    var sqlString = `UPDATE CAUTHU
+    SET hoten = @varHoTen, loai = @varLoai, ngaysinh = @varNgaySinh, ghichu = @varGhiChu 
+    WHERE id = @varId`;
+    for (let i = 0; i < data.length; i++) {
+      try {
+        const result = await pool
+          .request()
+          .input("varHoTen", sql.VarChar(MAX), data[i].playerName)
+          .input("varLoai", sql.VarChar(MAX), data[i].type)
+          .input("varNgaySinh", sql.Date, data[i].birthDay)
+          .input("varGhiChu", sql.VarChar(MAX), data[i].note)
+          .input("varId", sql.Int, parseInt(data[i].id))
+          .query(sqlString);
+        console.log(req.body);
+        console.log(result);
+        if (result.rowsAffected > 0) {
+          console.log({ message: "Update thành công" });
+        } else {
+          throw new Error();
+        }
+      } catch (err) {
+        return res.status(404).json({ message: "Không tìm thấy" });
+      }
+    }
+    return res.status(200).json({ message: "OK" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const handleGetAllTeam = async (req, res) => {
+  try {
+    var pool = await conn;
+    var sqlString = `SELECT * FROM DOIBONG`;
     const result = await pool.request().query(sqlString);
+    console.log(result.recordset);
     if (result.rowsAffected > 0) {
-      res.status(200).json({ message: "Update thành công" });
+      res.status(200).json(result.recordset);
     } else {
-      res.status(404).json({ message: "Không tìm thấy" });
+      res.status(404).json({ message: "Không có dữ liệu" });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -164,9 +196,9 @@ const handleGetAllInfoPlayer = async (req, res) => {
 
 const handleGetInfoPlayer = async (req, res) => {
   try {
-    const name = req.params.name;
+    const name = req.params.id;
     var pool = await conn;
-    var sqlString = `SELECT * FROM GIAOVIEN WHERE hoten = @varName`;
+    var sqlString = `SELECT * FROM CAUTHU WHERE hoten = @varName`;
     const result = await pool
       .request()
       .input("varName", sql.NChar(10), name)
@@ -188,4 +220,5 @@ module.exports = {
   handleGetInfoPlayer,
   handleUpdateTeam,
   handleGetAllInfoPlayer,
+  handleGetAllTeam,
 };

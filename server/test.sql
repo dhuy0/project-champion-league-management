@@ -1,7 +1,7 @@
 USE QLLopHoc
 SELECT * FROM GIAOVIEN WHERE hoten = 'Nga'
 SELECT * FROM CAUTHU
-
+SELECT * FROM DOIBONG
 CREATE TABLE DOIBONG(
   tendoi varchar(255),
   sannha varchar(255),
