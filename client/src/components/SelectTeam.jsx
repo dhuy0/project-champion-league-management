@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 const SelectTeam = () => {
 
-  const options = ['Option 1', 'Option 2', 'Option 3'];
+  const options = ['Đội 1', '2', '3'];
   const [selectedTeam, setSelectedTeam] = useState('');
 
   const handleTeamChange = (event) => {
