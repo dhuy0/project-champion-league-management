@@ -2,6 +2,7 @@ import React from 'react'
 import Nav from '../container/Nav'
 import { useEffect, useState } from 'react'
 import Player from '../container/Player'
+import axios from 'axios'
 
 const TeamEdit = () => {
   const [players, setPlayers] = useState([
@@ -9,6 +10,8 @@ const TeamEdit = () => {
     { number: '2', name: 'Player 2', type: 'foreign', birthday: '02/02/1991', note: 'Note 2' },
     // Add more players as needed
   ]);
+
+
 
   const handleDeletePlayer = (index) => {
     // Logic to delete a player from the array
@@ -25,6 +28,10 @@ const TeamEdit = () => {
   const [birthday, setBirthday] = useState("")
   const [note, setNote] = useState("");
 
+  useEffect(() => {
+
+  }, []);
+
   return (
     <div className='flex flex-row h-screen'>
       <div className='basis-1/5'>
@@ -37,11 +44,13 @@ const TeamEdit = () => {
         <form className='flex flex-col gap-4 mx-32 my-8 h-4/5 pr-40'>
           <div className='flex flex-row text-xl justify-between'>
             <p className='w-24'>Tên đội </p>
-            <input type='text' className='bg-stone-200 w-5/6' />
+            <input type='text' value={teamName} onChange={(event) => setTeamName(event.target.value)} 
+            className='bg-stone-200 w-5/6 pl-4' />
           </div>
           <div className='flex flex-row text-xl justify-between'>
             <p className='w-24'>Sân nhà</p>
-            <input type='text' className='bg-stone-200 w-5/6' />
+            <input type='text' value={stadium} onChange={(event) => setStadium(event.target.value)} 
+            className='bg-stone-200 w-5/6 pl-4' />
           </div>
           <div className='text-xl bg-sky-200 text-center w-48 py-2 mt-2'>
             Danh sách cầu thủ

@@ -5,7 +5,7 @@ const Player = ({ player, index, handleDeletePlayer }) => {
         <div className='flex flex-col gap-4 border-b-2'> 
             <div className='flex flex-row text-xl items-center'>
                 <p className='w-[222px]'>Số thứ tự cầu thủ</p>
-                <input type='text' className=' bg-stone-200 w-1/3 pl-4'value={player.number} />
+                <input type='text' className=' bg-stone-200 w-1/3 pl-4' value={player.number} />
                 <button onClick={() => handleDeletePlayer(index)} 
                 className='ml-64 bg-white text-2xl rounded-full w-10 h-10 border-solid border-2 border-black'>
                     <div className="flex items-center justify-center">-</div>
