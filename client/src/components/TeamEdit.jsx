@@ -11,7 +11,12 @@ const TeamEdit = () => {
     // Add more players as needed
   ]);
 
-
+  const handlePlayerChange = (index, field, value) => {
+    // Logic to update the player data in the array
+    const updatedPlayers = [...players];
+    updatedPlayers[index] = { ...updatedPlayers[index], [field]: value };
+    setPlayers(updatedPlayers);
+  };
 
   const handleDeletePlayer = (index) => {
     // Logic to delete a player from the array
@@ -61,6 +66,7 @@ const TeamEdit = () => {
               player={player}
               index={index}
               handleDeletePlayer={handleDeletePlayer}
+              handlePlayerChange={handlePlayerChange}
             />
           ))}
           <div>
