@@ -4,7 +4,7 @@ const config = {
   server: "localhost",
   user: "sa",
   password: "123456",
-  database: "QLLopHoc",
+  database: "V_League",
   driver: "SQL Server",
   trustServerCertificate: true,
 };
