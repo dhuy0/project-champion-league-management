@@ -13,7 +13,10 @@ const initWebRoutes = (app) => {
   router.post("/reg", homeController.handleReg);
 
   router.get("/get", homeController.handleGetAllInfoPlayer);
-  router.get("/get/:name", homeController.handleGetInfoPlayer);
+  router.get("/get-by-id/:id", homeController.handleGetInfoPlayer);
+  router.get("/get-by-name/:name", homeController.handleGetInfoPlayerByName);
+  router.get("/get-by-date/:date", homeController.handleGetInfoPlayerByDate);
+  router.get("/get-scorer-by-date/:date", homeController.handleGetScorerInfoPlayerByDate);
 
   router.put("/update", homeController.handleUpdateTeam); // Thay đổi hồ sơ đội bóng
   router.post("/update", homeController.handleUpdateTeam); // Thêm thành viên vô đội bóng

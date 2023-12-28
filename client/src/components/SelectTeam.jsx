@@ -1,12 +1,25 @@
 import React from 'react'
 import Nav from '../container/Nav'
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const SelectTeam = () => {
 
-  const options = ['Đội 1', '2', '3'];
+  const [teams, setTeams] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState('');
+
+  useEffect(() => {
+    // Giả sử backend gửi chuỗi JSON như sau:
+    axios.get('http://localhost:8080/get')
+      .then(response => {
+        setTeams(response.data);
+        console.log(teams);
+      })
+      .catch(error => {
+        console.error('Error fetching data from API', error);
+      });
+  }, []);
 
   const handleTeamChange = (event) => {
     setSelectedTeam(event.target.value);
@@ -20,7 +33,7 @@ const SelectTeam = () => {
       </div>
       <div className='basis-4/5'>
         <header className='bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]'>
-          Đăng kí đội bóng
+          Chỉnh sửa hồ sơ đội bóng
         </header>
         <div className='flex flex-col justify-center items-center gap-20 text-2xl h-4/5'>
           <div className='mt-20 flex flex-row justify-center items-center gap-4 text-2xl'>
@@ -29,10 +42,10 @@ const SelectTeam = () => {
             </div>
             {/* Chọn đội bóng để chỉnh sửa */}
             <select name="team" className='bg-stone-200 w-64' onChange={handleTeamChange} value={selectedTeam}>
-            <option value="" disabled   >Chọn loại cầu thủ</option>
-              {options.map((option, index) => (
-                <option key={index} value={option}>
-                  {option}
+            <option value="" disabled >Chọn đội bóng</option>
+              {teams.map((team) => (
+                <option key={team.id} value={team.id}>
+                  {team.hoten}
                 </option>
               ))}
             </select>

@@ -1,7 +1,31 @@
 import React from 'react'
 import Nav from '../container/Nav'
+import { useState } from 'react'
+import axios from 'axios';
 
 const ScorerList = () => {
+
+    const [date, setDate] = useState('');
+    const [scorers, setScorers] = useState([]);
+
+    const handleSearch = () => {
+        // Kiểm tra nếu date không rỗng mới gửi yêu cầu
+        if (date.trim() !== '') {
+            axios.get(`http://localhost:8080/get-scorer-by-date/${encodeURIComponent(date)}`)
+                .then(response => {
+                    setScorers(response.data);
+                })
+                .catch(error => {
+                    console.error('Error fetching ranking data', error);
+                });
+        } else {
+            // Xử lý trường hợp date rỗng
+            console.warn('Date is empty');
+        }
+
+        console.log(scorers)
+    };
+
     return (
         <div className='flex flex-row h-screen'>
             <div className='basis-1/5'>
@@ -14,9 +38,15 @@ const ScorerList = () => {
                 <div className='flex flex-col gap-4 mx-32 my-8 h-4/5'>
                     <div className='flex flex-row text-xl justify-center items-center gap-16'>
                         <p className=''>Ngày </p>
-                        <input type='text' className='bg-stone-200' />
+                        <input
+                            type='text'
+                            className='bg-stone-200'
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)} />
                         <div className='flex justify-center'>
-                            <button className='text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
+                            <button
+                                className='text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'
+                                onClick={handleSearch}>
                                 <div className="flex items-center justify-center">
                                     Xác nhận
                                 </div>
@@ -25,9 +55,11 @@ const ScorerList = () => {
                     </div>
 
                     <div className='bg-blue-300 flex flex-row h-8 mx-16'>
-                        <button className='bg-teal-400 w-1/2'>
+                        <a
+                            href='http://localhost:3000/report-ranking'
+                            className='bg-teal-400 flex items-center justify-center w-1/2'>
                             Bảng xếp hạng
-                        </button>
+                        </a>
                         <button className='bg-teal-700 text-white w-1/2'>
                             Danh sách cầu thủ ghi bàn
                         </button>
@@ -35,32 +67,26 @@ const ScorerList = () => {
 
                     <div className='h-3/4'>
                         <table className='w-full h-fit border-solid border-2 border-black'>
-                            <tr className='bg-gray-300'>
-                                <th className='font-bold'>STT</th>
-                                <th className='font-bold'>Đội</th>
-                                <th className='font-bold'>Loại cầu thủ</th>
-                                <th className='font-bold'>Số bàn thắng</th>
-                            </tr>
-                            <tr>
-                                <th>1</th>
-                                <th>Nguyễn Văn A</th>
-                                <th>DNA</th>
-                                <th>Nội binh</th>
-                            </tr>
-                            <tr>
-                                <th>1</th>
-                                <th>Nguyễn Văn A</th>
-                                <th>DNA</th>
-                                <th>Nội binh</th>
-
-                            </tr>
-                            <tr>
-                                <th>1</th>
-                                <th>Nguyễn Văn A</th>
-                                <th>DNA</th>
-                                <th>Nội binh</th>
-
-                            </tr>
+                            <thead className='bg-gray-300'>
+                                <tr>
+                                    <th className='font-bold'>STT</th>
+                                    <th className='font-bold'>Cầu thủ</th>
+                                    <th className='font-bold w-40'>Đội</th>
+                                    <th className='font-bold'>Loại cầu thủ</th>
+                                    <th className='font-bold'>Số bàn thắng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {scorers.map((scorer, index) => (
+                                    <tr key={index}>
+                                        <td>{scorer.STT}</td>
+                                        <td>{scorer.CAUTHU}</td>
+                                        <td>{scorer.DOI}</td>
+                                        <td>{scorer.LOAICAUTHU}</td>
+                                        <td>{scorer.SOBANTHANG}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
                         </table>
                     </div>
                 </div>
