@@ -16,7 +16,10 @@ const initWebRoutes = (app) => {
   //Đang làm
   // Trang tra cứu thông tin cầu thủ
   router.get("/get", homeController.handleGetAllInfoPlayer);
-  router.get("/get/:name", homeController.handleGetInfoPlayer);
+  router.get("/get-by-id/:id", homeController.handleGetInfoPlayer);
+  router.get("/get-by-name/:name", homeController.handleGetInfoPlayerByName);
+  router.get("/get-by-date/:date", homeController.handleGetInfoPlayerByDate);
+  router.get("/get-scorer-by-date/:date", homeController.handleGetScorerInfoPlayerByDate);
 
   // Trang Update đội bóng
   router.get("/update", homeController.handleGetAllTeam); // Xuất các đội bóng có trong CSDL --Xong

@@ -1,7 +1,62 @@
 import React from 'react'
 import Nav from '../container/Nav'
+import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
+import axios from 'axios'
 
 const ScheduleView = () => {
+
+    const { round } = useParams();
+
+    const [rounds, setRounds] = useState([]);
+    const [selectedRound, setSelectedRound] = useState('');
+    const [matchData, setMatchData] = useState([]);
+
+
+    const handleRoundChange = (e) => {
+        setSelectedRound(e.target.value);
+    };
+
+    useEffect(() => {
+        // Lấy tất cả cái vòng có trong cơ sở dữ liệu
+        axios.get('api').then(response => {
+            setRounds(response.data)
+        })
+    }, []); 
+
+    useEffect(() => {
+        if (round) {
+            setSelectedRound(round);
+        }
+    }, [round]); 
+
+    useEffect(() => {
+        // Simulate fetching match data from the server based on the selected round
+        const fetchMatchData = async () => {
+            const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+            await delay(500); // Simulating a delay of 500ms
+
+            // Simulated match data for testing
+            // const simulatedData = [
+            //     { stt: 1, team1: 'Team A', team2: 'Team B', date: '2023-01-01', time: '15:00', pitch: 'Stadium X' },
+            //     { stt: 2, team1: 'Team B', team2: 'Team C', date: '2023-04-01', time: '10:00', pitch: 'Stadium Y' },
+            //     { stt: 3, team1: 'Team B', team2: 'Team C', date: '2023-04-01', time: '10:00', pitch: 'Stadium Y' },
+            //     // Add more simulated data as needed
+            // ];
+
+            // setMatchData(simulatedData);
+            //Lấy thông tin về tất cả trận đấu trong vòng này
+            axios.get(`api/${encodeURIComponent(selectedRound)}`).then(response => {
+                setMatchData(response.data)
+            })
+        };
+
+        if (selectedRound) {
+            fetchMatchData();
+        }
+    }, [selectedRound]);
+
     return (
         <div className='flex flex-row h-screen'>
             <div className='basis-1/5'>
@@ -9,14 +64,23 @@ const ScheduleView = () => {
             </div>
             <div className='basis-4/5'>
                 <header className='bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]'>
-                    Tra cứu thông tin cầu thủ
+                    Quản lý lịch thi đấu
                 </header>
                 <div className='flex flex-col gap-4 mx-32 my-8 h-4/5'>
                     <div className='flex flex-row text-xl justify-center'>
                         <p className='w-1/6'>Vòng</p>
-                        <select name="playerType" className='bg-stone-200 w-1/3'>
-                            <option value="domestic">Vòng 1</option>
-                            <option value="foreign">Vòng 2</option>
+                        <select
+                            name="round"
+                            className='bg-stone-200 w-1/3'
+                            value={selectedRound}
+                            onChange={handleRoundChange}
+                        >
+                            <option disabled value="">Chọn vòng</option>
+                            {rounds.map((roundId) => (
+                                <option key={roundId} value={roundId}>
+                                    {roundId}
+                                </option>
+                            ))}
                         </select>
                     </div>
                     <div className='flex justify-center text-xl mt-8'>
@@ -31,40 +95,32 @@ const ScheduleView = () => {
                                 <th className='font-bold'>Ngày - Giờ</th>
                                 <th className='font-bold'>Sân</th>
                             </tr>
-                            <tr>
-                                <th>1</th>
-                                <th>Nguyễn Văn A</th>
-                                <th>DNA</th>
-                                <th>Nội binh</th>
-                                <th>4</th>
-                            </tr>
-                            <tr>
-                                <th>1</th>
-                                <th>Nguyễn Văn A</th>
-                                <th>DNA</th>
-                                <th>Nội binh</th>
-                                <th>4</th>
-                            </tr>
-                            <tr>
-                                <th>1</th>
-                                <th>Nguyễn Văn A</th>
-                                <th>DNA</th>
-                                <th>Nội binh</th>
-                                <th>4</th>
-                            </tr>
+                            {matchData.map((match) => (
+                                <tr key={match.stt}>
+                                    <td>{match.stt}</td>
+                                    <td>{match.team1}</td>
+                                    <td>{match.team2}</td>
+                                    <td>{`${match.date} ${match.time}`}</td>
+                                    <td>{match.pitch}</td>
+                                </tr>
+                            ))}
                         </table>
                     </div>
                     <div className='flex justify-center gap-32'>
-                        <button className='mt-4 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
-                            <div className="flex items-center justify-center">
-                                Chỉnh sửa
-                            </div>
-                        </button>
-                        <button className='mt-4 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
-                            <div className="flex items-center justify-center">
-                                Thêm mới
-                            </div>
-                        </button>
+                        <Link to={`/schedule-edit/${selectedRound}`}>
+                            <button className='mt-4 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
+                                <div className="flex items-center justify-center">
+                                    Chỉnh sửa
+                                </div>
+                            </button>
+                        </Link>
+                        <Link to={`/schedule-add/${selectedRound}`}>
+                            <button className='mt-4 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
+                                <div className="flex items-center justify-center">
+                                    Thêm mới
+                                </div>
+                            </button>
+                        </Link>
                     </div>
                 </div>
 

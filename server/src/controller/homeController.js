@@ -54,8 +54,7 @@ const handleReg = async (req, res) => {
         .input("varField", sql.VarChar(255), data.stadium)
         .query(sqlString);
       console.log(result.rowsAffected);
-      // if (result.rowsAffected == 1) {
-      //   return res.status(200).json({ message: "Thêm thành công" });
+
       // } else {
       //   return res.status(500).json({ message: "Không thành công" });
       // }
@@ -66,10 +65,13 @@ const handleReg = async (req, res) => {
     } // Có return lỗi
   }
 
+
   // Add cầu thủ
   // CHECK đã có trong CSDL chưa?
 
-  var playerNumber = data.players.map(getPlayerNumber).join(","); // Tách lấy mã cầu thủ
+  console.log(">>>>> checking data in CAUTHU");
+  var playerNumber = data.players.map(getPlayerNumber).join(",");
+
   // console.log(playerNumber);
   var sqlCheck =
     "SELECT COUNT(*) as cnt FROM CauThu WHERE MaCauThu in (" +
@@ -82,7 +84,9 @@ const handleReg = async (req, res) => {
     return res.status(500).json({ message: "da ton tai" }); // Có -> return lỗi
   }
   // Chạy query thêm vào CSDL
+
   const table = new sql.Table("CauThu");
+
   table.create = true;
   table.columns.add("MaCauThu", sql.Int, { nullable: false });
   table.columns.add("TenDoiBong", sql.VarChar(MAX), { nullable: true });
@@ -101,7 +105,8 @@ const handleReg = async (req, res) => {
       data.note
     );
   });
-  console.log(table);
+  console.log(">>>>> updated data in CAUTHU");
+  console.log(">>> check table", table);
   // var sqlString = `INSERT INTO CAUTHU(id, hoten, loai, ngaysinh, ghichu)
   // VALUES(@varId, @varHoten, @varLoai, @varNgaySinh, @varGhiChu)`;
   // var text;
@@ -205,7 +210,9 @@ const handleUpdateTeam = async (req, res) => {
 const handleGetAllTeam = async (req, res) => {
   try {
     var pool = await conn;
+
     var sqlString = `SELECT * FROM DoiBong`;
+
     const result = await pool.request().query(sqlString);
     console.log(result.recordset);
     if (result.rowsAffected > 0) {
@@ -223,10 +230,35 @@ const handleGetAllTeam = async (req, res) => {
 // làm
 const handleAddSchedule = async (req, res) => {
   try {
+/*
+    const idFind = req.params.id;
+    var pool = await conn;
+    var sqlString = `SELECT * FROM CAUTHU WHERE id = @varName`;
+    const result = await pool
+      .request()
+      .input("varName", sql.NChar(10), idFind)
+      .query(sqlString);
+    if (result.rowsAffected > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json({ message: "Không tìm thấy" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const handleGetInfoPlayerByName = async (req, res) => {
+  try {
+    const name = req.params.name;
+    var pool = await conn;
+    var sqlString = `SELECT * FROM CAUTHU WHERE hoten = @varName`;
+*/
     const data = req.body;
     var pool = await conn;
     var sqlString = `INSERT INTO TranDau(MaTranDau, VongDau, TenDoi1, TenDoi2, SanDau, Ngay, Gio)
     VALUES(@varId, @varRound, @varName1, @varName2, @varField, @varDate, @varTime)`;
+
     const result = await pool
       // Chỉnh lại biến theo front end
       .request()
@@ -239,7 +271,59 @@ const handleAddSchedule = async (req, res) => {
       .input("varTime", sql.Time, data.stadium)
       .query(sqlString);
     if (result.rowsAffected > 0) {
-      res.status(200).json(result);
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json({ message: "Không tìm thấy" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+function convertDateFormat(inputDate) {
+  // Sử dụng phương thức split để tách ngày, tháng, năm
+  const dateParts = inputDate.split('-');
+  
+  // Sắp xếp lại các thành phần theo định dạng mới
+  const formattedDate = dateParts.join('/');
+  
+  return formattedDate;
+}
+
+const handleGetInfoPlayerByDate = async (req, res) => {
+  try {
+    const date = convertDateFormat(req.params.date);
+    console.log(">>>> check date: ", date)
+    var pool = await conn;
+    var sqlString = `SET DATEFORMAT dmy SELECT * FROM BANGXEPHANG WHERE ngay = '${date}'`;
+    const result = await pool
+      .request()
+      .query(sqlString);
+      console.log(result)
+      console.log(">>>> check date: ", date)
+    if (result.rowsAffected > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json({ message: "Không tìm thấy" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const handleGetScorerInfoPlayerByDate = async (req, res) => {
+  try {
+    const date = convertDateFormat(req.params.date);
+    console.log(">>>> check date: ", date)
+    var pool = await conn;
+    var sqlString = `SET DATEFORMAT dmy SELECT * FROM DANHSACHGHIBAN WHERE ngay = '${date}'`;
+    const result = await pool
+      .request()
+      .query(sqlString);
+      console.log(result)
+      console.log(">>>> check date: ", date)
+    if (result.rowsAffected > 0) {
+      res.status(200).json(result.recordset);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });
     }
@@ -323,9 +407,15 @@ module.exports = {
   handleGetInfoPlayer,
   handleUpdateTeam,
   handleGetAllInfoPlayer,
+
+  handleGetInfoPlayerByName,
+  handleGetInfoPlayerByDate,
+  handleGetScorerInfoPlayerByDate,
+
   handleGetAllTeam,
   handleAddSchedule,
   handleUpdateSchedule,
   handleGetInfoGame,
   handleGoal,
+
 };

@@ -10,7 +10,7 @@ const Player = ({ player, index, handleDeletePlayer, handlePlayerChange }) => {
                     className=' bg-stone-200 w-1/3 pl-4'
                     value={player.number}
                     onChange={(e) => handlePlayerChange(index, 'number', e.target.value)} />
-                <button onClick={() => handleDeletePlayer(index)}
+                <button type='button' onClick={() => handleDeletePlayer(index)}
                     className='ml-64 bg-white text-2xl rounded-full w-10 h-10 border-solid border-2 border-black'>
                     <div className="flex items-center justify-center">-</div>
                 </button>
@@ -30,6 +30,9 @@ const Player = ({ player, index, handleDeletePlayer, handlePlayerChange }) => {
                     className='bg-stone-200 w-64 pl-4'
                     value={player.type}
                     onChange={(e) => handlePlayerChange(index, 'type', e.target.value)}>
+                    <option value="" disabled>
+                        Chọn loại cầu thủ
+                    </option>
                     <option value="domestic">Trong nước</option>
                     <option value="foreign">Nước ngoài</option>
                 </select>

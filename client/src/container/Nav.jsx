@@ -40,7 +40,7 @@ const Nav = () => {
         <p>Tra cứu thông tin cầu thủ</p>
       </a>
 
-      <a href='http://localhost:3000/schedule-edit' className={getRowClassName(5)} onClick={() => handleRowClick(5)}>
+      <a href='http://localhost:3000/schedule-view' className={getRowClassName(5)} onClick={() => handleRowClick(5)}>
         <i class="ri-calendar-2-fill"></i>
         <p>Quản lý lịch thi đấu</p>
       </a>
