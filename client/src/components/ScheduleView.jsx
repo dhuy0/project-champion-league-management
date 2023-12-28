@@ -3,12 +3,13 @@ import Nav from '../container/Nav'
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
+import axios from 'axios'
 
 const ScheduleView = () => {
 
     const { round } = useParams();
 
-    const [rounds, setRounds] = useState(['1', '2', '3', '4']);
+    const [rounds, setRounds] = useState([]);
     const [selectedRound, setSelectedRound] = useState('');
     const [matchData, setMatchData] = useState([]);
 
@@ -18,34 +19,44 @@ const ScheduleView = () => {
     };
 
     useEffect(() => {
+        // Lấy tất cả cái vòng có trong cơ sở dữ liệu
+        axios.get('api').then(response => {
+            setRounds(response.data)
+        })
+    }, []); 
+
+    useEffect(() => {
         if (round) {
             setSelectedRound(round);
         }
-    }, [round]); // Only re-run the effect if 'round' changes
+    }, [round]); 
 
     useEffect(() => {
         // Simulate fetching match data from the server based on the selected round
         const fetchMatchData = async () => {
-            // In a real scenario, you would replace the following with an actual API call
-            // For testing, I'll simulate fetching data after a short delay
             const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
             await delay(500); // Simulating a delay of 500ms
 
             // Simulated match data for testing
-            const simulatedData = [
-                { stt: 1, team1: 'Team A', team2: 'Team B', date: '2023-01-01', time: '15:00', pitch: 'Stadium X' },
-                { stt: 2, team1: 'Team B', team2: 'Team C', date: '2023-04-01', time: '10:00', pitch: 'Stadium Y' },
-                { stt: 3, team1: 'Team B', team2: 'Team C', date: '2023-04-01', time: '10:00', pitch: 'Stadium Y' },
-                // Add more simulated data as needed
-            ];
+            // const simulatedData = [
+            //     { stt: 1, team1: 'Team A', team2: 'Team B', date: '2023-01-01', time: '15:00', pitch: 'Stadium X' },
+            //     { stt: 2, team1: 'Team B', team2: 'Team C', date: '2023-04-01', time: '10:00', pitch: 'Stadium Y' },
+            //     { stt: 3, team1: 'Team B', team2: 'Team C', date: '2023-04-01', time: '10:00', pitch: 'Stadium Y' },
+            //     // Add more simulated data as needed
+            // ];
 
-            setMatchData(simulatedData);
+            // setMatchData(simulatedData);
+            //Lấy thông tin về tất cả trận đấu trong vòng này
+            axios.get(`api/${encodeURIComponent(selectedRound)}`).then(response => {
+                setMatchData(response.data)
+            })
         };
 
         if (selectedRound) {
             fetchMatchData();
         }
     }, [selectedRound]);
+
     return (
         <div className='flex flex-row h-screen'>
             <div className='basis-1/5'>

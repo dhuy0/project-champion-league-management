@@ -2,6 +2,7 @@ import React from 'react'
 import Nav from '../container/Nav'
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const ResultRecord = () => {
 
@@ -29,15 +30,23 @@ const ResultRecord = () => {
     const [scorerList, setScorerList] = useState([]);
 
     useEffect(() => {
-        // Fetch the array of team names from the server when the component mounts
+        // Lấy danh sách các đội bóng có trong cơ sở dữ liệu
         const fetchTeamNames = async () => {
             try {
+                axios.get('api')
+                .then(response => {
+                    setTeamName(response.data)
+                    console.log('>>> check team name: ', teamName)
+                })
+                .catch(error => {
+                    console.error('Loi khi lay data tu server', error);
+                });
                 // const response = await axios.get('your-api-endpoint-for-team-names');
                 //setTeamNames(response.data); // Assuming the response is an array of team names
-                const testData = ['team1', 'team2', 'team3', 'team4']
-                setTeamName(testData)
+                // const testData = ['team1', 'team2', 'team3', 'team4']
+                
             } catch (error) {
-                console.error('Error fetching team names:', error);
+                console.error('Loi khi lay data tu server:', error);
             }
         };
 
@@ -56,143 +65,155 @@ const ResultRecord = () => {
 
     const validateMatchForm = () => {
         if (!matchData.no) {
-            toast.error("Number is required");
+            toast.error("So thu tu khong duoc de trong");
             return false
         }
         if (!matchData.team1) {
-            toast.error("Team 1 is required");
+            toast.error("Doi 1 khong duoc de trong");
             return false
         }
         if (!matchData.team2) {
-            toast.error("Team 2 is required");
+            toast.error("Doi 2 khong duoc de trong");
             return false
         }
 
         if (!teamName.includes(matchData.team1)) {
-            toast.error("Team 1 is not in the database");
+            toast.error("Doi 1 khong co trong database");
             return false
         }
 
         if (!teamName.includes(matchData.team2)) {
-            toast.error("Team 2 is not in the database");
+            toast.error("Doi 2 khong co trong database");
             return false
         }
 
         if (matchData.team1 === matchData.team2) {
-            toast.error("Two team must be different");
+            toast.error("Hai doi khong duoc trung nhau");
             return false
         }
 
         if (!matchData.round) {
-            toast.error("Round is required");
+            toast.error("Vong thi dau khong duoc de trong");
             return false
         }
 
         if (!matchData.score1) {
-            toast.error("Score 1 is required");
+            toast.error("Ty so doi 1 khong duoc de trong");
             return false
         }
 
         if (!matchData.score2) {
-            toast.error("Score 2 is required");
+            toast.error("Ty so doi 2 khong duoc de trong");
             return false
         }
 
 
         if (!matchData.pitch) {
-            toast.error("Stadium is required");
+            toast.error("San dau khong duoc de trong");
             return false
         }
 
         if (!matchData.date) {
-            toast.error("Date is required");
+            toast.error("Ngay khong duoc de trong");
             return false
         }
 
         if (!matchData.time) {
-            toast.error("Time is required");
+            toast.error("Thoi gian khong duoc de trong");
             return false
         }
         return true
     }
 
+    //Khi ấn lưu thì kiểm tra điều kiện sau đó gửi data về cho server
     const handleMatchSave = async () => {
-        try {
-            // Use Axios to send section1Data to the server
-            //   await Axios.post('your-api-endpoint', matchData);
+        console.log(matchData)
+        try { 
             const isValid = validateMatchForm()
             if (isValid) {
-                console.log('Section 1 data saved successfully');
-                console.log(matchData)
+                await axios.post('api', matchData);
+                // console.log('Section 1 data saved successfully');
+                // console.log(matchData)
                 toast.success("Them thanh cong!");
             }
         } catch (error) {
-            console.error('Error saving match data:', error);
+            console.error('Loi gui du lieu ve server:', error);
         }
     };
 
     const validateScorerForm = () => {
         if (!scoreData.stt) {
-            toast.error("Number is required");
+            toast.error("So thu tu khong duoc de trong");
             return false
         }
         if (!scoreData.player) {
-            toast.error("Player is required");
+            toast.error("Ten cau thu khong duoc de trong");
             return false
         }
         if (!scoreData.team) {
-            toast.error("Team is required");
+            toast.error("Doi bong khong duoc de trong");
             return false
         }
 
         if (scoreData.team != matchData.team1 && scoreData.team != matchData.team2) {
-            toast.error("Player team not match");
+            toast.error("Doi bong khong hop le");
             return false
         }
 
 
         if (!scoreData.goalType) {
-            toast.error("Goal Type is required");
+            toast.error("Loai ban thang khong duoc de trong");
             return false
         }
 
         if (!scoreData.time) {
-            toast.error("Time is required");
+            toast.error("Thoi diem khong duoc de trong");
             return false
         }
 
         const selectedPlayer = playerInfo.find(player => player.id === scoreData.stt);
         if (!selectedPlayer) {
-            toast.error("Invalid player selected");
+            toast.error("Cau thu khong hop le");
             return false;
         }
 
         if (scoreData.player !== selectedPlayer.name) {
-            toast.error("Player name not match");
+            toast.error("Ten cau thu khong hop le");
             return false;
         }
 
         return true
     }
 
-    const handleScoreSave = async () => {
+    const handleScoreSave =  () => {
         try {
             // Use Axios to send section2Data to the server
             //   await Axios.post('your-api-endpoint', scoreData);
-            const testData = 
-            [{ id: '1', name: 'playerA' },
-            { id: '2', name: 'playerB' },
-            { id: '4', name: 'playerD' },
-            { id: '3', name: 'playerC' }]
+            // const testData = 
+            // [{ id: '1', name: 'playerA' },
+            // { id: '2', name: 'playerB' },
+            // { id: '4', name: 'playerD' },
+            // { id: '3', name: 'playerC' }]
 
-            setPlayerInfo(testData)
+            // setPlayerInfo(testData)
+            // Lấy dữ liệu về các các cầu thủ để kiểm tra các ID và tên cầu thủ khớp 
+            // với nhau trong cơ sở dữ liệu, nội dung lấy về từ server sẽ là id và name của các cầu thủ
+            axios.get('api').then(response => {
+                setPlayerInfo(response.data)
+            })
+            .catch(error => {
+                console.error('Loi khi lay data tu server', error);
+            });
+
 
             const isValid = validateScorerForm()
             if (isValid) {
+                axios.post('api', scoreData)
                 setScorerList((prevList) => [
                     ...prevList,
                     { ...scoreData, index: prevList.length + 1 },
                 ]);
+                console.log('>>> check scorer data: ', scoreData)
                 toast.success("Them thanh cong!");
             }
 

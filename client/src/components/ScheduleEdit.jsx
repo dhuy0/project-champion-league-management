@@ -9,28 +9,28 @@ import { useNavigate } from 'react-router-dom';
 const ScheduleEdit = () => {
   const navigate = useNavigate();
 
-  const mockNoList = ['1', '2', '3', '4'];
-  const mockMatchData = {
-    '1': {
-      team1: 'Team A',
-      team2: 'Team B',
-      pitch: 'Stadium X',
-      date: '2023-01-01',
-      time: '15:00',
-    },
-    '2': {
-      team1: 'Team B',
-      team2: 'Team C',
-      pitch: 'Stadium Y',
-      date: '2023-04-01',
-      time: '10:00',
-    },
-    // Add more simulated data as needed
-  };
+  // const mockNoList = ['1', '2', '3', '4'];
+  // const mockMatchData = {
+  //   '1': {
+  //     team1: 'Team A',
+  //     team2: 'Team B',
+  //     pitch: 'Stadium X',
+  //     date: '2023-01-01',
+  //     time: '15:00',
+  //   },
+  //   '2': {
+  //     team1: 'Team B',
+  //     team2: 'Team C',
+  //     pitch: 'Stadium Y',
+  //     date: '2023-04-01',
+  //     time: '10:00',
+  //   },
+  //   // Add more simulated data as needed
+  // };
 
   const { round } = useParams();
-
-  const [noList, setNoList] = useState(mockNoList);
+  const [matchData, setMatchData] = useState([])
+  const [noList, setNoList] = useState([]);
   // const [noList, setNoList] = useState([]);
   const [teamName, setTeamName] = useState([]);
   const [formData, setFormData] = useState({
@@ -44,13 +44,25 @@ const ScheduleEdit = () => {
 
 
   useEffect(() => {
-    // Fetch the list of STT values from the backend
+    // Lây danh sách STT từ server với round gửi đi
     const fetchSttList = async () => {
       try {
         // const response = await axios.get(`/api/getSttList?round=${round}`);
         // setNoList(response.data.sttList);
-        const testData = ['team1', 'team2', 'team3', 'team4']
-        setTeamName(testData)
+        // Lấy danh sách các số thứ tự dựa trên round gửi về server
+        axios.post(`api/${encodeURIComponent(round)}`).then(response => {
+          setNoList(response.data)
+        })
+        // const testData = ['team1', 'team2', 'team3', 'team4']
+        // setTeamName(testData)
+        //Lấy danh sách các đội bóng trong cơ sở dữ liệu
+        axios.get(`api/${encodeURIComponent(round)}`).then(response => {
+          setTeamName(response.data)
+        })
+        //Lấy thông tin về tất cả trận đấu trong vòng này như cái mockData ở trên
+        axios.get(`api/${encodeURIComponent(round)}`).then(response => {
+          setMatchData(response.data)
+        })
       } catch (error) {
         console.error('Error fetching STT list:', error);
       }
@@ -76,10 +88,10 @@ const ScheduleEdit = () => {
       // });
       setFormData({
         no: selectedNo,
-        ...mockMatchData[selectedNo],
+        ...matchData[selectedNo],
       });
     } catch (error) {
-      console.error('Error fetching match data:', error);
+      console.error('Loi lay data tu server:', error);
     }
   };
 
@@ -90,30 +102,30 @@ const ScheduleEdit = () => {
 
   const validateForm = () => {
     if (!formData.no) {
-      toast.error("Number is required");
+      toast.error("So thu tu khong duoc de trong");
       return false
     }
     if (!formData.team1) {
-      toast.error("Team 1 is required");
+      toast.error("Doi 1 khong duoc de trong");
       return false
     }
     if (!formData.team2) {
-      toast.error("Team 2 is required");
+      toast.error("Doi 2 khong duoc de trong");
       return false
     }
 
     if (!teamName.includes(formData.team1)) {
-      toast.error("Team 1 is not in the database");
+      toast.error("Doi 1 khong ton tai trong database");
       return false
     }
 
     if (!teamName.includes(formData.team2)) {
-      toast.error("Team 2 is not in the database");
+      toast.error("Doi 2 khong ton tai trong database");
       return false
     }
 
     if (formData.team1 === formData.team2) {
-      toast.error("Two team must be different");
+      toast.error("Hai doi khong duoc trung nhau");
       return false
     }
 
@@ -128,16 +140,16 @@ const ScheduleEdit = () => {
     // }
 
     if (!formData.pitch) {
-      toast.error("Stadium is required");
+      toast.error("San dau khong duoc trong");
       return false
     }
 
     if (!formData.date) {
-      toast.error("Date is required");
+      toast.error("Ngay khong duoc trong");
       return false
     }
     if (!formData.time) {
-      toast.error("Time is required");
+      toast.error("Thoi gian khong duoc trong");
       return false
     }
     return true
@@ -156,6 +168,7 @@ const ScheduleEdit = () => {
 
       const isValid = validateForm()
       if (isValid) {
+        axios.post('api', dataToSend)
         console.log('Data saved successfully');
         console.log(dataToSend);
         toast.success("Chinh sua thanh cong")

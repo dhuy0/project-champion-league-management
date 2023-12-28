@@ -14,7 +14,8 @@ const TeamEdit = () => {
   const [players, setPlayers] = useState([]);
   const [teamName, setTeamName] = useState('');
   const [stadium, setStadium] = useState('');
-  const [maxPlayers, setMaxPlayers] = useState(4);
+  const [maxPlayers, setMaxPlayers] = useState(-1);
+
 
 
   const handlePlayerChange = (index, field, value) => {
@@ -117,7 +118,7 @@ const TeamEdit = () => {
   };
 
   const handleDelete = () => {
-    console.log(teamId)
+    axios.post('api', teamId)
   }
 
 
@@ -125,20 +126,25 @@ const TeamEdit = () => {
     // Simulate fetching team data from the backend
     const fetchTeamData = async () => {
       try {
-        // Hardcoded team data for testing (replace this with actual API call)
-        const response = {
-          teamName: 'Sample Team',
-          stadium: 'Sample Stadium',
-          players: [
-            { number: '1', name: 'Player 1', type: 'domestic', birthday: '01/01/1990', note: 'Note 1' },
-            { number: '2', name: 'Player 2', type: 'foreign', birthday: '02/02/1991', note: 'Note 2' },
-            // Add more players as needed
-          ],
-        };
+        // Lấy danh sách các đội bóng có trong cơ sở dữ liệu
+        axios.get('api').then(response => {
+          setTeamName(response.data)
+        })
+        //Lấy maxPLayer
+        axios.get('api').then(response => {
+          setMaxPlayers(response.data)
+        })
 
-        setTeamName(response.teamName);
-        setStadium(response.stadium);
-        setPlayers(response.players);
+        //Lấy tên đội bóng và sân đấu
+        axios.get(`api/${encodeURIComponent(teamId)}`).then(response => {
+          setTeamName(response.teamName);
+          setStadium(response.stadium);
+        })
+        //Lấy danh sách các cầu thủ của đội bóng
+        axios.get(`api/${encodeURIComponent(teamId)}`).then(response => {
+          setPlayers(response.players);
+        })
+
       } catch (error) {
         console.error('Error fetching team data:', error);
       }
@@ -159,12 +165,12 @@ const TeamEdit = () => {
         <form className='flex flex-col gap-4 mx-32 my-8 h-4/5 pr-40'>
           <div className='flex flex-row text-xl justify-between'>
             <p className='w-24'>Tên đội </p>
-            <input type='text' value={teamName} 
+            <input type='text' value={teamName}
               className='bg-stone-200 w-5/6 pl-4' />
           </div>
           <div className='flex flex-row text-xl justify-between'>
             <p className='w-24'>Sân nhà</p>
-            <input type='text' value={stadium} 
+            <input type='text' value={stadium}
               className='bg-stone-200 w-5/6 pl-4' />
           </div>
           <div className='text-xl bg-sky-200 text-center w-48 py-2 mt-2'>

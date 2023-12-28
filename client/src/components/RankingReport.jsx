@@ -24,16 +24,12 @@ const RankingReport = () => {
                 .then(response => {
                     setRankingData(response.data);
                     toast.success("Tim kiem thanh cong")
+                    console.log('>>> check ranking data: ', rankingData)
                 })
                 .catch(error => {
-                    console.error('Error fetching ranking data', error);
+                    console.error('Loi khi lay data tu server', error);
                 });
-        } else {
-            // Xử lý trường hợp date rỗng
-            console.warn('Date is empty');
         }
-
-        console.log(rankingData)
     };
 
     return (
@@ -42,10 +38,12 @@ const RankingReport = () => {
                 <Nav />
             </div>
             <div className='basis-4/5'>
+                {/* ============================ Header ============================ */}
                 <header className='bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]'>
                     Lập báo cáo giải
                 </header>
                 <div className='flex flex-col gap-4 mx-32 my-8 h-4/5'>
+                    {/* ============================ Nhập ngày cần lập báo cáo ============================ */}
                     <div className='flex flex-row text-xl justify-center items-center gap-16'>
                         <p className=''>Ngày </p>
                         <input
@@ -53,6 +51,7 @@ const RankingReport = () => {
                             className='bg-stone-200'
                             value={date}
                             onChange={(e) => setDate(e.target.value)} />
+
                         <div className='flex justify-center'>
                             <button
                                 className='text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'

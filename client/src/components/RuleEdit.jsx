@@ -2,6 +2,7 @@ import React from 'react'
 import Nav from '../container/Nav'
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 
 const RuleEdit = () => {
@@ -28,21 +29,26 @@ const RuleEdit = () => {
             // const apiUrl = 'YOUR_API_ENDPOINT_URL'; // Replace with your actual API URL
             // const response = await axios.get(apiUrl);
             
-            const fakeData = {
-                minAge: '18',
-                maxAge: '35',
-                minPlayers: '11',
-                maxPlayers: '15',
-                maxForeignPlayers: '3',
-                goalTypes: 'Goal A, Goal B',
-                maxGoalTime: '90',
-                winPoints: '3',
-                losePoints: '0',
-                drawPoints: '1',
-                rankingRule: 'Some ranking rule',
-              };
+            //Lấy dữ liệu từ server để xem các quy định đã được thiết lập chưa, nếu có thì hiển thị lên màn hình
+            axios.get('api').then(response => {
+                setFormData(response.data)
+            })
 
-              setFormData(fakeData)
+            // const fakeData = {
+            //     minAge: '18',
+            //     maxAge: '35',
+            //     minPlayers: '11',
+            //     maxPlayers: '15',
+            //     maxForeignPlayers: '3',
+            //     goalTypes: 'Goal A, Goal B',
+            //     maxGoalTime: '90',
+            //     winPoints: '3',
+            //     losePoints: '0',
+            //     drawPoints: '1',
+            //     rankingRule: 'Some ranking rule',
+            //   };
+
+            //   setFormData(fakeData)
 
             // If data is received from the backend, update the form data
             // if (response.data) {
@@ -55,7 +61,7 @@ const RuleEdit = () => {
         };
     
         fetchData();
-      }, []); // The empty dependency array ensures that this effect runs only once when the component mounts
+      }, []); 
     
 
     const handleChange = (e) => {
@@ -136,6 +142,7 @@ const RuleEdit = () => {
             const isValid = validateForm()
 
             if(isValid) {
+                axios.post('api', formData)
                 console.log('Form data sent successfully!');
                 console.log(formData)
                 toast.success("Them thanh cong!");

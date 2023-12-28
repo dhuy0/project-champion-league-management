@@ -2,15 +2,24 @@ import React from 'react'
 import Nav from '../container/Nav'
 import { useState } from 'react'
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const ScorerList = () => {
 
     const [date, setDate] = useState('');
     const [scorers, setScorers] = useState([]);
 
+    const validateForm = () => {
+        if(!date) {
+            toast.error("Khong duoc de trong ngay")
+            return false
+        }
+    }
+
     const handleSearch = () => {
         // Kiểm tra nếu date không rỗng mới gửi yêu cầu
-        if (date.trim() !== '') {
+        const isValid = validateForm()
+        if (isValid) {
             axios.get(`http://localhost:8080/get-scorer-by-date/${encodeURIComponent(date)}`)
                 .then(response => {
                     setScorers(response.data);
@@ -18,11 +27,7 @@ const ScorerList = () => {
                 .catch(error => {
                     console.error('Error fetching ranking data', error);
                 });
-        } else {
-            // Xử lý trường hợp date rỗng
-            console.warn('Date is empty');
-        }
-
+        } 
         console.log(scorers)
     };
 

@@ -22,15 +22,23 @@ const ScheduleAdd = () => {
     });
 
     useEffect(() => {
-        // Fetch the array of team names from the server when the component mounts
+        // Lấy dữ liệu như danh sách các đội bóng và danh sách các đọi bóng đã thi đấu trong vòng này
         const fetchTeamNames = async () => {
             try {
                 // const response = await axios.get('your-api-endpoint-for-team-names');
                 //setTeamNames(response.data); // Assuming the response is an array of team names
-                const testData = ['team1', 'team2', 'team3', 'team4']
-                const testPLayedTeam = ['team1', 'team2']
-                setTeamName(testData)
-                setPlayedTeam(testPLayedTeam)
+                // const testData = ['team1', 'team2', 'team3', 'team4']
+                // const testPLayedTeam = ['team1', 'team2']
+                // setTeamName(testData)
+                // setPlayedTeam(testPLayedTeam)
+                // Lấy danh sách các đội bóng trong cơ sở dữ liệu
+                axios.get('api').then(response => {
+                    setTeamName(response.data)
+                })
+                //Lấy danh sách teen các đội bóng đã thi đấu trong vòng này
+                axios.get(`api/${encodeURIComponent(round)}`).then(response => {
+                    setPlayedTeam(response.data)
+                })
             } catch (error) {
                 console.error('Error fetching team names:', error);
             }
@@ -101,16 +109,16 @@ const ScheduleAdd = () => {
 
     const handleSave = async () => {
         try {
-            // Combine round information with form data
+            //Thêm round vào data gửi về
             const dataToSend = {
                 round,
                 ...formData,
             };
 
-            // Use Axios to send data to the server
-            //   await axios.post('your-api-endpoint', dataToSend);
+            //Gửi data về cho server
             const isValid = validateForm()
             if (isValid) {
+                axios.post('api', dataToSend)
                 console.log('Data saved successfully');
                 console.log(dataToSend);
                 toast.success("Them moi thanh cong")

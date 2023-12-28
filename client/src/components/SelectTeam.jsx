@@ -10,7 +10,7 @@ const SelectTeam = () => {
   const [selectedTeam, setSelectedTeam] = useState('');
 
   useEffect(() => {
-    // Giả sử backend gửi chuỗi JSON như sau:
+    //Gửi về danh sách id, Tên đội bóng
     axios.get('http://localhost:8080/get')
       .then(response => {
         setTeams(response.data);
