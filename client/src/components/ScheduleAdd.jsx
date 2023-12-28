@@ -113,6 +113,7 @@ const ScheduleAdd = () => {
             if (isValid) {
                 console.log('Data saved successfully');
                 console.log(dataToSend);
+                toast.success("Them moi thanh cong")
                 navigate(`/schedule-view/${round}`);
             }
 

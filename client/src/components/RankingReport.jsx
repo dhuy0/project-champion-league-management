@@ -2,18 +2,28 @@ import React from 'react'
 import axios from 'axios';
 import Nav from '../container/Nav'
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 const RankingReport = () => {
 
     const [date, setDate] = useState('');
     const [rankingData, setRankingData] = useState([]);
 
+    const validateForm = () => {
+        if(!date) {
+            toast.error("Khong duoc de trong ngay")
+            return false
+        }
+    }
+
     const handleSearch = () => {
         // Kiểm tra nếu date không rỗng mới gửi yêu cầu
-        if (date.trim() !== '') {
+        const isValid = validateForm()
+        if (isValid) {
             axios.get(`http://localhost:8080/get-by-date/${encodeURIComponent(date)}`)
                 .then(response => {
                     setRankingData(response.data);
+                    toast.success("Tim kiem thanh cong")
                 })
                 .catch(error => {
                     console.error('Error fetching ranking data', error);

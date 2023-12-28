@@ -3,8 +3,11 @@ import Nav from '../container/Nav'
 import { Link, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const ScheduleEdit = () => {
+  const navigate = useNavigate();
 
   const mockNoList = ['1', '2', '3', '4'];
   const mockMatchData = {
@@ -29,7 +32,7 @@ const ScheduleEdit = () => {
 
   const [noList, setNoList] = useState(mockNoList);
   // const [noList, setNoList] = useState([]);
-
+  const [teamName, setTeamName] = useState([]);
   const [formData, setFormData] = useState({
     no: '',
     team1: '',
@@ -44,8 +47,10 @@ const ScheduleEdit = () => {
     // Fetch the list of STT values from the backend
     const fetchSttList = async () => {
       try {
-        const response = await axios.get(`/api/getSttList?round=${round}`);
-        setNoList(response.data.sttList);
+        // const response = await axios.get(`/api/getSttList?round=${round}`);
+        // setNoList(response.data.sttList);
+        const testData = ['team1', 'team2', 'team3', 'team4']
+        setTeamName(testData)
       } catch (error) {
         console.error('Error fetching STT list:', error);
       }
@@ -83,6 +88,61 @@ const ScheduleEdit = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const validateForm = () => {
+    if (!formData.no) {
+      toast.error("Number is required");
+      return false
+    }
+    if (!formData.team1) {
+      toast.error("Team 1 is required");
+      return false
+    }
+    if (!formData.team2) {
+      toast.error("Team 2 is required");
+      return false
+    }
+
+    if (!teamName.includes(formData.team1)) {
+      toast.error("Team 1 is not in the database");
+      return false
+    }
+
+    if (!teamName.includes(formData.team2)) {
+      toast.error("Team 2 is not in the database");
+      return false
+    }
+
+    if (formData.team1 === formData.team2) {
+      toast.error("Two team must be different");
+      return false
+    }
+
+    // if (playedTeam.includes(formData.team1)) {
+    //     toast.error("Team 1 is already played in this round");
+    //     return false
+    // }
+
+    // if (playedTeam.includes(formData.team2)) {
+    //     toast.error("Team 2 is already played in this round");
+    //     return false
+    // }
+
+    if (!formData.pitch) {
+      toast.error("Stadium is required");
+      return false
+    }
+
+    if (!formData.date) {
+      toast.error("Date is required");
+      return false
+    }
+    if (!formData.time) {
+      toast.error("Time is required");
+      return false
+    }
+    return true
+  }
+
   const handleSave = async () => {
     try {
       // Combine round information with form data
@@ -94,8 +154,13 @@ const ScheduleEdit = () => {
       // Use Axios to send data to the server
       //   await axios.post('your-api-endpoint', dataToSend);
 
-      console.log('Data saved successfully');
-      console.log(dataToSend);
+      const isValid = validateForm()
+      if (isValid) {
+        console.log('Data saved successfully');
+        console.log(dataToSend);
+        toast.success("Chinh sua thanh cong")
+        navigate(`/schedule-view/${round}`);
+      }
     } catch (error) {
       console.error('Error saving data:', error);
     }
@@ -188,13 +253,13 @@ const ScheduleEdit = () => {
               </div>
             </button>
           </Link>
-          <Link to={`/schedule-view/${round}`}>
-            <button onClick={handleSave} className='mt-16 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
-              <div className="flex items-center justify-center">
-                Lưu
-              </div>
-            </button>
-          </Link>
+
+          <button onClick={handleSave} className='mt-16 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
+            <div className="flex items-center justify-center">
+              Lưu
+            </div>
+          </button>
+
         </div>
       </div>
     </div>

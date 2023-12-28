@@ -2,6 +2,7 @@ import React from 'react'
 import Nav from '../container/Nav'
 import axios from 'axios'
 import { useState } from 'react'
+import { toast } from 'react-toastify';
 
 
 const Search = () => {
@@ -9,9 +10,18 @@ const Search = () => {
   const [playerName, setPlayerName] = useState('');
   const [searchResults, setSearchResults] = useState([]);
 
+  const validateForm = () => {
+    if(!playerName) {
+      toast.error("Ten cau thu khong duoc de trong")
+      return false
+    }
+    return true
+  }
+
   const handleSearch = () => {
     // Kiểm tra nếu playerName không rỗng mới gửi yêu cầu
-    if (playerName.trim() !== '') {
+    const isValid = validateForm()
+    if (isValid) {
       axios.get(`http://localhost:8080/get-by-name/${encodeURIComponent(playerName)}`)
         .then(response => {
           setSearchResults(response.data);

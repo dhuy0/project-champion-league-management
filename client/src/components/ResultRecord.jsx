@@ -1,9 +1,12 @@
 import React from 'react'
 import Nav from '../container/Nav'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 const ResultRecord = () => {
 
+    const [teamName, setTeamName] = useState([]);
+    const [playerInfo, setPlayerInfo] = useState([]);
     const [matchData, setMatchData] = useState({
         no: '',
         round: '',
@@ -12,10 +15,11 @@ const ResultRecord = () => {
         team2: '',
         score2: '',
         pitch: '',
-        dateAndTime: '',
+        date: '',
+        time: '',
     });
-
     const [scoreData, setScoreData] = useState({
+        stt: '',
         player: '',
         team: '',
         goalType: '',
@@ -23,6 +27,22 @@ const ResultRecord = () => {
     });
 
     const [scorerList, setScorerList] = useState([]);
+
+    useEffect(() => {
+        // Fetch the array of team names from the server when the component mounts
+        const fetchTeamNames = async () => {
+            try {
+                // const response = await axios.get('your-api-endpoint-for-team-names');
+                //setTeamNames(response.data); // Assuming the response is an array of team names
+                const testData = ['team1', 'team2', 'team3', 'team4']
+                setTeamName(testData)
+            } catch (error) {
+                console.error('Error fetching team names:', error);
+            }
+        };
+
+        fetchTeamNames();
+    }, []);
 
     const handleMatchChange = (e) => {
         const { name, value } = e.target;
@@ -34,28 +54,148 @@ const ResultRecord = () => {
         setScoreData((prevData) => ({ ...prevData, [name]: value }));
     };
 
+    const validateMatchForm = () => {
+        if (!matchData.no) {
+            toast.error("Number is required");
+            return false
+        }
+        if (!matchData.team1) {
+            toast.error("Team 1 is required");
+            return false
+        }
+        if (!matchData.team2) {
+            toast.error("Team 2 is required");
+            return false
+        }
+
+        if (!teamName.includes(matchData.team1)) {
+            toast.error("Team 1 is not in the database");
+            return false
+        }
+
+        if (!teamName.includes(matchData.team2)) {
+            toast.error("Team 2 is not in the database");
+            return false
+        }
+
+        if (matchData.team1 === matchData.team2) {
+            toast.error("Two team must be different");
+            return false
+        }
+
+        if (!matchData.round) {
+            toast.error("Round is required");
+            return false
+        }
+
+        if (!matchData.score1) {
+            toast.error("Score 1 is required");
+            return false
+        }
+
+        if (!matchData.score2) {
+            toast.error("Score 2 is required");
+            return false
+        }
+
+
+        if (!matchData.pitch) {
+            toast.error("Stadium is required");
+            return false
+        }
+
+        if (!matchData.date) {
+            toast.error("Date is required");
+            return false
+        }
+
+        if (!matchData.time) {
+            toast.error("Time is required");
+            return false
+        }
+        return true
+    }
+
     const handleMatchSave = async () => {
         try {
             // Use Axios to send section1Data to the server
             //   await Axios.post('your-api-endpoint', matchData);
-            console.log('Section 1 data saved successfully');
-            console.log(matchData)
+            const isValid = validateMatchForm()
+            if (isValid) {
+                console.log('Section 1 data saved successfully');
+                console.log(matchData)
+                toast.success("Them thanh cong!");
+            }
         } catch (error) {
             console.error('Error saving match data:', error);
         }
     };
 
+    const validateScorerForm = () => {
+        if (!scoreData.stt) {
+            toast.error("Number is required");
+            return false
+        }
+        if (!scoreData.player) {
+            toast.error("Player is required");
+            return false
+        }
+        if (!scoreData.team) {
+            toast.error("Team is required");
+            return false
+        }
+
+        if (scoreData.team != matchData.team1 && scoreData.team != matchData.team2) {
+            toast.error("Player team not match");
+            return false
+        }
+
+
+        if (!scoreData.goalType) {
+            toast.error("Goal Type is required");
+            return false
+        }
+
+        if (!scoreData.time) {
+            toast.error("Time is required");
+            return false
+        }
+
+        const selectedPlayer = playerInfo.find(player => player.id === scoreData.stt);
+        if (!selectedPlayer) {
+            toast.error("Invalid player selected");
+            return false;
+        }
+
+        if (scoreData.player !== selectedPlayer.name) {
+            toast.error("Player name not match");
+            return false;
+        }
+
+        return true
+    }
+
     const handleScoreSave = async () => {
         try {
             // Use Axios to send section2Data to the server
             //   await Axios.post('your-api-endpoint', scoreData);
-            console.log('Section 2 data saved successfully');
-            console.log(scoreData)
+            const testData = 
+            [{ id: '1', name: 'playerA' },
+            { id: '2', name: 'playerB' },
+            { id: '4', name: 'playerD' },
+            { id: '3', name: 'playerC' }]
 
-            setScorerList((prevList) => [
-                ...prevList,
-                { ...scoreData, index: prevList.length + 1 },
-            ]);
+            setPlayerInfo(testData)
+
+            const isValid = validateScorerForm()
+            if (isValid) {
+                setScorerList((prevList) => [
+                    ...prevList,
+                    { ...scoreData, index: prevList.length + 1 },
+                ]);
+                toast.success("Them thanh cong!");
+            }
+
         } catch (error) {
             console.error('Error saving score data:', error);
         }
@@ -146,14 +286,25 @@ const ResultRecord = () => {
                                 onChange={handleMatchChange} />
                         </div>
                         <div className='text-xl flex flex-row items-center justify-between pr-16'>
-                            <div className='flex flex-row w-1/2 pr-16'>
-                                <p className='w-28'>Ngày - Giờ</p>
+                            <div className='w-1/2'>
+                                <p className='w-28'>Ngày</p>
                                 <input
                                     type='text'
                                     className='pl-4 bg-stone-200 flex-grow'
-                                    name='dateAndTime'
-                                    value={matchData.dateAndTime}
-                                    onChange={handleMatchChange} />
+                                    name='date'
+                                    value={matchData.date}
+                                    onChange={handleMatchChange}
+                                />
+                            </div>
+                            <div className='w-1/2'>
+                                <p className='w-28'>Giờ</p>
+                                <input
+                                    type='text'
+                                    className='pl-4 bg-stone-200 flex-grow'
+                                    name='time'
+                                    value={matchData.time}
+                                    onChange={handleMatchChange}
+                                />
                             </div>
 
                             <button onClick={handleMatchSave} className='text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
@@ -164,7 +315,18 @@ const ResultRecord = () => {
                         </div>
                     </div>
                     <div className=' border-solid border-black border-2 py-4 px-8 flex flex-col gap-4'>
+                        <div className='text-xl flex flex-row w-1/2'>
+                            <p className='w-28'>STT</p>
+                            <input
+                                type='text'
+                                className='pl-4 bg-stone-200 flex-grow'
+                                name='stt'
+                                value={scoreData.stt}
+                                onChange={handleScoreChange}
+                            />
+                        </div>
                         <div className='text-xl flex flex-row justify-between'>
+
                             <div className='flex flex-row w-1/2'>
                                 <p className='w-28'>Cầu thủ</p>
                                 <input
@@ -226,7 +388,7 @@ const ResultRecord = () => {
                         <tbody>
                             {scorerList.map((scorer) => (
                                 <tr key={scorer.index}>
-                                    <td>{scorer.index}</td>
+                                    <td>{scorer.stt}</td>
                                     <td>{scorer.player}</td>
                                     <td>{scorer.team}</td>
                                     <td>{scorer.goalType}</td>

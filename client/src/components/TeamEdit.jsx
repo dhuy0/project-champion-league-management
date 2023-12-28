@@ -3,6 +3,7 @@ import Nav from '../container/Nav'
 import { useEffect, useState } from 'react'
 import Player from '../container/Player'
 import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify';
 import axios from 'axios'
 
 
@@ -13,12 +14,8 @@ const TeamEdit = () => {
   const [players, setPlayers] = useState([]);
   const [teamName, setTeamName] = useState('');
   const [stadium, setStadium] = useState('');
+  const [maxPlayers, setMaxPlayers] = useState(4);
 
-  // const [players, setPlayers] = useState([
-  //   { number: '1', name: 'Player 1', type: 'domestic', birthday: '01/01/1990', note: 'Note 1' },
-  //   { number: '2', name: 'Player 2', type: 'foreign', birthday: '02/02/1991', note: 'Note 2' },
-  //   // Add more players as needed
-  // ]);
 
   const handlePlayerChange = (index, field, value) => {
     // Logic to update the player data in the array
@@ -43,7 +40,65 @@ const TeamEdit = () => {
       birthday: '',
       note: '',
     };
-    setPlayers([...players, newPlayer]);
+    if (players.length + 1 <= maxPlayers) {
+      setPlayers([...players, newPlayer]);
+    }
+    else toast.error("Maximum player allow")
+  };
+
+  const validateForm = () => {
+    // Kiểm tra các trường input
+    if (!teamName) {
+      toast.error("Team name is required");
+      return false;
+    }
+
+    if (!stadium) {
+      toast.error("Stadium is required");
+      return false;
+    }
+
+    const usedNumbers = new Set();
+
+    // Kiểm tra từng cầu thủ
+    for (let i = 0; i < players.length; i++) {
+      const player = players[i];
+
+      if (!player.number) {
+        toast.error(`Player ${i + 1}: Number is required`);
+        return false;
+      }
+
+      if (usedNumbers.has(player.number)) {
+        toast.error(`Player ${i + 1}: Duplicate Number`);
+        return false;
+      }
+
+      usedNumbers.add(player.number);
+
+      if (!player.name) {
+        toast.error(`Player ${i + 1}: Name is required`);
+        return false;
+      }
+
+      if (!player.type) {
+        toast.error(`Player ${i + 1}: Type is required`);
+        return false;
+      }
+
+      if (!player.birthday) {
+        toast.error(`Player ${i + 1}: Birthday is required`);
+        return false;
+      }
+
+      if (!player.note) {
+        toast.error(`Player ${i + 1}: Note is required`);
+        return false;
+      }
+    }
+
+    // Nếu không có lỗi, trả về true
+    return true;
   };
 
   const handleSave = () => {
@@ -54,7 +109,10 @@ const TeamEdit = () => {
       stadium,
       players,
     };
-    console.log('Team data to be saved:', teamData);
+    const isValid = validateForm()
+    if (isValid) {
+      console.log('Team data to be saved:', teamData);
+    }
     // You can now send this data to your backend or perform other actions as needed.
   };
 
@@ -101,13 +159,13 @@ const TeamEdit = () => {
         <form className='flex flex-col gap-4 mx-32 my-8 h-4/5 pr-40'>
           <div className='flex flex-row text-xl justify-between'>
             <p className='w-24'>Tên đội </p>
-            <input type='text' value={teamName} onChange={(event) => setTeamName(event.target.value)} 
-            className='bg-stone-200 w-5/6 pl-4' />
+            <input type='text' value={teamName} 
+              className='bg-stone-200 w-5/6 pl-4' />
           </div>
           <div className='flex flex-row text-xl justify-between'>
             <p className='w-24'>Sân nhà</p>
-            <input type='text' value={stadium} onChange={(event) => setStadium(event.target.value)} 
-            className='bg-stone-200 w-5/6 pl-4' />
+            <input type='text' value={stadium} 
+              className='bg-stone-200 w-5/6 pl-4' />
           </div>
           <div className='text-xl bg-sky-200 text-center w-48 py-2 mt-2'>
             Danh sách cầu thủ
@@ -143,5 +201,5 @@ const TeamEdit = () => {
     </div>
   )
 }
- 
+
 export default TeamEdit

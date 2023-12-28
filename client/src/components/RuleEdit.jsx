@@ -1,7 +1,7 @@
 import React from 'react'
 import Nav from '../container/Nav'
 import { useState, useEffect } from 'react';
-
+import { toast } from 'react-toastify';
 
 
 const RuleEdit = () => {
@@ -63,6 +63,69 @@ const RuleEdit = () => {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
+    const validateForm = () => {
+        if (!formData.minAge || formData.minAge < 0) {
+            toast.error("Do tuoi toi thieu khong hop le");
+            return false
+        }
+        if (!formData.maxAge || formData.maxAge < 0) {
+            toast.error("Do tuoi toi da khong hop le");
+            return false
+        }
+
+        if (!formData.minPlayers || formData.minPlayers < 0) {
+            toast.error("So cau thu toi thieu khong hop le");
+            return false
+        }
+        if (!formData.maxPlayers || formData.maxPlayers < 0) {
+            toast.error("So cau thu toi da khong hop le");
+            return false
+        }
+
+        if(formData.minAge > formData.maxAge || formData.minPlayers > formData.maxPlayers){
+            toast.error("Toi thieu phai nho hon toi da");
+            return false
+        }
+
+        if (!formData.maxForeignPlayers || formData.maxForeignPlayers < 0) {
+            toast.error("So cau thu nuoc ngoai toi da khong hop le");
+            return false
+        }
+        if (!formData.goalTypes) {
+            toast.error("Loai ban thang bi trong");
+            return false
+        }
+        if (!formData.maxGoalTime || formData.maxGoalTime < 0) {
+            toast.error("Thoi diem ghi ban toi da khong hop le");
+            return false
+        }
+        if (!formData.winPoints || formData.winPoints < 0) {
+            toast.error("Diem so khi thang khong hop le");
+            return false
+        }
+        if (!formData.drawPoints || formData.drawPoints < 0) {
+            toast.error("Diem so khi hoa khong hop le");
+            return false
+        }
+        if (!formData.losePoints || formData.losePoints < 0) {
+            toast.error("Diem so khi thua khong hop le");
+            return false
+        }
+        if (!formData.rankingRule) {
+            toast.error("Quy tac xep hang khong duoc de trong");
+            return false
+        }
+        //Điều kiện này phải để ở cuối
+        if(formData.winPoints > formData.drawPoints && formData.drawPoints > formData.losePoints) {
+            return true
+        }
+        else {
+            toast.error("Quy tac tinh diem phai tuan thu: Diem thang > Diem hoa > Diem thua");
+            return false
+        }
+        return true
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -70,10 +133,15 @@ const RuleEdit = () => {
             // Use your API endpoint URL
             // const apiUrl = 'YOUR_API_ENDPOINT_URL';
             // await axios.post(apiUrl, formData);
+            const isValid = validateForm()
 
-            // Add any additional logic after successful submission
-            console.log('Form data sent successfully!');
-            console.log(formData)
+            if(isValid) {
+                console.log('Form data sent successfully!');
+                console.log(formData)
+                toast.success("Them thanh cong!");
+            }
+            
+
         } catch (error) {
             // Handle error
             console.error('Error sending form data:', error);
