@@ -14,25 +14,43 @@ const initWebRoutes = (app) => {
   router.post("/reg", homeController.handleReg);
 
   //Đang làm
+  // Trang Chỉnh sửa hồ sơ đội bóng
+  router.get("/get-all-team", homeController.handleGetAllTeam); // Xuất các đội bóng có trong CSDL --Xong
+  router.put("/update-player-team", homeController.handleUpdateTeam); // Thay đổi hồ sơ đội bóng --Xong
+  router.post("/add-player-to-team", homeController.handleUpdateTeam); // Thêm thành viên vô đội bóng
+  router.delete("/delete-player-team", homeController.handleUpdateTeam); // Xóa thành viên ra đội bóng
+
   // Trang tra cứu thông tin cầu thủ
-  router.get("/get", homeController.handleGetAllInfoPlayer);
-  router.get("/get-by-id/:id", homeController.handleGetInfoPlayer);
-  router.get("/get-by-name/:name", homeController.handleGetInfoPlayerByName);
-  router.get("/get-by-date/:date", homeController.handleGetInfoPlayerByDate);
-  router.get("/get-scorer-by-date/:date", homeController.handleGetScorerInfoPlayerByDate);
-
-  // Trang Update đội bóng
-  router.get("/update", homeController.handleGetAllTeam); // Xuất các đội bóng có trong CSDL --Xong
-  router.put("/update", homeController.handleUpdateTeam); // Thay đổi hồ sơ đội bóng --Xong
-
-  router.post("/update", homeController.handleUpdateTeam); // Thêm thành viên vô đội bóng
-  router.delete("/update", homeController.handleUpdateTeam); // Xóa thành viên ra đội bóng
+  router.get("/get-all-player", homeController.handleGetAllInfoPlayer);
+  router.get(
+    "/get-player-by-name/:name",
+    homeController.handleGetInfoPlayerByName
+  );
+  // router.get("/get-by-name/:name", homeController.handleGetInfoPlayerByName);
+  router.get(
+    "/get-player-by-date/:date",
+    homeController.handleGetInfoPlayerByDate
+  );
+  router.get(
+    "/get-scorer-by-date/:date",
+    homeController.handleGetScorerInfoPlayerByDate
+  );
 
   // Trang ghi nhận kết quả
-  router.get("/submit", homeController.handleGetInfoGame);
-  router.post("/submit", homeController.handleUpdateSchedule);
+  router.get("/get-info-game", homeController.handleGetInfoGame);
+  router.get("/get-name-team", homeController.handleGetTeamName);
+  router.get(
+    "/get-name-team/:round",
+    homeController.handleGetTeamNameFromRound
+  );
+  router.get("/get-info-game/:round", homeController.handleGetInfoGameByRound);
+  router.post("/add-schedule", homeController.handleAddSchedule);
+
+  router.put("/submit", homeController.handleUpdateSchedule);
 
   router.post("/submit/goal", homeController.handleGoal);
+
+  router.post("/change-rule", homeController.handleUpdateRule);
   //router.get("/player", homeController.handlePlayer);
 
   return app.use("/", router);

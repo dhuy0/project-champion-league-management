@@ -1,10 +1,10 @@
-import React from 'react'
-import Nav from '../container/Nav'
-import { Link, useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import Nav from "../container/Nav";
+import { Link, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const ScheduleEdit = () => {
   const navigate = useNavigate();
@@ -29,19 +29,18 @@ const ScheduleEdit = () => {
   // };
 
   const { round } = useParams();
-  const [matchData, setMatchData] = useState([])
+  const [matchData, setMatchData] = useState([]);
   const [noList, setNoList] = useState([]);
   // const [noList, setNoList] = useState([]);
   const [teamName, setTeamName] = useState([]);
   const [formData, setFormData] = useState({
-    no: '',
-    team1: '',
-    team2: '',
-    pitch: '',
-    date: '',
-    time: '',
+    no: "",
+    team1: "",
+    team2: "",
+    pitch: "",
+    date: "",
+    time: "",
   });
-
 
   useEffect(() => {
     // Lây danh sách STT từ server với round gửi đi
@@ -50,21 +49,21 @@ const ScheduleEdit = () => {
         // const response = await axios.get(`/api/getSttList?round=${round}`);
         // setNoList(response.data.sttList);
         // Lấy danh sách các số thứ tự dựa trên round gửi về server
-        axios.post(`api/${encodeURIComponent(round)}`).then(response => {
-          setNoList(response.data)
-        })
+        axios.get(`api/${encodeURIComponent(round)}`).then((response) => {
+          setNoList(response.data);
+        });
         // const testData = ['team1', 'team2', 'team3', 'team4']
         // setTeamName(testData)
         //Lấy danh sách các đội bóng trong cơ sở dữ liệu
-        axios.get(`api/${encodeURIComponent(round)}`).then(response => {
-          setTeamName(response.data)
-        })
+        axios.get(`api/${encodeURIComponent(round)}`).then((response) => {
+          setTeamName(response.data);
+        });
         //Lấy thông tin về tất cả trận đấu trong vòng này như cái mockData ở trên
-        axios.get(`api/${encodeURIComponent(round)}`).then(response => {
-          setMatchData(response.data)
-        })
+        axios.get(`api/${encodeURIComponent(round)}`).then((response) => {
+          setMatchData(response.data);
+        });
       } catch (error) {
-        console.error('Error fetching STT list:', error);
+        console.error("Error fetching STT list:", error);
       }
     };
 
@@ -91,7 +90,7 @@ const ScheduleEdit = () => {
         ...matchData[selectedNo],
       });
     } catch (error) {
-      console.error('Loi lay data tu server:', error);
+      console.error("Loi lay data tu server:", error);
     }
   };
 
@@ -103,30 +102,30 @@ const ScheduleEdit = () => {
   const validateForm = () => {
     if (!formData.no) {
       toast.error("So thu tu khong duoc de trong");
-      return false
+      return false;
     }
     if (!formData.team1) {
       toast.error("Doi 1 khong duoc de trong");
-      return false
+      return false;
     }
     if (!formData.team2) {
       toast.error("Doi 2 khong duoc de trong");
-      return false
+      return false;
     }
 
     if (!teamName.includes(formData.team1)) {
       toast.error("Doi 1 khong ton tai trong database");
-      return false
+      return false;
     }
 
     if (!teamName.includes(formData.team2)) {
       toast.error("Doi 2 khong ton tai trong database");
-      return false
+      return false;
     }
 
     if (formData.team1 === formData.team2) {
       toast.error("Hai doi khong duoc trung nhau");
-      return false
+      return false;
     }
 
     // if (playedTeam.includes(formData.team1)) {
@@ -141,19 +140,19 @@ const ScheduleEdit = () => {
 
     if (!formData.pitch) {
       toast.error("San dau khong duoc trong");
-      return false
+      return false;
     }
 
     if (!formData.date) {
       toast.error("Ngay khong duoc trong");
-      return false
+      return false;
     }
     if (!formData.time) {
       toast.error("Thoi gian khong duoc trong");
-      return false
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
   const handleSave = async () => {
     try {
@@ -166,41 +165,41 @@ const ScheduleEdit = () => {
       // Use Axios to send data to the server
       //   await axios.post('your-api-endpoint', dataToSend);
 
-      const isValid = validateForm()
+      const isValid = validateForm();
       if (isValid) {
-        axios.post('api', dataToSend)
-        console.log('Data saved successfully');
+        axios.post("api", dataToSend);
+        console.log("Data saved successfully");
         console.log(dataToSend);
-        toast.success("Chinh sua thanh cong")
+        toast.success("Chinh sua thanh cong");
         navigate(`/schedule-view/${round}`);
       }
     } catch (error) {
-      console.error('Error saving data:', error);
+      console.error("Error saving data:", error);
     }
   };
 
   return (
-    <div className='flex flex-row h-screen'>
-      <div className='basis-1/5'>
+    <div className="flex flex-row h-screen">
+      <div className="basis-1/5">
         <Nav />
       </div>
-      <div className='basis-4/5'>
-        <header className='bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]'>
+      <div className="basis-4/5">
+        <header className="bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]">
           Đăng kí đội bóng
         </header>
-        <form className='flex flex-col gap-4 px-8 py-12 mx-32 mt-24 h-1/2 mx-56 border-solid border-2 border-black'>
-          <div className='flex flex-row text-xl'>
-            <p className='w-[138px]'>STT</p>
+        <form className="flex flex-col gap-4 px-8 py-12 mx-32 mt-24 h-1/2 mx-56 border-solid border-2 border-black">
+          <div className="flex flex-row text-xl">
+            <p className="w-[138px]">STT</p>
             <select
-              name='no'
-              className='bg-stone-200 w-2/6'
+              name="no"
+              className="bg-stone-200 w-2/6"
               value={formData.no}
               onChange={(e) => {
                 handleInputChange(e);
                 handleNoChange(e.target.value);
               }}
             >
-              <option value='' disabled>
+              <option value="" disabled>
                 Chọn STT
               </option>
               {noList.map((stt) => (
@@ -210,73 +209,75 @@ const ScheduleEdit = () => {
               ))}
             </select>
           </div>
-          <div className='flex flex-row text-xl justify-between'>
-            <p className='w-36'>Đội 1</p>
+          <div className="flex flex-row text-xl justify-between">
+            <p className="w-36">Đội 1</p>
             <input
-              type='text'
-              className='bg-stone-200 w-5/6'
-              name='team1'
+              type="text"
+              className="bg-stone-200 w-5/6"
+              name="team1"
               value={formData.team1}
-              onChange={handleInputChange} />
+              onChange={handleInputChange}
+            />
           </div>
-          <div className='flex flex-row text-xl justify-between'>
-            <p className='w-36'>Đội 2</p>
+          <div className="flex flex-row text-xl justify-between">
+            <p className="w-36">Đội 2</p>
             <input
-              type='text'
-              className=' bg-stone-200 w-5/6'
-              name='team2'
+              type="text"
+              className=" bg-stone-200 w-5/6"
+              name="team2"
               value={formData.team2}
-              onChange={handleInputChange} />
+              onChange={handleInputChange}
+            />
           </div>
-          <div className='flex flex-row text-xl justify-between'>
-            <p className='w-36'>Sân</p>
+          <div className="flex flex-row text-xl justify-between">
+            <p className="w-36">Sân</p>
             <input
-              type='text'
-              className=' bg-stone-200 w-5/6'
-              name='pitch'
+              type="text"
+              className=" bg-stone-200 w-5/6"
+              name="pitch"
               value={formData.pitch}
-              onChange={handleInputChange} />
+              onChange={handleInputChange}
+            />
           </div>
-          <div className='flex flex-row text-xl justify-between'>
-            <p className='w-36'>Ngày</p>
+          <div className="flex flex-row text-xl justify-between">
+            <p className="w-36">Ngày</p>
             <input
-              type='text'
-              className=' bg-stone-200 w-5/6'
-              name='date'
+              type="text"
+              className=" bg-stone-200 w-5/6"
+              name="date"
               value={formData.date}
-              onChange={handleInputChange} />
+              onChange={handleInputChange}
+            />
           </div>
-          <div className='flex flex-row text-xl justify-between'>
-            <p className='w-36'>Giờ</p>
+          <div className="flex flex-row text-xl justify-between">
+            <p className="w-36">Giờ</p>
             <input
-              type='text'
-              className=' bg-stone-200 w-5/6'
-              name='time'
+              type="text"
+              className=" bg-stone-200 w-5/6"
+              name="time"
               value={formData.time}
-              onChange={handleInputChange} />
+              onChange={handleInputChange}
+            />
           </div>
-          <div>
-          </div>
+          <div></div>
         </form>
-        <div className='flex justify-center gap-12'>
+        <div className="flex justify-center gap-12">
           <Link to={`/schedule-view/${round}`}>
-            <button className='mt-16 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
-              <div className="flex items-center justify-center">
-                Trở lại
-              </div>
+            <button className="mt-16 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500">
+              <div className="flex items-center justify-center">Trở lại</div>
             </button>
           </Link>
 
-          <button onClick={handleSave} className='mt-16 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
-            <div className="flex items-center justify-center">
-              Lưu
-            </div>
+          <button
+            onClick={handleSave}
+            className="mt-16 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500"
+          >
+            <div className="flex items-center justify-center">Lưu</div>
           </button>
-
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ScheduleEdit
+export default ScheduleEdit;

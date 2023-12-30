@@ -2,7 +2,7 @@ const { MAX } = require("mssql");
 const { conn, sql } = require("../connect.js");
 
 const getPlayerNumber = (item) => {
-  return item.playerNumber;
+  return item.number;
 };
 
 const handleHome = (req, res) => {
@@ -33,7 +33,7 @@ const handleUserPage = async (req, res) => {
 
 const handleReg = async (req, res) => {
   // Add đội bóng
-  const data = req.body.registrationData;
+  const data = req.body;
   console.log(data);
   var pool = await conn;
   // CHECK đã có đội bóng trong CSDL chưa?
@@ -54,6 +54,7 @@ const handleReg = async (req, res) => {
         .input("varField", sql.VarChar(255), data.stadium)
         .query(sqlString);
       console.log(result.rowsAffected);
+      console.log("Thêm Thành Công");
 
       // } else {
       //   return res.status(500).json({ message: "Không thành công" });
@@ -65,105 +66,82 @@ const handleReg = async (req, res) => {
     } // Có return lỗi
   }
 
-
   // Add cầu thủ
   // CHECK đã có trong CSDL chưa?
 
   console.log(">>>>> checking data in CAUTHU");
+  console.log(data);
   var playerNumber = data.players.map(getPlayerNumber).join(",");
-
-  // console.log(playerNumber);
   var sqlCheck =
-    "SELECT COUNT(*) as cnt FROM CauThu WHERE MaCauThu in (" +
+    "SET DATEFORMAT dmy SELECT COUNT(*) as cnt FROM CauThu WHERE MaCauThu in (" +
     playerNumber +
-    ")";
-  const checkPlayer = await pool.request().query(sqlCheck);
+    ") AND TenDoiBong = @varTeamName";
+  const checkPlayer = await pool
+    .request()
+    .input("varTeamName", sql.VarChar(MAX), data.teamName)
+    .query(sqlCheck);
   console.log(checkPlayer.recordset[0].cnt);
   if (checkPlayer.recordset[0].cnt) {
-    console.log({ message: "da ton tai" });
-    return res.status(500).json({ message: "da ton tai" }); // Có -> return lỗi
+    console.log({ message: "Đã tồn tại" });
+    return res.status(500).json({ message: "Đã tồn tại" }); // Có -> return lỗi
   }
   // Chạy query thêm vào CSDL
 
   const table = new sql.Table("CauThu");
 
   table.create = true;
-  table.columns.add("MaCauThu", sql.Int, { nullable: false });
-  table.columns.add("TenDoiBong", sql.VarChar(MAX), { nullable: true });
-  table.columns.add("TenCauThu", sql.VarChar(MAX), { nullable: true });
-  table.columns.add("LoaiCauThu", sql.VarChar(MAX), { nullable: true });
-  table.columns.add("NgaySinh", sql.Date, { nullable: true });
-  table.columns.add("GhiChu", sql.VarChar(MAX), { nullable: true });
+  table.columns.add("MaCauThu", sql.VarChar(MAX), { nullable: false });
+  table.columns.add("TenDoiBong", sql.NVarChar(MAX), { nullable: false });
+  table.columns.add("TenCauThu", sql.NVarChar(MAX), { nullable: false });
+  table.columns.add("LoaiCauThu", sql.NVarChar(MAX), { nullable: false });
+  table.columns.add("TongSoBanThang", sql.Int, { nullable: false });
+  table.columns.add("NgaySinh", sql.Date, { nullable: false });
+  table.columns.add("GhiChu", sql.NVarChar(MAX), { nullable: true });
+
+  console.log(stringToDate(data.players[0].birthday));
 
   data.players.forEach((data) => {
     table.rows.add(
-      parseInt(data.playerNumber),
-      req.body.registrationData.teamName,
-      data.playerName,
-      data.playerType,
-      data.birthday,
+      data.number,
+      req.body.teamName,
+      data.name,
+      data.type,
+      0,
+      stringToDate(data.birthday),
       data.note
     );
   });
   console.log(">>>>> updated data in CAUTHU");
   console.log(">>> check table", table);
-  // var sqlString = `INSERT INTO CAUTHU(id, hoten, loai, ngaysinh, ghichu)
-  // VALUES(@varId, @varHoten, @varLoai, @varNgaySinh, @varGhiChu)`;
-  // var text;
-  // for (i = 0; i < playerNumber.length(); i++) {
-  //   text += '(' + data.players[i].playerNumber + ',';
-  //   text += data.players[i].playerType + ',';
-  //   text += data.players[i].playerName + ',';
-  //   text += data.players[i].birthday + ',';
-  //   text += data.players[i].note + ')';
-  // }
   try {
     const test = await pool.request();
     const result = await test.bulk(table);
     console.log(result);
-    console.log(table);
-    // if (test.rowsAffected == 1) {
-    //   res.status(200).json({ message: "Thêm thành công" });
-    // } else {
-    //   res.status(500).json({ message: "Không thành công" });
-    //   console.log(error.message);
-    // }
+    if (result.rowsAffected > 0) {
+      console.log("Thêm Thành Công");
+      return res.status(200).json({ message: "Thêm thành công" });
+    } else {
+      console.log(error.message);
+      return res.status(500).json({ message: "Không thành công" });
+    }
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: "Có lỗi xảy ra" });
+    console.log(error);
+    return res.status(500).json({ message: "Có lỗi xảy ra" });
   }
 };
 
-// Làm tạm
-const handleGetAllInfoPlayer = async (req, res) => {
+const handleGetAllTeam = async (req, res) => {
   try {
     var pool = await conn;
-    var sqlString = `SELECT * FROM CauThu`;
+
+    var sqlString = `SELECT * FROM DoiBong`;
+
     const result = await pool.request().query(sqlString);
     console.log(result.recordset);
     if (result.rowsAffected > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "Không có dữ liệu" });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-const handleGetInfoPlayer = async (req, res) => {
-  try {
-    const name = req.params.id;
-    var pool = await conn;
-    var sqlString = `SELECT * FROM CauThu WHERE TenCauThu = @varName`;
-    const result = await pool
-      .request()
-      .input("varName", sql.NChar(10), name)
-      .query(sqlString);
-    if (result.rowsAffected > 0) {
-      res.status(200).json(result);
-    } else {
-      res.status(404).json({ message: "Không tìm thấy" });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -207,12 +185,54 @@ const handleUpdateTeam = async (req, res) => {
   }
 };
 
-const handleGetAllTeam = async (req, res) => {
+const handleAddPlayerToTeam = async (req, res) => {
   try {
+    const data = req.body;
     var pool = await conn;
 
-    var sqlString = `SELECT * FROM DoiBong`;
+    // Update cầu thủ
+    // var sqlString = `INSERT CauThu
+    // SET TenCauThu = @varHoTen, TenDoiBong = @varTenDoi, LoaiCauThu = @varLoai, NgaySinh = @varNgaySinh, GhiChu = @varGhiChu
+    // WHERE MaCauThu = @varId AND TenDoiBong = @varTenDoi`;
 
+    var sqlCheck = `UPDATE CauThu
+    SET TenCauThu = @varHoTen, TenDoiBong = @varTenDoi, LoaiCauThu = @varLoai, NgaySinh = @varNgaySinh, GhiChu = @varGhiChu 
+    WHERE MaCauThu = @varId AND TenDoiBong = @varTenDoi`;
+
+    const result = await pool.request().query(sqlCheck);
+
+    for (let i = 0; i < data.length; i++) {
+      try {
+        const result = await pool
+          .request()
+          .input("varHoTen", sql.VarChar(MAX), data[i].playerName)
+          .input("varTenDoi", sql.VarChar(MAX), data[i].teamName) // Client gửi về thêm lần nữa !!!
+          .input("varLoai", sql.VarChar(MAX), data[i].type)
+          .input("varNgaySinh", sql.Date, data[i].birthDay)
+          .input("varGhiChu", sql.VarChar(MAX), data[i].note)
+          .input("varId", sql.Int, parseInt(data[i].id))
+          .query(sqlString);
+        console.log(req.body);
+        console.log(result);
+        if (result.rowsAffected > 0) {
+          console.log({ message: "Update thành công" });
+        } else {
+          throw new Error();
+        }
+      } catch (err) {
+        return res.status(404).json({ message: "Không tìm thấy" });
+      }
+    }
+    return res.status(200).json({ message: "OK" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const handleGetAllInfoPlayer = async (req, res) => {
+  try {
+    var pool = await conn;
+    var sqlString = `SELECT * FROM CauThu`;
     const result = await pool.request().query(sqlString);
     console.log(result.recordset);
     if (result.rowsAffected > 0) {
@@ -225,82 +245,55 @@ const handleGetAllTeam = async (req, res) => {
   }
 };
 
-// const handle
-
-// làm
-const handleAddSchedule = async (req, res) => {
-  try {
-/*
-    const idFind = req.params.id;
-    var pool = await conn;
-    var sqlString = `SELECT * FROM CAUTHU WHERE id = @varName`;
-    const result = await pool
-      .request()
-      .input("varName", sql.NChar(10), idFind)
-      .query(sqlString);
-    if (result.rowsAffected > 0) {
-      res.status(200).json(result.recordset);
-    } else {
-      res.status(404).json({ message: "Không tìm thấy" });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 const handleGetInfoPlayerByName = async (req, res) => {
   try {
     const name = req.params.name;
     var pool = await conn;
-    var sqlString = `SELECT * FROM CAUTHU WHERE hoten = @varName`;
-*/
-    const data = req.body;
-    var pool = await conn;
-    var sqlString = `INSERT INTO TranDau(MaTranDau, VongDau, TenDoi1, TenDoi2, SanDau, Ngay, Gio)
-    VALUES(@varId, @varRound, @varName1, @varName2, @varField, @varDate, @varTime)`;
-
-    const result = await pool
-      // Chỉnh lại biến theo front end
-      .request()
-      .input("varId", sql.VarChar(255), data.teamName)
-      .input("varRound", sql.Int, data.stadium)
-      .input("varName1", sql.VarChar(255), data.stadium)
-      .input("varName2", sql.VarChar(255), data.stadium)
-      .input("varField", sql.VarChar(255), data.stadium)
-      .input("varDate", sql.Date, data.stadium)
-      .input("varTime", sql.Time, data.stadium)
-      .query(sqlString);
+    var sqlString =
+      "SELECT * FROM CauThu WHERE TenCauThu LIKE '%" + name + "%'";
+    console.log(sqlString);
+    const result = await pool.request().query(sqlString);
+    console.log(result);
     if (result.rowsAffected > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "Không tìm thấy" });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
 
+// làm
+
 function convertDateFormat(inputDate) {
   // Sử dụng phương thức split để tách ngày, tháng, năm
-  const dateParts = inputDate.split('-');
-  
+  const dateParts = inputDate.split("-");
+
   // Sắp xếp lại các thành phần theo định dạng mới
-  const formattedDate = dateParts.join('/');
-  
+  const formattedDate = dateParts.join("/");
+
+  return formattedDate;
+}
+function stringToDate(inputDate) {
+  // Sử dụng phương thức split để tách ngày, tháng, năm
+  var doo = new Date(inputDate);
+  var formattedDate = new Date(
+    doo.getTime() + Math.abs(doo.getTimezoneOffset() * 60000)
+  );
   return formattedDate;
 }
 
 const handleGetInfoPlayerByDate = async (req, res) => {
   try {
     const date = convertDateFormat(req.params.date);
-    console.log(">>>> check date: ", date)
+    console.log(">>>> check date: ", date);
     var pool = await conn;
     var sqlString = `SET DATEFORMAT dmy SELECT * FROM BANGXEPHANG WHERE ngay = '${date}'`;
-    const result = await pool
-      .request()
-      .query(sqlString);
-      console.log(result)
-      console.log(">>>> check date: ", date)
+    const result = await pool.request().query(sqlString);
+    console.log(result);
+    console.log(">>>> check date: ", date);
     if (result.rowsAffected > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -314,14 +307,12 @@ const handleGetInfoPlayerByDate = async (req, res) => {
 const handleGetScorerInfoPlayerByDate = async (req, res) => {
   try {
     const date = convertDateFormat(req.params.date);
-    console.log(">>>> check date: ", date)
+    console.log(">>>> check date: ", date);
     var pool = await conn;
     var sqlString = `SET DATEFORMAT dmy SELECT * FROM DANHSACHGHIBAN WHERE ngay = '${date}'`;
-    const result = await pool
-      .request()
-      .query(sqlString);
-      console.log(result)
-      console.log(">>>> check date: ", date)
+    const result = await pool.request().query(sqlString);
+    console.log(result);
+    console.log(">>>> check date: ", date);
     if (result.rowsAffected > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -335,17 +326,108 @@ const handleGetScorerInfoPlayerByDate = async (req, res) => {
 const handleGetInfoGame = async (req, res) => {
   try {
     var pool = await conn;
-    var sqlString = `SELECT * FROM TranDau`;
+    var sqlString = `SELECT VongDau FROM TranDau`;
     const result = await pool
       .request()
       // Chỉnh lại biến theo front end
       .query(sqlString);
+    console.log(result.recordset);
     if (result.rowsAffected > 0) {
-      res.status(200).json(result);
+      res.status(200).json(result.recordset);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });
     }
   } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const handleGetTeamNameFromRound = async (req, res) => {
+  try {
+    const round = req.params.round;
+    var pool = await conn;
+    var sqlString = `SELECT TenDoi1, TenDoi2 FROM TranDau WHERE VongDau = @varRound`;
+    const result = await pool
+      .request()
+      // Chỉnh lại biến theo front end
+      .input("varRound", sql.Int, round)
+      .query(sqlString);
+    console.log(result.recordset);
+    if (result.rowsAffected > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(500).json({ message: "đã có lỗi xảy ra" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+const handleGetTeamName = async (req, res) => {
+  try {
+    var pool = await conn;
+    var sqlString = `SELECT TenDoiBong FROM DoiBong`;
+    const result = await pool
+      .request()
+      // Chỉnh lại biến theo front end
+      .query(sqlString);
+    console.log(result.recordset);
+    if (result.rowsAffected > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(500).json({ message: "đã có lỗi xảy ra" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+const handleGetInfoGameByRound = async (req, res) => {
+  try {
+    const round = req.params.round;
+    // console.log(round);
+    var pool = await conn;
+    var sqlString = `SELECT * FROM TranDau WHERE VongDau = @varRound`;
+    const result = await pool
+      .request()
+      .input("varRound", sql.Int, round)
+      // Chỉnh lại biến theo front end
+      .query(sqlString);
+    console.log(result.recordset);
+    if (result.rowsAffected > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(500).json({ message: "đã có lỗi xảy ra" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const handleAddSchedule = async (req, res) => {
+  try {
+    const data = req.body;
+    var pool = await conn;
+    var sqlString = `INSERT INTO TranDau(MaTranDau, VongDau, TenDoi1, TenDoi2, SanDau, Ngay, Gio)
+    VALUES(@varId, @varRound, @varName1, @varName2, @varField, @varDate, @varTime)`;
+
+    const result = await pool
+      // Chỉnh lại biến theo front end
+      .request()
+      .input("varId", sql.VarChar(MAX), data.no)
+      .input("varRound", sql.Int, data.round)
+      .input("varName1", sql.NVarChar(MAX), data.team1)
+      .input("varName2", sql.NVarChar(MAX), data.team2)
+      .input("varField", sql.NVarChar(MAX), data.pitch)
+      .input("varDate", sql.Date, data.date)
+      .input("varTime", sql.Time, data.time)
+      .query(sqlString);
+    console.log(result);
+    if (result.rowsAffected > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json({ message: "Không tìm thấy" });
+    }
+  } catch (error) {
+    console.log(error.message);
     res.status(500).json({ message: error.message });
   }
 };
@@ -400,22 +482,53 @@ const handleGoal = async (req, res) => {
   }
 };
 
+const handleUpdateRule = async (req, res) => {
+  try {
+    const data = req.body;
+    var pool = await conn;
+    var sqlString = `UPDATE QuyDinh
+    SET DoTuoi_Min = @varAgeMin, DoTuoi_Max = @varAgeMax, SoCauThu_Min = @varPlayerMin, SoCauThu_Max = @varPlayerMax, SoCauThuNuocNgoai_Max = @varForeignerMax, ThoiDiemGhiBan_Max = @varTimeMax, DiemSoThang = @varWinScore, DiemSoHoa = @varDrawScore, DiemSoThua = @varLooseScore`;
+    const result = await pool
+      .request()
+      // Chỉnh lại biến theo front end
+      .input("varAgeMin", sql.Int, data.minAge)
+      .input("varAgeMax", sql.Int, data.maxAge)
+      .input("varPlayerMin", sql.VarChar(255), data.minPlayers)
+      .input("varPlayerMax", sql.Int, data.maxPlayers)
+      .input("varForeignerMax", sql.Int, data.maxForeignPlayers)
+      .input("varTimeMax", sql.VarChar(255), data.maxGoalTime)
+      .input("varWinScore", sql.VarChar(255), data.winPoints)
+      .input("varDrawScore", sql.VarChar(255), data.drawPoints)
+      .input("varLooseScore", sql.VarChar(255), data.losePoints)
+      .query(sqlString);
+    if (result.rowsAffected > 0) {
+      res.status(200).json(result);
+    } else {
+      res.status(500).json({ message: "đã có lỗi xảy ra" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   handleHome,
   handleUserPage,
   handleReg,
-  handleGetInfoPlayer,
+  handleGetInfoPlayerByName,
   handleUpdateTeam,
   handleGetAllInfoPlayer,
 
-  handleGetInfoPlayerByName,
+  // handleGetInfoPlayerByName,
   handleGetInfoPlayerByDate,
   handleGetScorerInfoPlayerByDate,
-
+  handleGetInfoGameByRound,
   handleGetAllTeam,
   handleAddSchedule,
   handleUpdateSchedule,
   handleGetInfoGame,
   handleGoal,
-
+  handleUpdateRule,
+  handleGetTeamNameFromRound,
+  handleGetTeamName,
 };
