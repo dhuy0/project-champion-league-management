@@ -26,6 +26,10 @@ const initWebRoutes = (app) => {
     "/get-player-by-name/:name",
     homeController.handleGetInfoPlayerByName
   );
+  router.get(
+    "/get-player-by-team/:team",
+    homeController.handleGetInfoPlayerByTeam
+  );
   // router.get("/get-by-name/:name", homeController.handleGetInfoPlayerByName);
   router.get(
     "/get-player-by-date/:date",
@@ -35,6 +39,7 @@ const initWebRoutes = (app) => {
     "/get-scorer-by-date/:date",
     homeController.handleGetScorerInfoPlayerByDate
   );
+  router.post("/add-scorer", homeController.handleAddScorer);
 
   // Trang ghi nhận kết quả
   router.get("/get-round-from-game", homeController.handleGetRoundFromGame);

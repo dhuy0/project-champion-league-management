@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const ResultRecord = () => {
+  const [selectedTeam, setSelectedTeam] = useState("");
   const [selectedMatchInfo, setSelectedMatchInfo] = useState({});
   const [matchInfo, setMatchInfo] = useState([
     //   {MaTranDau: "",
@@ -45,6 +46,17 @@ const ResultRecord = () => {
   });
 
   const [scorerList, setScorerList] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/get-player-by-team/${selectedTeam}`)
+      .then((response) => {
+        setPlayerInfo(response.data);
+      })
+      .catch((error) => {
+        console.error("Loi khi lay data tu server", error);
+      });
+  }, [selectedTeam]);
 
   useEffect(() => {
     const fetchMatchInfo = async () => {
@@ -155,7 +167,24 @@ const ResultRecord = () => {
 
   const handleScoreChange = (e) => {
     const { name, value } = e.target;
+    console.log(playerInfo);
+    setPlayerInfo((prevData) => ({ ...prevData, [name]: value }));
+
+    // setScoreData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handlePlayerNumberChange = (e) => {
+    const { name, value } = e.target;
     setScoreData((prevData) => ({ ...prevData, [name]: value }));
+
+    axios
+      .get("api")
+      .then((response) => {
+        setPlayerInfo(response.data);
+      })
+      .catch((error) => {
+        console.error("Loi khi lay data tu server", error);
+      });
   };
 
   const validateMatchForm = () => {
@@ -303,14 +332,6 @@ const ResultRecord = () => {
       // setPlayerInfo(testData)
       // Lấy dữ liệu về các các cầu thủ để kiểm tra các ID và tên cầu thủ khớp
       // với nhau trong cơ sở dữ liệu, nội dung lấy về từ server sẽ là id và name của các cầu thủ
-      axios
-        .get("api")
-        .then((response) => {
-          setPlayerInfo(response.data);
-        })
-        .catch((error) => {
-          console.error("Loi khi lay data tu server", error);
-        });
 
       const isValid = validateScorerForm();
       if (isValid) {
@@ -463,34 +484,56 @@ const ResultRecord = () => {
           <div className=" border-solid border-black border-2 py-4 px-8 flex flex-col gap-4">
             <div className="text-xl flex flex-row w-1/2">
               <p className="w-28">STT</p>
-              <input
-                type="text"
+              <select
                 className="pl-4 bg-stone-200 flex-grow"
-                name="stt"
-                value={scoreData.stt}
+                name="MaCauThu"
+                value={playerInfo}
                 onChange={handleScoreChange}
-              />
+              >
+                <option value="" disabled>
+                  Chọn STT
+                </option>
+                {playerInfo.map((player) => (
+                  <option key={player.MaCauThu} value={player.MaCauThu}>
+                    {player.MaCauThu}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="text-xl flex flex-row justify-between">
               <div className="flex flex-row w-1/2">
                 <p className="w-28">Cầu thủ</p>
-                <input
-                  type="text"
+                <select
                   className="pl-4 bg-stone-200 flex-grow"
                   name="player"
                   value={scoreData.player}
                   onChange={handleScoreChange}
-                />
+                >
+                  <option value="" disabled>
+                    Chọn Cầu thủ
+                  </option>
+                  {playerInfo.map((player) => (
+                    <option key={player.id} value={player.name}>
+                      {player.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="flex flex-row gap-8 w-1/2 justify-between px-16">
                 <p>Đội</p>
-                <input
-                  type="text"
+                <select
                   className="pl-4 bg-stone-200 flex-grow"
-                  name="team"
-                  value={scoreData.team}
-                  onChange={handleScoreChange}
-                />
+                  name="TenDoi"
+                  value={selectedTeam}
+                  onChange={(e) => setSelectedTeam(e.target.value)}
+                >
+                  <option value={selectedMatchInfo.TenDoi1}>
+                    {selectedMatchInfo.TenDoi1}
+                  </option>
+                  <option value={selectedMatchInfo.TenDoi2}>
+                    {selectedMatchInfo.TenDoi2}
+                  </option>
+                </select>
               </div>
             </div>
             <div className="text-xl flex flex-row justify-between">

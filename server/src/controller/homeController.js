@@ -286,6 +286,27 @@ function stringToDate(inputDate) {
   return formattedDate;
 }
 
+const handleGetInfoPlayerByTeam = async (req, res) => {
+  try {
+    const team = req.params.team;
+    console.log(team);
+    var pool = await conn;
+    var sqlString = `SELECT * FROM CauThu WHERE TenDoiBong = @varTeam`;
+    const result = await pool
+      .request()
+      .input("varTeam", sql.NVarChar(MAX), team)
+      .query(sqlString);
+    console.log(result);
+    if (result.rowsAffected > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json({ message: "Không tìm thấy" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
 const handleGetInfoPlayerByDate = async (req, res) => {
   try {
     const date = convertDateFormat(req.params.date);
@@ -499,6 +520,36 @@ const handleAddSchedule = async (req, res) => {
   }
 };
 
+const handleAddScorer = async (req, res) => {
+  try {
+    const data = req.body;
+    // console.log(date.toLocaleDateString(), date.toLocaleTimeString());
+    var pool = await conn;
+    var sqlString = `INSERT INTO BanThang(MaCauThu, TenDoiBong, LoaiBanThang, ThoiDiem, MaTranDau, VongDau)
+    VALUES(@varId, @varTeam, @varType, @varTime, @varIdGame, @varRound)`;
+
+    const result = await pool
+      // Chỉnh lại biến theo front end
+      .request()
+      .input("varId", sql.VarChar(MAX), data.no)
+      .input("varTeam", sql.NVarChar(MAX), data.round)
+      .input("varType", sql.NVarChar(MAX), data.team1)
+      .input("varTime", sql.Int, data.team2)
+      .input("varIdGame", sql.VarChar(MAX), data.pitch)
+      .input("varRound", sql.Int, date)
+      .query(sqlString);
+    console.log(result);
+    if (result.rowsAffected > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json({ message: "Không tìm thấy" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const handleUpdateRecord = async (req, res) => {
   try {
     const data = req.body;
@@ -662,4 +713,6 @@ module.exports = {
   handleGetInfoGame,
   handleGetRoundFromGameId,
   handleGetInfoGameByRoundAndId,
+  handleGetInfoPlayerByTeam,
+  handleAddScorer,
 };
