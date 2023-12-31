@@ -5,15 +5,17 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const ResultRecord = () => {
-  const [matchInfo, setMatchInfo] = useState({
-    MaTranDau: "",
-    VongDau: "",
-    TenDoi1: "",
-    TenDoi2: "",
-    SanDau: "",
-    Ngay: "",
-    Gio: "",
-  });
+  const [selectedMatchInfo, setSelectedMatchInfo] = useState({});
+  const [matchInfo, setMatchInfo] = useState([
+    //   {MaTranDau: "",
+    //   VongDau: "",
+    //   TenDoi1: "",
+    //   TenDoi2: "",
+    //   SanDau: "",
+    //   Ngay: "",
+    //   Gio: "",
+    // }
+  ]);
   const [sttList, setSttList] = useState([]);
   const [roundList, setRoundList] = useState([]);
 
@@ -129,8 +131,19 @@ const ResultRecord = () => {
   };
 
   useEffect(() => {
-    console.log(matchInfo[0].TenDoi1);
-  });
+    const selectedMatchData = matchInfo.find(
+      (match) => match.VongDau == selectedRound
+    );
+    console.log(selectedRound);
+    console.log(matchInfo);
+    setSelectedMatchInfo({
+      TenDoi1: selectedMatchData?.TenDoi1 || "",
+      TenDoi2: selectedMatchData?.TenDoi2 || "",
+      SanDau: selectedMatchData?.SanDau || "",
+      Ngay: selectedMatchData?.Ngay || "",
+      Gio: selectedMatchData?.Gio || "",
+    });
+  }, [matchInfo]);
 
   const handleScoreChange = (e) => {
     const { name, value } = e.target;
@@ -355,7 +368,7 @@ const ResultRecord = () => {
                   type="text"
                   className="pl-4 bg-stone-200 flex-grow"
                   name="TenDoi1"
-                  value={matchInfo.TenDoi1}
+                  value={selectedMatchInfo.TenDoi1}
                   //onChange={handleMatchChange}
                 />
               </div>
@@ -377,7 +390,7 @@ const ResultRecord = () => {
                   type="text"
                   className="pl-4 bg-stone-200 flex-grow"
                   name="TenDoi2"
-                  value={matchInfo.TenDoi2}
+                  value={selectedMatchInfo.TenDoi2}
                   //onChange={handleMatchChange}
                 />
               </div>
@@ -398,7 +411,7 @@ const ResultRecord = () => {
                 type="text"
                 className="pl-4 bg-stone-200 flex-grow"
                 name="SanDau"
-                value={matchInfo.SanDau}
+                value={selectedMatchInfo.SanDau}
                 //onChange={handleMatchChange}
               />
             </div>
@@ -409,7 +422,7 @@ const ResultRecord = () => {
                   type="text"
                   className="pl-4 bg-stone-200 flex-grow"
                   name="Ngay"
-                  value={matchInfo.Ngay}
+                  value={selectedMatchInfo.Ngay}
                   //onChange={handleMatchChange}
                 />
               </div>
@@ -419,7 +432,7 @@ const ResultRecord = () => {
                   type="text"
                   className="pl-4 bg-stone-200 flex-grow"
                   name="Gio"
-                  value={matchInfo.Gio}
+                  value={selectedMatchInfo.Gio}
                   //onChange={handleMatchChange}
                 />
               </div>

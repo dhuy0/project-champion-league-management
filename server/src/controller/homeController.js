@@ -406,7 +406,7 @@ const handleGetInfoGame = async (req, res) => {
   try {
     // console.log(round);
     var pool = await conn;
-    var sqlString = `SELECT MaTranDau FROM TranDau`;
+    var sqlString = `SELECT DISTINCT(MaTranDau) FROM TranDau`;
     const result = await pool.request().query(sqlString);
     console.log(result.recordset);
     if (result.rowsAffected > 0) {
@@ -467,6 +467,10 @@ const handleGetInfoGameByRoundAndId = async (req, res) => {
 const handleAddSchedule = async (req, res) => {
   try {
     const data = req.body;
+    console.log(data.date, data.time);
+    const date = new Date(data.date + " " + data.time);
+    console.log(date);
+    // console.log(date.toLocaleDateString(), date.toLocaleTimeString());
     var pool = await conn;
     var sqlString = `INSERT INTO TranDau(MaTranDau, VongDau, TenDoi1, TenDoi2, SanDau, Ngay, Gio)
     VALUES(@varId, @varRound, @varName1, @varName2, @varField, @varDate, @varTime)`;
@@ -479,8 +483,8 @@ const handleAddSchedule = async (req, res) => {
       .input("varName1", sql.NVarChar(MAX), data.team1)
       .input("varName2", sql.NVarChar(MAX), data.team2)
       .input("varField", sql.NVarChar(MAX), data.pitch)
-      .input("varDate", sql.Date, data.date)
-      .input("varTime", sql.Time, data.time)
+      .input("varDate", sql.Date, date)
+      .input("varTime", sql.Time(7), date)
       .query(sqlString);
     console.log(result);
     if (result.rowsAffected > 0) {
@@ -489,7 +493,7 @@ const handleAddSchedule = async (req, res) => {
       res.status(404).json({ message: "Không tìm thấy" });
     }
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };

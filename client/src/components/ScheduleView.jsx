@@ -101,15 +101,25 @@ const ScheduleView = () => {
                 <th className="font-bold">Ngày - Giờ</th>
                 <th className="font-bold">Sân</th>
               </tr>
-              {matchData.map((match) => (
-                <tr key={match.MaTranDau}>
-                  <td>{match.MaTranDau}</td>
-                  <td>{match.TenDoi1}</td>
-                  <td>{match.TenDoi2}</td>
-                  <td>{`${match.Ngay} ${match.Gio}`}</td>
-                  <td>{match.SanDau}</td>
-                </tr>
-              ))}
+              {matchData.map((match) => {
+                const gioMatch = new Date(match.Gio);
+                const gioGiamMotGio = new Date(
+                  gioMatch.getTime() - 60 * 60 * 1000
+                ); // Giảm một giờ
+
+                return (
+                  <tr key={match.MaTranDau}>
+                    <td>{match.MaTranDau}</td>
+                    <td>{match.TenDoi1}</td>
+                    <td>{match.TenDoi2}</td>
+                    <td>
+                      {new Date(match.Ngay).toLocaleDateString()}{" "}
+                      {gioGiamMotGio.toLocaleTimeString()}
+                    </td>
+                    <td>{match.SanDau}</td>
+                  </tr>
+                );
+              })}
             </table>
           </div>
           <div className="flex justify-center gap-32">
