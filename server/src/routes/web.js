@@ -56,7 +56,7 @@ const initWebRoutes = (app) => {
   router.post("/add-schedule", homeController.handleAddSchedule);
 
   router.put("/update-schedule", homeController.handleUpdateSchedule);
-  router.put("/update-record", homeController.handleUpdateSchedule);
+  router.put("/update-record", homeController.handleUpdateRecord);
 
   router.post("/submit/goal", homeController.handleGoal);
 

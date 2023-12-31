@@ -144,6 +144,7 @@ const handleGetAllTeam = async (req, res) => {
       res.status(404).json({ message: "Không có dữ liệu" });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -504,20 +505,27 @@ const handleUpdateRecord = async (req, res) => {
     var pool = await conn;
     var sqlString = `UPDATE TranDau
     SET TySoDoi1 = @varScore1, TySoDoi2 = @varScore2
-    WHERE MaTranDau = @VarId`;
+    WHERE MaTranDau = @varId AND VongDau = @varRound`;
+    console.log(data);
+    console.log(sqlString);
     const result = await pool
       .request()
       // Chỉnh lại biến theo front end
-      .input("varScore1", sql.Int, data.stadium)
-      .input("varScore2", sql.Int, data.stadium)
-      .input("varId", sql.VarChar(255), data.teamName)
+      .input("varScore1", sql.Int, data.TySoDoi1)
+      .input("varScore2", sql.Int, data.TySoDoi2)
+      .input("varId", sql.VarChar(MAX), data.MaTranDau)
+      .input("varRound", sql.Int, data.VongDau)
       .query(sqlString);
+    console.log(result.recordset);
     if (result.rowsAffected > 0) {
+      console.log(result.recordset);
       res.status(200).json(result);
     } else {
+      console.log(error);
       res.status(500).json({ message: "đã có lỗi xảy ra" });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };

@@ -75,9 +75,10 @@ const ResultRecord = () => {
     // Lấy danh sách các đội bóng có trong cơ sở dữ liệu
     const fetchTeamNames = async () => {
       try {
-        axios
-          .get(/*http://localhost:8080/get-all-team*/)
+        await axios
+          .get("http://localhost:8080/get-name-team")
           .then((response) => {
+            console.log(">>> check data: ", response.data);
             setTeamName(response.data);
             console.log(">>> check team name: ", teamName);
           })
@@ -91,8 +92,8 @@ const ResultRecord = () => {
         console.error("Loi khi lay data tu server:", error);
       }
     };
-
-    //fetchTeamNames();
+    console.log(">>> check team name: ", teamName);
+    fetchTeamNames();
     fetchSttList();
   }, []);
 
@@ -131,6 +132,9 @@ const ResultRecord = () => {
   };
 
   useEffect(() => {
+    console.log("Checking us", teamName);
+  });
+  useEffect(() => {
     const selectedMatchData = matchInfo.find(
       (match) => match.VongDau == selectedRound
     );
@@ -139,6 +143,10 @@ const ResultRecord = () => {
     setSelectedMatchInfo({
       TenDoi1: selectedMatchData?.TenDoi1 || "",
       TenDoi2: selectedMatchData?.TenDoi2 || "",
+      MaTranDau: selectedStt,
+      VongDau: selectedRound,
+      TySoDoi1: selectedMatchData?.TySoDoi1 || "",
+      TySoDoi2: selectedMatchData?.TySoDoi2 || "",
       SanDau: selectedMatchData?.SanDau || "",
       Ngay: selectedMatchData?.Ngay || "",
       Gio: selectedMatchData?.Gio || "",
@@ -151,60 +159,64 @@ const ResultRecord = () => {
   };
 
   const validateMatchForm = () => {
-    if (!matchData.MaTranDau) {
+    if (!selectedStt) {
       toast.error("So thu tu khong duoc de trong");
       return false;
     }
-    if (!matchData.TenDoi1) {
+    if (!selectedMatchInfo.TenDoi1) {
       toast.error("Doi 1 khong duoc de trong");
       return false;
     }
-    if (!matchData.TenDoi2) {
+    if (!selectedMatchInfo.TenDoi2) {
       toast.error("Doi 2 khong duoc de trong");
       return false;
     }
 
-    if (!teamName.includes(matchData.TenDoi1)) {
-      toast.error("Doi 1 khong co trong database");
+    if (
+      !teamName.some((team) => team.TenDoiBong === selectedMatchInfo.TenDoi1)
+    ) {
+      toast.error("Team 1 is not in the database");
       return false;
     }
 
-    if (!teamName.includes(matchData.TenDoi2)) {
-      toast.error("Doi 2 khong co trong database");
+    if (
+      !teamName.some((team) => team.TenDoiBong === selectedMatchInfo.TenDoi2)
+    ) {
+      toast.error("Team 2 is not in the database");
       return false;
     }
 
-    if (matchData.TenDoi1 === matchData.TenDoi2) {
+    if (selectedMatchInfo.TenDoi1 === selectedMatchInfo.TenDoi2) {
       toast.error("Hai doi khong duoc trung nhau");
       return false;
     }
 
-    if (!matchData.VongDau) {
+    if (!selectedRound) {
       toast.error("Vong thi dau khong duoc de trong");
       return false;
     }
 
-    if (!matchData.TySoDoi1) {
+    if (!selectedMatchInfo.TySoDoi1) {
       toast.error("Ty so doi 1 khong duoc de trong");
       return false;
     }
 
-    if (!matchData.TySoDoi2) {
+    if (!selectedMatchInfo.TySoDoi2) {
       toast.error("Ty so doi 2 khong duoc de trong");
       return false;
     }
 
-    if (!matchData.SanDau) {
+    if (!selectedMatchInfo.SanDau) {
       toast.error("San dau khong duoc de trong");
       return false;
     }
 
-    if (!matchData.Ngay) {
+    if (!selectedMatchInfo.Ngay) {
       toast.error("Ngay khong duoc de trong");
       return false;
     }
 
-    if (!matchData.Gio) {
+    if (!selectedMatchInfo.Gio) {
       toast.error("Thoi gian khong duoc de trong");
       return false;
     }
@@ -213,11 +225,14 @@ const ResultRecord = () => {
 
   //Khi ấn lưu thì kiểm tra điều kiện sau đó gửi data về cho server
   const handleMatchSave = async () => {
-    console.log(matchData);
+    console.log(selectedMatchInfo);
     try {
       const isValid = validateMatchForm();
       if (isValid) {
-        await axios.post("api", matchData);
+        await axios.put(
+          "http://localhost:8080/update-record",
+          selectedMatchInfo
+        );
         // console.log('Section 1 data saved successfully');
         // console.log(matchData)
         toast.success("Them thanh cong!");

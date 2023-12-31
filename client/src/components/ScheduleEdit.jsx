@@ -257,7 +257,7 @@ const ScheduleEdit = () => {
           <div className="flex flex-row text-xl justify-between">
             <p className="w-36">Ngày</p>
             <input
-              type="text"
+              type="date"
               className=" bg-stone-200 w-5/6"
               name="Ngay"
               value={formData.Ngay}
@@ -267,7 +267,7 @@ const ScheduleEdit = () => {
           <div className="flex flex-row text-xl justify-between">
             <p className="w-36">Giờ</p>
             <input
-              type="text"
+              type="time"
               className=" bg-stone-200 w-5/6"
               name="Gio"
               value={formData.Gio}
