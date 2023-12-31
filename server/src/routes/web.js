@@ -66,6 +66,7 @@ const initWebRoutes = (app) => {
   router.post("/submit/goal", homeController.handleGoal);
 
   router.post("/change-rule", homeController.handleUpdateRule);
+  router.get("/get-rule", homeController.handleGetRule);
 
   router.get(
     "/get-id-game-from-round/:round",

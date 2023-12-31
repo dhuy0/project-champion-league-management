@@ -635,6 +635,24 @@ const handleUpdateRule = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const handleGetRule = async (req, res) => {
+  try {
+    const data = req.body;
+    var pool = await conn;
+    var sqlString = `SELECT * FROM QuyDinh`;
+    const result = await pool
+      .request()
+      // Chỉnh lại biến theo front end
+      .query(sqlString);
+    if (result.rowsAffected > 0) {
+      res.status(200).json(result);
+    } else {
+      res.status(500).json({ message: "đã có lỗi xảy ra" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 const handleUpdateSchedule = async (req, res) => {
   try {
@@ -715,4 +733,5 @@ module.exports = {
   handleGetInfoGameByRoundAndId,
   handleGetInfoPlayerByTeam,
   handleAddScorer,
+  handleGetRule,
 };
