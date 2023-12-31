@@ -5,6 +5,22 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const ResultRecord = () => {
+  const [matchInfo, setMatchInfo] = useState({
+    MaTranDau: "",
+    VongDau: "",
+    TenDoi1: "",
+    TenDoi2: "",
+    SanDau: "",
+    Ngay: "",
+    Gio: "",
+  });
+  const [sttList, setSttList] = useState([]);
+  const [roundList, setRoundList] = useState([]);
+
+  // Thêm state để lưu trữ STT và vòng được chọn
+  const [selectedStt, setSelectedStt] = useState("");
+  const [selectedRound, setSelectedRound] = useState("");
+
   const [teamName, setTeamName] = useState([]);
   const [playerInfo, setPlayerInfo] = useState([]);
   const [matchData, setMatchData] = useState({
@@ -29,11 +45,36 @@ const ResultRecord = () => {
   const [scorerList, setScorerList] = useState([]);
 
   useEffect(() => {
+    const fetchMatchInfo = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/get-info-game/${selectedStt}/${selectedRound}`
+        );
+        setMatchInfo(response.data);
+      } catch (error) {
+        console.error("Loi khi lay data trận đấu tu server:", error);
+      }
+    };
+    if (selectedStt && selectedRound) {
+      fetchMatchInfo();
+    }
+  }, [selectedStt, selectedRound]);
+
+  useEffect(() => {
+    const fetchSttList = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/get-info-game");
+        setSttList(response.data);
+      } catch (error) {
+        console.error("Loi khi lay data STT tu server:", error);
+      }
+    };
+
     // Lấy danh sách các đội bóng có trong cơ sở dữ liệu
     const fetchTeamNames = async () => {
       try {
         axios
-          .get("http://localhost:8080/get-all-team")
+          .get(/*http://localhost:8080/get-all-team*/)
           .then((response) => {
             setTeamName(response.data);
             console.log(">>> check team name: ", teamName);
@@ -49,13 +90,47 @@ const ResultRecord = () => {
       }
     };
 
-    fetchTeamNames();
+    //fetchTeamNames();
+    fetchSttList();
   }, []);
+
+  // Thêm useEffect để lấy danh sách vòng dựa trên STT khi STT thay đổi
+  useEffect(() => {
+    const fetchRoundList = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/get-round-from-game/${selectedStt}`
+        );
+        setRoundList(response.data);
+      } catch (error) {
+        console.error("Loi khi lay data vong tu server:", error);
+      }
+    };
+
+    if (selectedStt) {
+      fetchRoundList();
+    }
+  }, [selectedStt]);
 
   const handleMatchChange = (e) => {
     const { name, value } = e.target;
     setMatchData((prevData) => ({ ...prevData, [name]: value }));
+    if (name === "MaTranDau") {
+      setSelectedStt(value);
+    }
   };
+
+  const handleRoundChange = (e) => {
+    const { name, value } = e.target;
+    //setMatchData((prevData) => ({ ...prevData, [name]: value }));
+    if (name === "VongDau") {
+      setSelectedRound(value);
+    }
+  };
+
+  useEffect(() => {
+    console.log(matchInfo[0].TenDoi1);
+  });
 
   const handleScoreChange = (e) => {
     const { name, value } = e.target;
@@ -63,60 +138,60 @@ const ResultRecord = () => {
   };
 
   const validateMatchForm = () => {
-    if (!matchData.no) {
+    if (!matchData.MaTranDau) {
       toast.error("So thu tu khong duoc de trong");
       return false;
     }
-    if (!matchData.team1) {
+    if (!matchData.TenDoi1) {
       toast.error("Doi 1 khong duoc de trong");
       return false;
     }
-    if (!matchData.team2) {
+    if (!matchData.TenDoi2) {
       toast.error("Doi 2 khong duoc de trong");
       return false;
     }
 
-    if (!teamName.includes(matchData.team1)) {
+    if (!teamName.includes(matchData.TenDoi1)) {
       toast.error("Doi 1 khong co trong database");
       return false;
     }
 
-    if (!teamName.includes(matchData.team2)) {
+    if (!teamName.includes(matchData.TenDoi2)) {
       toast.error("Doi 2 khong co trong database");
       return false;
     }
 
-    if (matchData.team1 === matchData.team2) {
+    if (matchData.TenDoi1 === matchData.TenDoi2) {
       toast.error("Hai doi khong duoc trung nhau");
       return false;
     }
 
-    if (!matchData.round) {
+    if (!matchData.VongDau) {
       toast.error("Vong thi dau khong duoc de trong");
       return false;
     }
 
-    if (!matchData.score1) {
+    if (!matchData.TySoDoi1) {
       toast.error("Ty so doi 1 khong duoc de trong");
       return false;
     }
 
-    if (!matchData.score2) {
+    if (!matchData.TySoDoi2) {
       toast.error("Ty so doi 2 khong duoc de trong");
       return false;
     }
 
-    if (!matchData.pitch) {
+    if (!matchData.SanDau) {
       toast.error("San dau khong duoc de trong");
       return false;
     }
 
-    if (!matchData.date) {
+    if (!matchData.Ngay) {
       toast.error("Ngay khong duoc de trong");
       return false;
     }
 
-    if (!matchData.time) {
+    if (!matchData.Gio) {
       toast.error("Thoi gian khong duoc de trong");
       return false;
     }
@@ -201,7 +276,7 @@ const ResultRecord = () => {
       // Lấy dữ liệu về các các cầu thủ để kiểm tra các ID và tên cầu thủ khớp
       // với nhau trong cơ sở dữ liệu, nội dung lấy về từ server sẽ là id và name của các cầu thủ
       axios
-        .get("http://localhost:8080/get-player-by-name")
+        .get("api")
         .then((response) => {
           setPlayerInfo(response.data);
         })
@@ -238,23 +313,39 @@ const ResultRecord = () => {
             <div className="text-xl flex flex-row justify-between">
               <div className="flex flex-row w-1/2">
                 <p className="w-28">STT</p>
-                <input
-                  type="text"
+                <select
                   className="pl-4 bg-stone-200 flex-grow"
-                  name="no"
-                  value={matchData.no}
-                  onChange={handleMatchChange}
-                />
+                  name="MaTranDau"
+                  value={selectedStt}
+                  onChange={(e) => setSelectedStt(e.target.value)}
+                  //disabled={!selectedStt}
+                >
+                  <option value="" disabled>
+                    Chọn STT
+                  </option>
+                  {sttList.map((stt) => (
+                    <option key={stt.MaTranDau} value={stt.MaTranDau}>
+                      {stt.MaTranDau}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="flex flex-row gap-8 w-1/2 justify-between px-16">
                 <p className="">Vòng</p>
-                <input
-                  type="text"
-                  name="round"
+                <select
+                  name="VongDau"
                   className="pl-4 bg-stone-200 flex-grow"
-                  value={matchData.round}
-                  onChange={handleMatchChange}
-                />
+                  value={matchData.VongDau}
+                  onChange={handleRoundChange}
+                  //disabled={!selectedStt} // Disable if STT is not selected
+                >
+                  <option value="">Chọn vòng</option>
+                  {roundList.map((round) => (
+                    <option key={round.VongDau} value={round.VongDau}>
+                      {round.VongDau}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="text-xl flex flex-row justify-between">
@@ -263,9 +354,9 @@ const ResultRecord = () => {
                 <input
                   type="text"
                   className="pl-4 bg-stone-200 flex-grow"
-                  name="team1"
-                  value={matchData.team1}
-                  onChange={handleMatchChange}
+                  name="TenDoi1"
+                  value={matchInfo.TenDoi1}
+                  //onChange={handleMatchChange}
                 />
               </div>
               <div className="flex flex-row gap-8 w-1/2 justify-between px-16">
@@ -285,9 +376,9 @@ const ResultRecord = () => {
                 <input
                   type="text"
                   className="pl-4 bg-stone-200 flex-grow"
-                  name="team2"
-                  value={matchData.team2}
-                  onChange={handleMatchChange}
+                  name="TenDoi2"
+                  value={matchInfo.TenDoi2}
+                  //onChange={handleMatchChange}
                 />
               </div>
               <div className="flex flex-row gap-8 w-1/2 justify-between px-16">
@@ -306,9 +397,9 @@ const ResultRecord = () => {
               <input
                 type="text"
                 className="pl-4 bg-stone-200 flex-grow"
-                name="pitch"
-                value={matchData.pitch}
-                onChange={handleMatchChange}
+                name="SanDau"
+                value={matchInfo.SanDau}
+                //onChange={handleMatchChange}
               />
             </div>
             <div className="text-xl flex flex-row items-center justify-between pr-16">
@@ -317,9 +408,9 @@ const ResultRecord = () => {
                 <input
                   type="text"
                   className="pl-4 bg-stone-200 flex-grow"
-                  name="date"
-                  value={matchData.date}
-                  onChange={handleMatchChange}
+                  name="Ngay"
+                  value={matchInfo.Ngay}
+                  //onChange={handleMatchChange}
                 />
               </div>
               <div className="w-1/2">
@@ -327,9 +418,9 @@ const ResultRecord = () => {
                 <input
                   type="text"
                   className="pl-4 bg-stone-200 flex-grow"
-                  name="time"
-                  value={matchData.time}
-                  onChange={handleMatchChange}
+                  name="Gio"
+                  value={matchInfo.Gio}
+                  //onChange={handleMatchChange}
                 />
               </div>
 

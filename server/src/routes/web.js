@@ -37,20 +37,35 @@ const initWebRoutes = (app) => {
   );
 
   // Trang ghi nhận kết quả
-  router.get("/get-info-game", homeController.handleGetInfoGame);
+  router.get("/get-round-from-game", homeController.handleGetRoundFromGame);
+  router.get(
+    "/get-round-from-game/:id",
+    homeController.handleGetRoundFromGameId
+  );
   router.get("/get-name-team", homeController.handleGetTeamName);
   router.get(
     "/get-name-team/:round",
     homeController.handleGetTeamNameFromRound
   );
+  router.get("/get-info-game", homeController.handleGetInfoGame);
   router.get("/get-info-game/:round", homeController.handleGetInfoGameByRound);
+  router.get(
+    "/get-info-game/:id/:round",
+    homeController.handleGetInfoGameByRoundAndId
+  );
   router.post("/add-schedule", homeController.handleAddSchedule);
 
-  router.put("/submit", homeController.handleUpdateSchedule);
+  router.put("/update-schedule", homeController.handleUpdateSchedule);
+  router.put("/update-record", homeController.handleUpdateSchedule);
 
   router.post("/submit/goal", homeController.handleGoal);
 
   router.post("/change-rule", homeController.handleUpdateRule);
+
+  router.get(
+    "/get-id-game-from-round/:round",
+    homeController.handleGetIdGameFromRound
+  );
   //router.get("/player", homeController.handlePlayer);
 
   return app.use("/", router);

@@ -34,13 +34,17 @@ const ScheduleEdit = () => {
   // const [noList, setNoList] = useState([]);
   const [teamName, setTeamName] = useState([]);
   const [formData, setFormData] = useState({
-    no: "",
-    team1: "",
-    team2: "",
-    pitch: "",
-    date: "",
-    time: "",
+    MaTranDau: "",
+    TenDoi1: "",
+    TenDoi2: "",
+    SanDau: "",
+    Ngay: "",
+    Gio: "",
   });
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
 
   useEffect(() => {
     // Lây danh sách STT từ server với round gửi đi
@@ -49,19 +53,29 @@ const ScheduleEdit = () => {
         // const response = await axios.get(`/api/getSttList?round=${round}`);
         // setNoList(response.data.sttList);
         // Lấy danh sách các số thứ tự dựa trên round gửi về server
-        axios.get(`api/${encodeURIComponent(round)}`).then((response) => {
-          setNoList(response.data);
-        });
+        axios
+          .get(
+            `http://localhost:8080/get-id-game-from-round/${encodeURIComponent(
+              round
+            )}`
+          )
+          .then((response) => {
+            setNoList(response.data);
+          });
         // const testData = ['team1', 'team2', 'team3', 'team4']
         // setTeamName(testData)
         //Lấy danh sách các đội bóng trong cơ sở dữ liệu
-        axios.get(`api/${encodeURIComponent(round)}`).then((response) => {
+        axios.get(`http://localhost:8080/get-name-team`).then((response) => {
           setTeamName(response.data);
         });
         //Lấy thông tin về tất cả trận đấu trong vòng này như cái mockData ở trên
-        axios.get(`api/${encodeURIComponent(round)}`).then((response) => {
-          setMatchData(response.data);
-        });
+        axios
+          .get(
+            `http://localhost:8080/get-info-game/${encodeURIComponent(round)}`
+          )
+          .then((response) => {
+            setMatchData(response.data);
+          });
       } catch (error) {
         console.error("Error fetching STT list:", error);
       }
@@ -70,60 +84,61 @@ const ScheduleEdit = () => {
     fetchSttList();
   }, [round]);
 
-  const handleNoChange = async (selectedNo) => {
+  const handleNoChange = (selectedNo) => {
     try {
-      // Fetch match data based on selected round and STT from the backend
-      // const response = await axios.get(`/api/getMatchData?round=${round}&stt=${selectedNo}`);
-      // const matchData = response.data.matchData;
+      // Find the match data for the selected match number
+      const selectedMatchData = matchData.find(
+        (match) => match.MaTranDau === selectedNo
+      );
 
-      // Update the form data with the fetched match data
-      // setFormData({
-      //   no: selectedNo,
-      //   team1: matchData.team1,
-      //   team2: matchData.team2,
-      //   pitch: matchData.pitch,
-      //   date: matchData.date,
-      //   time: matchData.time,
-      // });
+      // Update the form data with the selected match data
       setFormData({
-        no: selectedNo,
-        ...matchData[selectedNo],
+        MaTranDau: selectedNo,
+        TenDoi1: selectedMatchData?.TenDoi1 || "",
+        TenDoi2: selectedMatchData?.TenDoi2 || "",
+        SanDau: selectedMatchData?.SanDau || "",
+        Ngay: selectedMatchData?.Ngay || "",
+        Gio: selectedMatchData?.Gio || "",
       });
     } catch (error) {
-      console.error("Loi lay data tu server:", error);
+      console.error("Error updating form data:", error);
     }
   };
 
+  // Dang Fix
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    // console.log("check Prevdata: ", formData);
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+    // console.log("check Name, Value: ", name, value);
+    // console.log("check After Data: ", formData);
   };
 
   const validateForm = () => {
-    if (!formData.no) {
+    if (!formData.MaTranDau) {
       toast.error("So thu tu khong duoc de trong");
       return false;
     }
-    if (!formData.team1) {
+    if (!formData.TenDoi1) {
       toast.error("Doi 1 khong duoc de trong");
       return false;
     }
-    if (!formData.team2) {
+    if (!formData.TenDoi2) {
       toast.error("Doi 2 khong duoc de trong");
       return false;
     }
 
-    if (!teamName.includes(formData.team1)) {
-      toast.error("Doi 1 khong ton tai trong database");
+    if (!teamName.some((team) => team.TenDoiBong === formData.TenDoi1)) {
+      toast.error("Team 1 is not in the database");
       return false;
     }
 
-    if (!teamName.includes(formData.team2)) {
-      toast.error("Doi 2 khong ton tai trong database");
+    if (!teamName.some((team) => team.TenDoiBong === formData.TenDoi2)) {
+      toast.error("Team 2 is not in the database");
       return false;
     }
 
-    if (formData.team1 === formData.team2) {
+    if (formData.TenDoi1 === formData.TenDoi2) {
       toast.error("Hai doi khong duoc trung nhau");
       return false;
     }
@@ -138,16 +153,16 @@ const ScheduleEdit = () => {
     //     return false
     // }
 
-    if (!formData.pitch) {
+    if (!formData.SanDau) {
       toast.error("San dau khong duoc trong");
       return false;
     }
 
-    if (!formData.date) {
+    if (!formData.Ngay) {
       toast.error("Ngay khong duoc trong");
       return false;
     }
-    if (!formData.time) {
+    if (!formData.Gio) {
       toast.error("Thoi gian khong duoc trong");
       return false;
     }
@@ -164,10 +179,10 @@ const ScheduleEdit = () => {
 
       // Use Axios to send data to the server
       //   await axios.post('your-api-endpoint', dataToSend);
-
+      // console.log(formData);
       const isValid = validateForm();
       if (isValid) {
-        axios.post("api", dataToSend);
+        axios.put("http://localhost:8080/update-schedule", dataToSend);
         console.log("Data saved successfully");
         console.log(dataToSend);
         toast.success("Chinh sua thanh cong");
@@ -191,9 +206,9 @@ const ScheduleEdit = () => {
           <div className="flex flex-row text-xl">
             <p className="w-[138px]">STT</p>
             <select
-              name="no"
+              name="MaTranDau"
               className="bg-stone-200 w-2/6"
-              value={formData.no}
+              value={formData.MaTranDau}
               onChange={(e) => {
                 handleInputChange(e);
                 handleNoChange(e.target.value);
@@ -203,8 +218,8 @@ const ScheduleEdit = () => {
                 Chọn STT
               </option>
               {noList.map((stt) => (
-                <option key={stt} value={stt}>
-                  {stt}
+                <option key={stt.MaTranDau} value={stt.MaTranDau}>
+                  {stt.MaTranDau}
                 </option>
               ))}
             </select>
@@ -214,8 +229,8 @@ const ScheduleEdit = () => {
             <input
               type="text"
               className="bg-stone-200 w-5/6"
-              name="team1"
-              value={formData.team1}
+              name="TenDoi1"
+              value={formData.TenDoi1}
               onChange={handleInputChange}
             />
           </div>
@@ -224,8 +239,8 @@ const ScheduleEdit = () => {
             <input
               type="text"
               className=" bg-stone-200 w-5/6"
-              name="team2"
-              value={formData.team2}
+              name="TenDoi2"
+              value={formData.TenDoi2}
               onChange={handleInputChange}
             />
           </div>
@@ -234,8 +249,8 @@ const ScheduleEdit = () => {
             <input
               type="text"
               className=" bg-stone-200 w-5/6"
-              name="pitch"
-              value={formData.pitch}
+              name="SanDau"
+              value={formData.SanDau}
               onChange={handleInputChange}
             />
           </div>
@@ -244,8 +259,8 @@ const ScheduleEdit = () => {
             <input
               type="text"
               className=" bg-stone-200 w-5/6"
-              name="date"
-              value={formData.date}
+              name="Ngay"
+              value={formData.Ngay}
               onChange={handleInputChange}
             />
           </div>
@@ -254,8 +269,8 @@ const ScheduleEdit = () => {
             <input
               type="text"
               className=" bg-stone-200 w-5/6"
-              name="time"
-              value={formData.time}
+              name="Gio"
+              value={formData.Gio}
               onChange={handleInputChange}
             />
           </div>

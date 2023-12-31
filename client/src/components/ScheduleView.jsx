@@ -18,7 +18,7 @@ const ScheduleView = () => {
 
   useEffect(() => {
     // Lấy tất cả cái vòng có trong cơ sở dữ liệu
-    axios.get("http://localhost:8080/get-info-game").then((response) => {
+    axios.get("http://localhost:8080/get-round-from-game").then((response) => {
       setRounds(response.data);
     });
   }, []);
