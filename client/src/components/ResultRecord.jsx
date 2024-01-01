@@ -20,6 +20,11 @@ const ResultRecord = () => {
   const [sttList, setSttList] = useState([]);
   const [roundList, setRoundList] = useState([]);
 
+  const gioMatch = new Date(selectedMatchInfo.Gio);
+  const gioGiamMotGio = new Date(
+    gioMatch.getTime() - 60 * 60 * 1000
+  ); // Giảm một giờ
+
   // Thêm state để lưu trữ STT và vòng được chọn
   const [selectedStt, setSelectedStt] = useState("");
   const [selectedRound, setSelectedRound] = useState("");
@@ -186,8 +191,32 @@ const ResultRecord = () => {
 
   const handleScoreChange = (e) => {
     const { name, value } = e.target;
+    if(name == "MaCauThu") {
+      setSelectedPlayerNumber(e.target.value)
+      setScoreData({
+        goalType: "",
+        time: ""
+      })
+    }
+
+    if(name == "TenDoi") {
+      setSelectedTeam(e.target.value) 
+      setScoreData({
+        goalType: "",
+        time: ""
+      })
+      setSelectedPlayerNumber("")
+      setSelectedPlayerName("")
+    }
+
+    if(name == "player") {
+      setSelectedPlayerName(e.target.value) 
+      setScoreData({
+        goalType: "",
+        time: ""
+      })
+    }
     setScoreData((prevData) => ({ ...prevData, [name]: value }));
-    console.log("check score data", scoreData);
     setScoreData((prevScoreData) => ({
       id: selectedPlayerNumber,
       player: selectedPlayerName,
@@ -195,6 +224,7 @@ const ResultRecord = () => {
       goalType: prevScoreData.goalType,
       time: prevScoreData.time,
     }));
+    console.log("check score data", scoreData);
   };
 
   const validateMatchForm = () => {
@@ -451,7 +481,7 @@ const ResultRecord = () => {
                   type="text"
                   className="pl-4 bg-stone-200 flex-grow"
                   name="Ngay"
-                  value={selectedMatchInfo.Ngay}
+                  value={new Date(selectedMatchInfo.Ngay).toLocaleDateString()}
                   //onChange={handleMatchChange}
                 />
               </div>
@@ -461,7 +491,7 @@ const ResultRecord = () => {
                   type="text"
                   className="pl-4 bg-stone-200 flex-grow"
                   name="Gio"
-                  value={selectedMatchInfo.Gio}
+                  value={gioGiamMotGio.toLocaleTimeString()}
                   //onChange={handleMatchChange}
                 />
               </div>
@@ -481,7 +511,7 @@ const ResultRecord = () => {
                 className="pl-4 bg-stone-200 flex-grow"
                 name="MaCauThu"
                 value={selectedPlayerNumber}
-                onChange={(e) => setSelectedPlayerNumber(e.target.value)}
+                onChange={handleScoreChange}
               >
                 <option value="" disabled>
                   Chọn STT
@@ -516,7 +546,7 @@ const ResultRecord = () => {
                   className="pl-4 bg-stone-200 flex-grow"
                   name="TenDoi"
                   value={selectedTeam}
-                  onChange={(e) => setSelectedTeam(e.target.value)}
+                  onChange={handleScoreChange}
                 >
                   <option value="" disable>
                     Chọn Đội
