@@ -26,6 +26,8 @@ const ResultRecord = () => {
 
   const [teamName, setTeamName] = useState([]);
   const [playerInfo, setPlayerInfo] = useState([]);
+  const [selectedPlayerNumber, setSelectedPlayerNumber] = useState("");
+  const [selectedPlayerName, setSelectedPlayerName] = useState("");
   const [matchData, setMatchData] = useState({
     no: "",
     round: "",
@@ -38,7 +40,7 @@ const ResultRecord = () => {
     time: "",
   });
   const [scoreData, setScoreData] = useState({
-    stt: "",
+    id: "",
     player: "",
     team: "",
     goalType: "",
@@ -46,6 +48,23 @@ const ResultRecord = () => {
   });
 
   const [scorerList, setScorerList] = useState([]);
+
+  // useEffect(() => {
+  //   console.log('check player info: ', selectedPlayerName)
+  // }, [selectedPlayerName])
+
+  useEffect(() => {
+    try {
+        for (var i = 0; i < playerInfo.length; i++) {
+          const key = "MaCauThu"
+          if(playerInfo[i][key] == selectedPlayerNumber) {
+            setSelectedPlayerName(playerInfo[i]["TenCauThu"])
+          }
+        }
+      } catch (error) {
+        console.error("Error updating form data:", error);
+      }
+  }, [selectedPlayerNumber])
 
   useEffect(() => {
     axios
@@ -66,7 +85,7 @@ const ResultRecord = () => {
         );
         setMatchInfo(response.data);
       } catch (error) {
-        console.error("Loi khi lay data trận đấu tu server:", error);
+        console.error("Loi khi lay data tran dau tu server:", error);
       }
     };
     if (selectedStt && selectedRound) {
@@ -143,9 +162,9 @@ const ResultRecord = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("Checking us", teamName);
-  });
+//   useEffect(() => {
+//     console.log("Checking us", teamName);
+//   });
   useEffect(() => {
     const selectedMatchData = matchInfo.find(
       (match) => match.VongDau == selectedRound
@@ -167,25 +186,10 @@ const ResultRecord = () => {
 
   const handleScoreChange = (e) => {
     const { name, value } = e.target;
-    console.log(playerInfo);
-    setPlayerInfo((prevData) => ({ ...prevData, [name]: value }));
-
-    // setScoreData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const handlePlayerNumberChange = (e) => {
-    const { name, value } = e.target;
     setScoreData((prevData) => ({ ...prevData, [name]: value }));
-
-    axios
-      .get("api")
-      .then((response) => {
-        setPlayerInfo(response.data);
-      })
-      .catch((error) => {
-        console.error("Loi khi lay data tu server", error);
-      });
+    console.log("check score data", scoreData);
   };
+
 
   const validateMatchForm = () => {
     if (!selectedStt) {
@@ -272,26 +276,19 @@ const ResultRecord = () => {
   };
 
   const validateScorerForm = () => {
-    if (!scoreData.stt) {
+    if (!selectedPlayerNumber) {
       toast.error("So thu tu khong duoc de trong");
       return false;
     }
-    if (!scoreData.player) {
+    if (!selectedPlayerName) {
       toast.error("Ten cau thu khong duoc de trong");
       return false;
     }
-    if (!scoreData.team) {
+    if (!selectedTeam) {
       toast.error("Doi bong khong duoc de trong");
       return false;
     }
 
-    if (
-      scoreData.team != matchData.team1 &&
-      scoreData.team != matchData.team2
-    ) {
-      toast.error("Doi bong khong hop le");
-      return false;
-    }
 
     if (!scoreData.goalType) {
       toast.error("Loai ban thang khong duoc de trong");
@@ -303,39 +300,23 @@ const ResultRecord = () => {
       return false;
     }
 
-    const selectedPlayer = playerInfo.find(
-      (player) => player.id === scoreData.stt
-    );
-    if (!selectedPlayer) {
-      toast.error("Cau thu khong hop le");
-      return false;
-    }
-
-    if (scoreData.player !== selectedPlayer.name) {
-      toast.error("Ten cau thu khong hop le");
-      return false;
-    }
-
     return true;
   };
 
   const handleScoreSave = () => {
     try {
-      // Use Axios to send section2Data to the server
-      //   await Axios.post('your-api-endpoint', scoreData);
-      // const testData =
-      // [{ id: '1', name: 'playerA' },
-      // { id: '2', name: 'playerB' },
-      // { id: '4', name: 'playerD' },
-      // { id: '3', name: 'playerC' }]
 
-      // setPlayerInfo(testData)
-      // Lấy dữ liệu về các các cầu thủ để kiểm tra các ID và tên cầu thủ khớp
-      // với nhau trong cơ sở dữ liệu, nội dung lấy về từ server sẽ là id và name của các cầu thủ
+      setScoreData((prevScoreData) => ({
+        id: selectedPlayerNumber,
+        player: selectedPlayerName,
+        team: selectedTeam,
+        goalType: prevScoreData.goalType,
+        time: prevScoreData.time,
+      }));
 
       const isValid = validateScorerForm();
       if (isValid) {
-        axios.post("api", scoreData);
+        // axios.post("api", scoreData);
         setScorerList((prevList) => [
           ...prevList,
           { ...scoreData, index: prevList.length + 1 },
@@ -487,8 +468,8 @@ const ResultRecord = () => {
               <select
                 className="pl-4 bg-stone-200 flex-grow"
                 name="MaCauThu"
-                value={playerInfo}
-                onChange={handleScoreChange}
+                value={selectedPlayerNumber}
+                onChange={(e) => setSelectedPlayerNumber(e.target.value)}
               >
                 <option value="" disabled>
                   Chọn STT
@@ -512,11 +493,10 @@ const ResultRecord = () => {
                   <option value="" disabled>
                     Chọn Cầu thủ
                   </option>
-                  {playerInfo.map((player) => (
-                    <option key={player.id} value={player.name}>
-                      {player.name}
-                    </option>
-                  ))}
+                  <option key={selectedPlayerName} value={selectedPlayerName}>
+                    {selectedPlayerName}
+                  </option>
+            
                 </select>
               </div>
               <div className="flex flex-row gap-8 w-1/2 justify-between px-16">
@@ -527,6 +507,9 @@ const ResultRecord = () => {
                   value={selectedTeam}
                   onChange={(e) => setSelectedTeam(e.target.value)}
                 >
+                  <option value='' disable>
+                    Chọn Đội
+                  </option>
                   <option value={selectedMatchInfo.TenDoi1}>
                     {selectedMatchInfo.TenDoi1}
                   </option>
@@ -580,7 +563,7 @@ const ResultRecord = () => {
             <tbody>
               {scorerList.map((scorer) => (
                 <tr key={scorer.index}>
-                  <td>{scorer.stt}</td>
+                  <td>{scorer.id}</td>
                   <td>{scorer.player}</td>
                   <td>{scorer.team}</td>
                   <td>{scorer.goalType}</td>
