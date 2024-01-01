@@ -9,7 +9,18 @@ const Register = () => {
   const [players, setPlayers] = useState([]); //Khai báo mảng các cầu thủ
   const [teamName, setTeamName] = useState(""); //Khai báo tên đội
   const [stadium, setStadium] = useState(""); // Khai báo sân đấu
-  const [maxPlayers, setMaxPlayers] = useState(4); //Số lượng cầu thủ tối đa
+  const [foreginPLayers, setForeginPLayers] = useState(""); // Số lượng cầu thủ nước ngoài
+  const [maxPlayers, setMaxPlayers] = useState(3); //Số lượng cầu thủ tối đa
+
+
+  const [rules, setRules] = useState({})
+
+  useEffect(() => {
+    //Lấy quy định giải đấu
+    // axios.get("api").then((response) => {
+    //   setRules(response.data)
+    // })
+  })
 
   const handlePlayerChange = (index, field, value) => {
     // Update cầu thủ khi có thay đổi
@@ -92,7 +103,23 @@ const Register = () => {
         toast.error(`Cau thu so ${i + 1}: Ghi chu khong duoc de trong`);
         return false;
       }
+
+      if(player.type == 'Nước ngoài') {
+        setForeginPLayers(foreginPLayers + 1)
+      }
     }
+
+    if(foreginPLayers > rules.maxForeinPlayer) {
+      toast.error(`So luong cau thu nuoc ngoai vuot qua quy dinh`);
+      return false
+    }
+
+    if(players.length < rules.minPLayer) {
+      toast.error(`Khong du so luong cau thu toi thieu`);
+      return false
+    }
+
+    
 
     // Nếu không có lỗi, trả về true
     return true;

@@ -44,18 +44,18 @@ const TeamEdit = () => {
     if (players.length + 1 <= maxPlayers) {
       setPlayers([...players, newPlayer]);
     }
-    else toast.error("Maximum player allow")
+    else toast.error("Da dat so luong cau thu toi da")
   };
 
   const validateForm = () => {
     // Kiểm tra các trường input
     if (!teamName) {
-      toast.error("Team name is required");
+      toast.error("Ten doi bong khong duoc de trong");
       return false;
     }
 
     if (!stadium) {
-      toast.error("Stadium is required");
+      toast.error("San nha khong duoc de trong");
       return false;
     }
 
@@ -66,34 +66,34 @@ const TeamEdit = () => {
       const player = players[i];
 
       if (!player.number) {
-        toast.error(`Player ${i + 1}: Number is required`);
+        toast.error(`Cau thu so ${i + 1}: So thu tu bi trung`);
         return false;
       }
 
       if (usedNumbers.has(player.number)) {
-        toast.error(`Player ${i + 1}: Duplicate Number`);
+        toast.error(`Cau thu so ${i + 1}: ten cau thu bi trung`);
         return false;
       }
 
       usedNumbers.add(player.number);
 
       if (!player.name) {
-        toast.error(`Player ${i + 1}: Name is required`);
+        toast.error(`Cau thu so ${i + 1}: Ten cau thu khong duoc de trong`);
         return false;
       }
 
       if (!player.type) {
-        toast.error(`Player ${i + 1}: Type is required`);
+        toast.error(`Cau thu so ${i + 1}: Loai cau thu khong duoc de trong`);
         return false;
       }
 
       if (!player.birthday) {
-        toast.error(`Player ${i + 1}: Birthday is required`);
+        toast.error(`Cau thu so ${i + 1}: Ngay sinh khong duoc de trong`);
         return false;
       }
 
       if (!player.note) {
-        toast.error(`Player ${i + 1}: Note is required`);
+        toast.error(`Cau thu so ${i + 1}: Ghi chu khong duoc de trong`);
         return false;
       }
     }
