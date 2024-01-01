@@ -8,71 +8,89 @@ const router = express.Router();
  */
 
 const initWebRoutes = (app) => {
-  //router.get("/", homeController.handleHome);
-  //router.get("/user", homeController.handleUserPage);
-  // Trang Đăng ký đội bóng
-  router.post("/reg", homeController.handleReg);
-
-  //Đang làm
-  // Trang Chỉnh sửa hồ sơ đội bóng
-  router.get("/get-all-team", homeController.handleGetAllTeam); // Xuất các đội bóng có trong CSDL --Xong
-  router.put("/update-player-team", homeController.handleUpdateTeam); // Thay đổi hồ sơ đội bóng --Xong
-  router.post("/add-player-to-team", homeController.handleUpdateTeam); // Thêm thành viên vô đội bóng
-  router.delete("/delete-player-team", homeController.handleUpdateTeam); // Xóa thành viên ra đội bóng
-
-  // Trang tra cứu thông tin cầu thủ
+  // GET METHOD--------------
+  // Lấy các đội bóng có trong CSDL
+  router.get("/get-all-team", homeController.handleGetAllTeam);
+  // Lấy thông tin tất cả cầu thủ
   router.get("/get-all-player", homeController.handleGetAllInfoPlayer);
+  // Lấy thông tin cầu thủ theo tên
   router.get(
     "/get-player-by-name/:name",
     homeController.handleGetInfoPlayerByName
   );
+  // Lấy thông tin cầu thủ theo tên đội bóng
   router.get(
     "/get-player-by-team/:team",
     homeController.handleGetInfoPlayerByTeam
   );
-  // router.get("/get-by-name/:name", homeController.handleGetInfoPlayerByName);
+  // Lấy thông tin cầu thủ theo ngày -- đang làm
   router.get(
     "/get-player-by-date/:date",
     homeController.handleGetInfoPlayerByDate
   );
+  // Lấy thông tin cầu thủ ghi bàn trong trận đấu theo ngày -- đang làm
   router.get(
     "/get-scorer-by-date/:date",
     homeController.handleGetScorerInfoPlayerByDate
   );
-  router.post("/add-scorer", homeController.handleAddScorer);
-
-  // Trang ghi nhận kết quả
+  // Lấy tất cả vòng đấu trong trận đấu
   router.get("/get-round-from-game", homeController.handleGetRoundFromGame);
+  // Lấy vòng đấu trong trận đấu theo mã trận đấu
   router.get(
     "/get-round-from-game/:id",
     homeController.handleGetRoundFromGameId
   );
+  // Lấy tên đội bóng trong DoiBong
   router.get("/get-name-team", homeController.handleGetTeamName);
+  // Lấy tên đội 1 và 2 theo vòng đấu trong trận đấu
   router.get(
     "/get-name-team/:round",
     homeController.handleGetTeamNameFromRound
   );
+  // Lấy mã trận đấu trong tất cả trận đấu
   router.get("/get-info-game", homeController.handleGetInfoGame);
+  // Lấy thông tin trận đấu theo vòng
   router.get("/get-info-game/:round", homeController.handleGetInfoGameByRound);
+  // Lấy thông tin trận đấu theo mã và vòng
   router.get(
     "/get-info-game/:id/:round",
     homeController.handleGetInfoGameByRoundAndId
   );
-  router.post("/add-schedule", homeController.handleAddSchedule);
-
-  router.put("/update-schedule", homeController.handleUpdateSchedule);
-  router.put("/update-record", homeController.handleUpdateRecord);
-
-  router.post("/submit/goal", homeController.handleGoal);
-
-  router.post("/change-rule", homeController.handleUpdateRule);
+  // Lấy quy định
   router.get("/get-rule", homeController.handleGetRule);
-
+  // Lấy Mã trận đấu theo vòng đấu
   router.get(
     "/get-id-game-from-round/:round",
     homeController.handleGetIdGameFromRound
   );
-  //router.get("/player", homeController.handlePlayer);
+  // Lấy cầu thủ ghi bàn và số bàn ghi theo ngày thi đấu
+  router.get(
+    "/get-info-game-from-date/:date",
+    homeController.handleGetInfoGameByDate
+  );
+  // POST METHOD--------------
+  // Thêm đội bóng và thành viên
+  router.post("/reg", homeController.handleReg);
+  // Thêm thành viên vô đội bóng
+  router.post("/add-player-to-team", homeController.handleAddPlayerToTeam);
+  // Thêm bàn thắng
+  router.post("/add-scorer", homeController.handleAddScorer);
+  // Thêm lịch thi đấu
+  router.post("/add-schedule", homeController.handleAddSchedule);
+
+  // PUT METHOD--------------
+  // Thay đổi thông tin thành viên
+  router.put("/update-player-team", homeController.handleUpdatePlayer);
+  // Thay đổi lịch đấu
+  router.put("/update-schedule", homeController.handleUpdateSchedule);
+  // Xác nhận kết quả trận đấu
+  router.put("/update-record", homeController.handleUpdateRecord);
+  // Thay đổi quy định
+  router.put("/change-rule", homeController.handleUpdateRule);
+
+  // DELETE METHOD--------------
+  // Xóa thành viên ra đội bóng
+  router.delete("/delete-player-team", homeController.handleDeletePlayer);
 
   return app.use("/", router);
 };
