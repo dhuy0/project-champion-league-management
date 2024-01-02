@@ -168,6 +168,29 @@ const handleGetAllTeam = async (req, res) => {
   }
 };
 
+const handleGetTeamById = async (req, res) => {
+  try {
+    const id = req.params.teamId
+    console.log(">>> check id: ", id)
+    var pool = await conn;
+
+    var sqlString = `SELECT * FROM DoiBong WHERE MaDoiBong = @varId`;
+
+    const result = await pool.request()
+    .input("varId", sql.Int, parseInt(id))
+    .query(sqlString);
+    console.log('>>> check team result: ', result);
+    if (result.rowsAffected > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json({ message: "Không có dữ liệu" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const handleUpdatePlayer = async (req, res) => {
   try {
     const data = req.body;
@@ -307,8 +330,8 @@ const handleGetInfoPlayerByName = async (req, res) => {
 
 const handleGetInfoPlayerByTeam = async (req, res) => {
   try {
-    const team = req.params.team;
-    console.log(team);
+    const team = req.params.teamName;
+    console.log("check team to get player: ", team)
     var pool = await conn;
     var sqlString = `SELECT * FROM CauThu WHERE TenDoiBong = @varTeam`;
     const result = await pool
@@ -326,6 +349,9 @@ const handleGetInfoPlayerByTeam = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
 // Đang làm
 const handleGetInfoPlayerByDate = async (req, res) => {
   try {
@@ -351,7 +377,7 @@ const handleGetScorerInfoPlayerByDate = async (req, res) => {
     const date = new Date(req.params.date);
     console.log(">>>> check date: ", date);
     var pool = await conn;
-    var sqlString = `SELECT CT.MaCauThu, CT.TenCauThu, CT.TenDoiBong, CT.LoaiCauThu, Count FROM CauThu AS CT JOIN BanThang AS BT ON CT.MaCauThu = BT.MaCauThu AND
+    var sqlString = `SELECT CT.MaCauThu, CT.TenCauThu, CT.TenDoiBong, CT.LoaiCauThu, Count (*) AS SoBanThang FROM CauThu AS CT JOIN BanThang AS BT ON CT.MaCauThu = BT.MaCauThu AND
     CT.TenDoiBong = BT.TenDoiBong JOIN TranDau AS TD ON BT.MaTranDau = TD.MaTranDau
     WHERE Ngay = @varDate
     GROUP BY CT.MaCauThu, CT.TenCauThu, CT.TenDoiBong, CT.LoaiCauThu`;
@@ -359,12 +385,12 @@ const handleGetScorerInfoPlayerByDate = async (req, res) => {
       .request()
       .input("varDate", sql.Date, date)
       .query(sqlString);
-    console.log(result);
+    console.log('check data send to client: ', result);
     console.log(">>>> check date: ", date);
     if (result.rowsAffected > 0) {
       res.status(200).json(result.recordset);
     } else {
-      res.status(500).json({ message: "đã có lỗi xảy ra" });
+      res.status(404).json({ message: "không có trong cơ sở dữ liệu" });
     }
   } catch (error) {
     console.log(error);
@@ -521,6 +547,7 @@ const handleAddSchedule = async (req, res) => {
     const data = req.body;
     console.log(data.date, data.time);
     const date = new Date(data.date + " " + data.time);
+    const temp = new Date(data.date);
     console.log(date);
     // console.log(date.toLocaleDateString(), date.toLocaleTimeString());
     var pool = await conn;
@@ -535,7 +562,7 @@ const handleAddSchedule = async (req, res) => {
       .input("varName1", sql.NVarChar(MAX), data.team1)
       .input("varName2", sql.NVarChar(MAX), data.team2)
       .input("varField", sql.NVarChar(MAX), data.pitch)
-      .input("varDate", sql.Date, date)
+      .input("varDate", sql.Date, temp)
       .input("varTime", sql.Time(7), date)
       .query(sqlString);
     console.log(result);
@@ -561,12 +588,12 @@ const handleAddScorer = async (req, res) => {
     const result = await pool
       // Chỉnh lại biến theo front end
       .request()
-      .input("varId", sql.VarChar(MAX), data.no)
-      .input("varTeam", sql.NVarChar(MAX), data.round)
-      .input("varType", sql.NVarChar(MAX), data.team1)
-      .input("varTime", sql.Int, data.team2)
-      .input("varIdGame", sql.VarChar(MAX), data.pitch)
-      .input("varRound", sql.Int, date)
+      .input("varId", sql.VarChar(MAX), data.id)
+      .input("varTeam", sql.NVarChar(MAX), data.team)
+      .input("varType", sql.NVarChar(MAX), data.goalType)
+      .input("varTime", sql.Int, data.time)
+      .input("varIdGame", sql.VarChar(MAX), data.matchId)
+      .input("varRound", sql.Int, data.round)
       .query(sqlString);
     console.log(result);
     if (result.rowsAffected > 0) {
@@ -619,22 +646,24 @@ const handleUpdateRule = async (req, res) => {
     const result = await pool
       .request()
       // Chỉnh lại biến theo front end
-      .input("varAgeMin", sql.Int, data.minAge)
-      .input("varAgeMax", sql.Int, data.maxAge)
-      .input("varPlayerMin", sql.VarChar(255), data.minPlayers)
-      .input("varPlayerMax", sql.Int, data.maxPlayers)
-      .input("varForeignerMax", sql.Int, data.maxForeignPlayers)
-      .input("varTimeMax", sql.VarChar(255), data.maxGoalTime)
-      .input("varWinScore", sql.VarChar(255), data.winPoints)
-      .input("varDrawScore", sql.VarChar(255), data.drawPoints)
-      .input("varLooseScore", sql.VarChar(255), data.losePoints)
+      .input("varAgeMin", sql.Int, data.DoTuoi_Min)
+      .input("varAgeMax", sql.Int, data.DoTuoi_Max)
+      .input("varPlayerMin", sql.Int, data.SoCauThu_Min)
+      .input("varPlayerMax", sql.Int, data.SoCauThu_Max)
+      .input("varForeignerMax", sql.Int, data.SoCauThuNuocNgoai_Max)
+      .input("varTimeMax", sql.Int, data.ThoiDiemGhiBan_Max)
+      .input("varWinScore", sql.Int, data.DiemSoThang)
+      .input("varDrawScore", sql.Int, data.DiemSoHoa)
+      .input("varLooseScore", sql.Int, data.DiemSoThua)
       .query(sqlString);
+      console.log("check resul: ", result)
     if (result.rowsAffected > 0) {
       res.status(200).json(result);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });
     }
   } catch (error) {
+    console.log("check error: ", error)
     res.status(500).json({ message: error.message });
   }
 };
@@ -648,8 +677,9 @@ const handleGetRule = async (req, res) => {
       .request()
       // Chỉnh lại biến theo front end
       .query(sqlString);
+      console.log(result)
     if (result.rowsAffected > 0) {
-      res.status(200).json(result);
+      res.status(200).json(result.recordset);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });
     }
@@ -661,6 +691,9 @@ const handleGetRule = async (req, res) => {
 const handleUpdateSchedule = async (req, res) => {
   try {
     const data = req.body;
+    const date = new Date(data.Ngay + " " + data.Gio);
+    const temp = new Date(data.Ngay);
+    
     console.log(data);
     var pool = await conn;
     var sqlString = `UPDATE TranDau
@@ -672,10 +705,10 @@ const handleUpdateSchedule = async (req, res) => {
       .input("varTeam1", sql.NVarChar(MAX), data.TenDoi1)
       .input("varTeam2", sql.NVarChar(MAX), data.TenDoi2)
       .input("varField", sql.NVarChar(MAX), data.SanDau)
-      .input("varDate", sql.Date, data.Ngay)
-      .input("varTime", sql.Time, data.Gio)
-      .input("varId", sql.VarChar(MAX), data.no)
-      .input("varRound", sql.Int, data.VongDau)
+      .input("varDate", sql.Date, temp)
+      .input("varTime", sql.Time(7), date)
+      .input("varId", sql.VarChar(MAX), data.MaTranDau)
+      .input("varRound", sql.Int, data.round)
       .query(sqlString);
     console.log(result);
     if (result.rowsAffected > 0) {
@@ -759,4 +792,5 @@ module.exports = {
   handleUpdatePlayer,
   handleDeletePlayer,
   handleGetInfoGameByDate,
+  handleGetTeamById,
 };

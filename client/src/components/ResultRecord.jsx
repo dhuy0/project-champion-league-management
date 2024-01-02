@@ -353,17 +353,20 @@ const ResultRecord = () => {
 
   const handleScoreSave = () => {
     try {
-      console.log("check selected number: ", selectedPlayerNumber);
-      console.log(">> check selected team: ", selectedTeam);
 
       const isValid = validateScorerForm();
       if (isValid) {
-        // axios.post("api", scoreData);
+        const dataToSend = {
+          ...scoreData,
+          round: selectedRound,
+          matchId: selectedStt,
+        }
+        axios.post("http://localhost:8080/add-scorer", dataToSend);
         setScorerList((prevList) => [
           ...prevList,
           { ...scoreData, index: prevList.length + 1 },
         ]);
-        console.log(">>> check scorer data: ", scoreData);
+        console.log(">>> check data to send: ", dataToSend);
         toast.success("Them thanh cong!");
       }
     } catch (error) {

@@ -23,8 +23,8 @@ const ScheduleAdd = () => {
   });
 
   useEffect(() => {
-    console.log(teamName);
-    console.log(arrTeamName);
+    console.log(">> check team name: ", teamName);
+    // console.log(arrTeamName);
   }, [teamName]);
 
   useEffect(() => {
@@ -70,54 +70,54 @@ const ScheduleAdd = () => {
 
   const validateForm = () => {
     if (!formData.no) {
-      toast.error("Number is required");
+      toast.error("So thu tu khong duoc de trong");
       return false;
     }
     if (!formData.team1) {
-      toast.error("Team 1 is required");
+      toast.error("Doi 1 khong duoc de trong");
       return false;
     }
     if (!formData.team2) {
-      toast.error("Team 2 is required");
+      toast.error("Doi 1 khong duoc de trong");
       return false;
     }
 
     if (!teamName.some((team) => team.TenDoiBong === formData.team1)) {
-      toast.error("Team 1 is not in the database");
+      toast.error("Doi 2 khong co trong cow so du lieu");
       return false;
     }
 
     if (!teamName.some((team) => team.TenDoiBong === formData.team2)) {
-      toast.error("Team 2 is not in the database");
+      toast.error("Doi 2 khong co trong cow so du lieu");
       return false;
     }
 
     if (formData.team1 === formData.team2) {
-      toast.error("Two team must be different");
+      toast.error("Ten hai doi bong khong duoc trung");
       return false;
     }
 
-    if (playedTeam.includes(formData.team1)) {
-      toast.error("Team 1 is already played in this round");
+    if (playedTeam.some((team) => team.TenDoi1 == formData.team1 || team.TenDoi2 == formData.team1)) {
+      toast.error("Doi 1 da thi dau trong vong nay");
       return false;
     }
 
-    if (playedTeam.includes(formData.team2)) {
-      toast.error("Team 2 is already played in this round");
+    if (playedTeam.some((team) => team.TenDoi1 == formData.team2 || team.TenDoi2 == formData.team2)) {
+      toast.error("Doi 2 da thi dau trong vong nay");
       return false;
     }
 
     if (!formData.pitch) {
-      toast.error("Stadium is required");
+      toast.error("San dau khong duoc trong");
       return false;
     }
 
     if (!formData.date) {
-      toast.error("Date is required");
+      toast.error("Ngay thi dau khong duoc trong");
       return false;
     }
     if (!formData.time) {
-      toast.error("Time is required");
+      toast.error("Thoi gian khong duoc trong");
       return false;
     }
     return true;
@@ -134,11 +134,11 @@ const ScheduleAdd = () => {
       //Gửi data về cho server
       const isValid = validateForm();
       if (isValid) {
-        axios.post("http://localhost:8080/add-schedule", dataToSend);
+        // axios.post("http://localhost:8080/add-schedule", dataToSend);
         console.log("Data saved successfully");
         console.log(dataToSend);
         toast.success("Them moi thanh cong");
-        navigate(`/schedule-view/${round}`);
+        // navigate(`/schedule-view/${round}`);
       }
     } catch (error) {
       console.error("Error saving data:", error);

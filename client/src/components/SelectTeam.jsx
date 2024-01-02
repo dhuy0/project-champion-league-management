@@ -9,6 +9,14 @@ const SelectTeam = () => {
   const [selectedTeam, setSelectedTeam] = useState("");
 
   useEffect(() => {
+    console.log(">>> check selected team: ", selectedTeam)
+  }, [selectedTeam])
+
+  useEffect(() => {
+    console.log(">>> check team: ", teams)
+  }, [teams])
+
+  useEffect(() => {
     //Gửi về danh sách id, Tên đội bóng
     axios
       .get("http://localhost:8080/get-all-team")
@@ -49,8 +57,8 @@ const SelectTeam = () => {
                 Chọn đội bóng
               </option>
               {teams.map((team) => (
-                <option key={team.id} value={team.id}>
-                  {team.hoten}
+                <option key={team.MaDoiBong} value={team.MaDoiBong}>
+                  {team.TenDoiBong}
                 </option>
               ))}
             </select>

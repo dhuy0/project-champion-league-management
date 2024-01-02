@@ -27,7 +27,8 @@ const ScheduleEdit = () => {
   //   },
   //   // Add more simulated data as needed
   // };
-
+  const [isFocusedDate, setIsFocusedDate] = useState(false);
+  const [isFocusedTime, setIsFocusedTime] = useState(false);
   const { round } = useParams();
   const [matchData, setMatchData] = useState([]);
   const [noList, setNoList] = useState([]);
@@ -45,6 +46,22 @@ const ScheduleEdit = () => {
   useEffect(() => {
     console.log(formData);
   }, [formData]);
+
+  const handleFocusDate = () => {
+    setIsFocusedDate(true);
+  };
+
+  const handleBlurDate = () => {
+    setIsFocusedDate(false);
+  };
+
+  const handleFocusTime = () => {
+    setIsFocusedTime(true);
+  };
+
+  const handleBlurTime = () => {
+    setIsFocusedTime(false);
+  };
 
   useEffect(() => {
     // Lây danh sách STT từ server với round gửi đi
@@ -257,20 +274,24 @@ const ScheduleEdit = () => {
           <div className="flex flex-row text-xl justify-between">
             <p className="w-36">Ngày</p>
             <input
-              type="date"
-              className=" bg-stone-200 w-5/6"
+              type={isFocusedDate ? "date" : "text"}
+              className="bg-stone-200 w-5/6"
+              onFocus={handleFocusDate}
+              onBlur={handleBlurDate}
               name="Ngay"
-              value={formData.Ngay}
+              value={isFocusedDate ? formData.Ngay : new Date(formData.Ngay).toLocaleDateString()}
               onChange={handleInputChange}
             />
           </div>
           <div className="flex flex-row text-xl justify-between">
             <p className="w-36">Giờ</p>
             <input
-              type="time"
-              className=" bg-stone-200 w-5/6"
+              type={isFocusedTime ? "time" : "text"}
+              className="bg-stone-200 w-5/6"
+              onFocus={handleFocusTime}
+              onBlur={handleBlurTime}
               name="Gio"
-              value={formData.Gio}
+              value={isFocusedTime ? formData.Gio : new Date(formData.Gio ).toLocaleTimeString()}
               onChange={handleInputChange}
             />
           </div>

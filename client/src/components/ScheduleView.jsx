@@ -102,10 +102,10 @@ const ScheduleView = () => {
                 <th className="font-bold">Sân</th>
               </tr>
               {matchData.map((match) => {
-                const gioMatch = new Date(match.Gio);
-                const gioGiamMotGio = new Date(
-                  gioMatch.getTime() - 60 * 60 * 1000
-                ); // Giảm một giờ
+                // const gioMatch = new Date(match.Gio);
+                // const gioGiamMotGio = new Date(
+                //   gioMatch.getTime() - 60 * 60 * 1000
+                // ); // Giảm một giờ
 
                 return (
                   <tr key={match.MaTranDau}>
@@ -114,7 +114,7 @@ const ScheduleView = () => {
                     <td>{match.TenDoi2}</td>
                     <td>
                       {new Date(match.Ngay).toLocaleDateString()}{" "}
-                      {gioGiamMotGio.toLocaleTimeString()}
+                      {new Date(match.Gio).toLocaleTimeString()}
                     </td>
                     <td>{match.SanDau}</td>
                   </tr>

@@ -14,15 +14,20 @@ const ScorerList = () => {
             toast.error("Khong duoc de trong ngay")
             return false
         }
+        return true
     }
+
 
     const handleSearch = () => {
         // Kiểm tra nếu date không rỗng mới gửi yêu cầu
+        console.log("getting data from ", date)
         const isValid = validateForm()
         if (isValid) {
+            
             axios.get(`http://localhost:8080/get-scorer-by-date/${encodeURIComponent(date)}`)
                 .then(response => {
                     setScorers(response.data);
+                    console.log("get data successfully")
                 })
                 .catch(error => {
                     console.error('Error fetching ranking data', error);
@@ -44,7 +49,7 @@ const ScorerList = () => {
                     <div className='flex flex-row text-xl justify-center items-center gap-16'>
                         <p className=''>Ngày </p>
                         <input
-                            type='text'
+                            type='date'
                             className='bg-stone-200'
                             value={date}
                             onChange={(e) => setDate(e.target.value)} />
@@ -84,11 +89,11 @@ const ScorerList = () => {
                             <tbody>
                                 {scorers.map((scorer, index) => (
                                     <tr key={index}>
-                                        <td>{scorer.STT}</td>
-                                        <td>{scorer.CAUTHU}</td>
-                                        <td>{scorer.DOI}</td>
-                                        <td>{scorer.LOAICAUTHU}</td>
-                                        <td>{scorer.SOBANTHANG}</td>
+                                        <td>{scorer.MaCauThu}</td>
+                                        <td>{scorer.TenCauThu}</td>
+                                        <td>{scorer.TenDoiBong}</td>
+                                        <td>{scorer.LoaiCauThu}</td>
+                                        <td>{scorer.SoBanThang}</td>
                                     </tr>
                                 ))}
                             </tbody>

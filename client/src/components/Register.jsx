@@ -9,23 +9,40 @@ const Register = () => {
   const [players, setPlayers] = useState([]); //Khai báo mảng các cầu thủ
   const [teamName, setTeamName] = useState(""); //Khai báo tên đội
   const [stadium, setStadium] = useState(""); // Khai báo sân đấu
-  const [foreginPLayers, setForeginPLayers] = useState(""); // Số lượng cầu thủ nước ngoài
-  const [maxPlayers, setMaxPlayers] = useState(3); //Số lượng cầu thủ tối đa
+  const [foreginPLayers, setForeginPLayers] = useState(0); // Số lượng cầu thủ nước ngoài
+
 
 
   const [rules, setRules] = useState({})
 
   useEffect(() => {
     //Lấy quy định giải đấu
-    // axios.get("api").then((response) => {
-    //   setRules(response.data)
-    // })
-  })
+    axios.get('http://localhost:8080/get-rule').then((response) => {
+      setRules(response.data)
+    })
+  }, [])
+
+  useEffect(() => {
+    console.log(">>> check players: ", players)
+  }, [players])
 
   const handlePlayerChange = (index, field, value) => {
-    // Update cầu thủ khi có thay đổi
     const updatedPlayers = [...players];
-    updatedPlayers[index] = { ...updatedPlayers[index], [field]: value };
+  
+    if (field === "birthday") {
+      const birthday = new Date(value);
+      const today = new Date();
+      const age = today.getFullYear() - birthday.getFullYear();
+  
+      if (today.getMonth() < birthday.getMonth() || (today.getMonth() === birthday.getMonth() && today.getDate() < birthday.getDate())) {
+        updatedPlayers[index] = { ...updatedPlayers[index], age: age - 1, [field]: value };
+      } else {
+        updatedPlayers[index] = { ...updatedPlayers[index], age, [field]: value };
+      }
+    } else {
+      updatedPlayers[index] = { ...updatedPlayers[index], [field]: value };
+    }
+  
     setPlayers(updatedPlayers);
   };
 
@@ -45,9 +62,10 @@ const Register = () => {
       type: "",
       birthday: "",
       note: "",
+      age: "",
     };
     //Kiểm tra số lượng cầu thủ không được vượt quá số lượng cầu thủ tối đa cho phép
-    if (players.length + 1 <= maxPlayers) {
+    if (players.length + 1 <= rules[0]["SoCauThu_Max"]) {
       setPlayers([...players, newPlayer]);
     } else toast.error("Da dat so luong cau thu doi da");
   };
@@ -99,27 +117,32 @@ const Register = () => {
         return false;
       }
 
+      if(player.age < rules[0]["DoTuoi_Min"] || player.age > rules[0]["DoTuoi_Max"]) {
+        toast.error(`Cau thu so ${i + 1}: Tuoi cau thu khong hop le`);
+        return false;
+      }
+
       if (!player.note) {
         toast.error(`Cau thu so ${i + 1}: Ghi chu khong duoc de trong`);
         return false;
       }
 
-      if(player.type == 'Nước ngoài') {
-        setForeginPLayers(foreginPLayers + 1)
+      if (player.type == "Nước ngoài") {
+        setForeginPLayers(foreginPLayers + 1);
       }
     }
 
-    if(foreginPLayers > rules.maxForeinPlayer) {
+    if (foreginPLayers > rules[0]["SoCauThuNuocNgoai_Max"]) {
       toast.error(`So luong cau thu nuoc ngoai vuot qua quy dinh`);
-      return false
+      return false;
     }
 
-    if(players.length < rules.minPLayer) {
+    if (players.length < rules.minPLayer) {
       toast.error(`Khong du so luong cau thu toi thieu`);
       return false
     }
 
-    
+
 
     // Nếu không có lỗi, trả về true
     return true;
@@ -127,6 +150,7 @@ const Register = () => {
 
   const handleSave = () => {
     //Khi ấn lưu, kiểm tra điều kiện và gửi dữ liệu về server
+    console.log(">>> check foreign player cound: ", foreginPLayers)
     const teamData = {
       teamName,
       stadium,

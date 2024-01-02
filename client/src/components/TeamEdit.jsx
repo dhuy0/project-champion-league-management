@@ -14,19 +14,43 @@ const TeamEdit = () => {
   const [players, setPlayers] = useState([]);
   const [teamName, setTeamName] = useState('');
   const [stadium, setStadium] = useState('');
-  const [maxPlayers, setMaxPlayers] = useState(-1);
+  
+  const [teamData, setTeamData] = useState({})
+  const [rules, setRules] = useState({
+    // DoTuoi_Min: "",
+    // DoTuoi_Max: "",
+    // SoCauThu_Min: "",
+    // SoCauThu_Max: "",
+    // SoCauThuNuocNgoai_Max: "",
+    // ThoiDiemGhiBan_Max: "",
+    // DiemSoThang: "",
+    // DiemSoThua: "",
+  });
 
 
 
   const handlePlayerChange = (index, field, value) => {
-    // Logic to update the player data in the array
     const updatedPlayers = [...players];
-    updatedPlayers[index] = { ...updatedPlayers[index], [field]: value };
+  
+    if (field === "birthday") {
+      const birthday = new Date(value);
+      const today = new Date();
+      const age = today.getFullYear() - birthday.getFullYear();
+  
+      if (today.getMonth() < birthday.getMonth() || (today.getMonth() === birthday.getMonth() && today.getDate() < birthday.getDate())) {
+        updatedPlayers[index] = { ...updatedPlayers[index], age: age - 1, [field]: value };
+      } else {
+        updatedPlayers[index] = { ...updatedPlayers[index], age, [field]: value };
+      }
+    } else {
+      updatedPlayers[index] = { ...updatedPlayers[index], [field]: value };
+    }
+  
     setPlayers(updatedPlayers);
   };
 
   const handleDeletePlayer = (index) => {
-    // Logic to delete a player from the array
+    // Xử lý delete player
     const updatedPlayers = [...players];
     updatedPlayers.splice(index, 1);
     setPlayers(updatedPlayers);
@@ -41,7 +65,7 @@ const TeamEdit = () => {
       birthday: '',
       note: '',
     };
-    if (players.length + 1 <= maxPlayers) {
+    if (players.length + 1 <= rules[0]["SoCauThu_Max"]) {
       setPlayers([...players, newPlayer]);
     }
     else toast.error("Da dat so luong cau thu toi da")
@@ -49,15 +73,15 @@ const TeamEdit = () => {
 
   const validateForm = () => {
     // Kiểm tra các trường input
-    if (!teamName) {
-      toast.error("Ten doi bong khong duoc de trong");
-      return false;
-    }
+    // if (!teamName) {
+    //   toast.error("Ten doi bong khong duoc de trong");
+    //   return false;
+    // }
 
-    if (!stadium) {
-      toast.error("San nha khong duoc de trong");
-      return false;
-    }
+    // if (!stadium) {
+    //   toast.error("San nha khong duoc de trong");
+    //   return false;
+    // }
 
     const usedNumbers = new Set();
 
@@ -102,7 +126,7 @@ const TeamEdit = () => {
     return true;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Logic to handle form submission
     const teamData = {
       teamId,
@@ -112,46 +136,75 @@ const TeamEdit = () => {
     };
     const isValid = validateForm()
     if (isValid) {
+      const newPlayers = players.filter((player) => !player.id);
+      const updatedPlayers = players.filter((player) => player.id);
+
+      try {
+        // await axios.post('api/add-players', {newPlayers});
+        console.log(">>>> check new players: ", newPlayers)
+      } catch (error) {
+        console.error('Error adding new players:', error);
+        toast.error('Failed to add new players');
+      }
+
+      // Gửi dữ liệu lên API để cập nhật cầu thủ
+      try {
+        console.log(">>>> check updated players: ", updatedPlayers)
+        // await axios.post('api/update-players', {updatedPlayers});
+      } catch (error) {
+        console.error('Error updating players:', error);
+        toast.error('Failed to update players');
+      }
+
       console.log('Team data to be saved:', teamData);
     }
     // You can now send this data to your backend or perform other actions as needed.
   };
 
   const handleDelete = () => {
-    axios.post('api', teamId)
+    // axios.post('api', teamId)
   }
+
+  useEffect(() => {
+    console.log(">>> check team data: ", teamData)
+    if (teamData && teamData.length > 0) {
+    setTeamName(teamData[0]["TenDoiBong"])
+    setStadium(teamData[0]["SanNha"])
+    }
+  }, [teamData])
+
+  useEffect(() => {
+    console.log(">>>> check teamName: ", teamName)
+  }, [teamName])
+
+  useEffect(() => {
+    console.log(">>>> check players: ", players)
+  }, [players])
 
 
   useEffect(() => {
     // Simulate fetching team data from the backend
     const fetchTeamData = async () => {
       try {
-        // Lấy danh sách các đội bóng có trong cơ sở dữ liệu
-        axios.get('api').then(response => {
-          setTeamName(response.data)
-        })
-        //Lấy maxPLayer
-        axios.get('api').then(response => {
-          setMaxPlayers(response.data)
-        })
-
-        //Lấy tên đội bóng và sân đấu
-        axios.get(`api/${encodeURIComponent(teamId)}`).then(response => {
-          setTeamName(response.teamName);
-          setStadium(response.stadium);
-        })
-        //Lấy danh sách các cầu thủ của đội bóng
-        axios.get(`api/${encodeURIComponent(teamId)}`).then(response => {
-          setPlayers(response.players);
-        })
-
+        // Lấy các quy định
+        const ruleResponse = await axios.get('http://localhost:8080/get-rule');
+        setRules(ruleResponse.data);
+  
+        // Lấy tên đội bóng và sân đấu
+        const teamResponse = await axios.get(`http://localhost:8080/get-team-by-id/${encodeURIComponent(teamId)}`);
+        setTeamData(teamResponse.data);
+  
+        // Lấy danh sách các cầu thủ của đội bóng
+        const playerResponse = await axios.get(`http://localhost:8080/get-player-by-team/${encodeURIComponent(teamResponse.data[0]["TenDoiBong"])}`);
+        setPlayers(playerResponse.data);
       } catch (error) {
         console.error('Error fetching team data:', error);
       }
     };
-
+  
     fetchTeamData();
-  }, [teamId]); // Include teamId in the dependency array
+  }, [teamId]);
+  
 
   return (
     <div className='flex flex-row h-screen'>

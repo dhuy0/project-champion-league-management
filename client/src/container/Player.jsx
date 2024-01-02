@@ -8,7 +8,7 @@ const Player = ({ player, index, handleDeletePlayer, handlePlayerChange }) => {
                 <input
                     type='text'
                     className=' bg-stone-200 w-1/3 pl-4'
-                    value={player.number}
+                    value={player.MaCauThu}
                     onChange={(e) => handlePlayerChange(index, 'number', e.target.value)} />
                 <button type='button' onClick={() => handleDeletePlayer(index)}
                     className='ml-64 bg-white text-2xl rounded-full w-10 h-10 border-solid border-2 border-black'>
@@ -20,7 +20,7 @@ const Player = ({ player, index, handleDeletePlayer, handlePlayerChange }) => {
                 <input
                     type='text'
                     className=' bg-stone-200 w-5/6 pl-4'
-                    value={player.name}
+                    value={player.TenCauThu}
                     onChange={(e) => handlePlayerChange(index, 'name', e.target.value)} />
             </div>
             <div className='flex flex-row text-xl'>
@@ -28,29 +28,37 @@ const Player = ({ player, index, handleDeletePlayer, handlePlayerChange }) => {
                 <select
                     name="playerType"
                     className='bg-stone-200 w-64 pl-4'
-                    value={player.type}
+                    value={player.LoaiCauThu}
                     onChange={(e) => handlePlayerChange(index, 'type', e.target.value)}>
                     <option value="" disabled>
                         Chọn loại cầu thủ
                     </option>
-                    <option value="domestic">Trong nước</option>
-                    <option value="foreign">Nước ngoài</option>
+                    <option value="Trong nước">Trong nước</option>
+                    <option value="Nước ngoài">Nước ngoài</option>
                 </select>
             </div>
             <div className='flex flex-row text-xl justify-between'>
                 <p className='w-64'>Ngày sinh</p>
                 <input
+                    type='date'
+                    className=' bg-stone-200 w-5/6 pl-4'
+                    value={player.NgaySinh}
+                    onChange={(e) => handlePlayerChange(index, 'birthday', e.target.value)} />
+            </div>
+            <div className=' flex flex-row text-xl justify-between'>
+                <p className='w-64'>Tuổi</p>
+                <input
                     type='text'
                     className=' bg-stone-200 w-5/6 pl-4'
-                    value={player.birthday}
-                    onChange={(e) => handlePlayerChange(index, 'birthday', e.target.value)} />
+                    value={player.Tuoi}
+                    onChange={(e) => handlePlayerChange(index, 'age', e.target.value)} />
             </div>
             <div className='flex flex-row text-xl justify-between pb-8'>
                 <p className='w-64'>Ghi chú</p>
                 <input
                     type='text'
                     className=' bg-stone-200 w-5/6 pl-4'
-                    value={player.note}
+                    value={player.GhiChu}
                     onChange={(e) => handlePlayerChange(index, 'note', e.target.value)} />
             </div>
         </div>

@@ -11,6 +11,8 @@ const initWebRoutes = (app) => {
   // GET METHOD--------------
   // Lấy các đội bóng có trong CSDL
   router.get("/get-all-team", homeController.handleGetAllTeam);
+  //Lấy thông tin của đội bóng theo id
+  router.get("/get-team-by-id/:teamId", homeController.handleGetTeamById);
   // Lấy thông tin tất cả cầu thủ
   router.get("/get-all-player", homeController.handleGetAllInfoPlayer);
   // Lấy thông tin cầu thủ theo tên
@@ -20,7 +22,7 @@ const initWebRoutes = (app) => {
   );
   // Lấy thông tin cầu thủ theo tên đội bóng
   router.get(
-    "/get-player-by-team/:team",
+    "/get-player-by-team/:teamName",
     homeController.handleGetInfoPlayerByTeam
   );
   // Lấy thông tin cầu thủ theo ngày -- đang làm

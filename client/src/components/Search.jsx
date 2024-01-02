@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Nav from "../container/Nav";
 import axios from "axios";
 import { useState } from "react";
@@ -16,11 +16,16 @@ const Search = () => {
     return true;
   };
 
+  useEffect(() => {
+    console.log("check playerName: ", playerName)
+  }, [playerName])
+
   const handleSearch = () => {
     // Kiểm tra nếu playerName không rỗng mới gửi yêu cầu
     const isValid = validateForm();
     console.log(searchResults);
     if (isValid) {
+      
       axios
         .get(
           `http://localhost:8080/get-player-by-name/${encodeURIComponent(
@@ -29,6 +34,7 @@ const Search = () => {
         )
         .then((response) => {
           setSearchResults(response.data);
+          
         })
         .catch((error) => {
           console.error("Error searching players", error);
