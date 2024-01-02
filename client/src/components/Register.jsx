@@ -174,7 +174,7 @@ const Register = () => {
       <div className="basis-4/5">
         {/* ============================ Header ============================ */}
         <header className="bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]">
-          Chỉnh sửa hồ sơ đội bóng
+          Đăng ký đội bóng
         </header>
         {/* ============================ Form đăng ký ============================ */}
         <form className="flex flex-col gap-4 mx-32 my-8 h-4/5 pr-40">

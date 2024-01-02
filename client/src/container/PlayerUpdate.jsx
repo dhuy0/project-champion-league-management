@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Player = ({ player, index, handleDeletePlayer, handlePlayerChange }) => {
+const PlayerUpdate = ({ player, index, handleDeletePlayer, handlePlayerChange, handleDateInputBlur, handleDateInputFocus }) => {
     return (
         <div className='flex flex-col gap-4 border-b-2'>
             <div className='flex flex-row text-xl items-center'>
@@ -8,8 +8,8 @@ const Player = ({ player, index, handleDeletePlayer, handlePlayerChange }) => {
                 <input
                     type='text'
                     className=' bg-stone-200 w-1/3 pl-4'
-                    value={player.number}
-                    onChange={(e) => handlePlayerChange(index, 'number', e.target.value)} />
+                    value={player.MaCauThu}
+                    onChange={(e) => handlePlayerChange(index, 'MaCauThu', e.target.value)} />
                 <button type='button' onClick={() => handleDeletePlayer(index)}
                     className='ml-64 bg-white text-2xl rounded-full w-10 h-10 border-solid border-2 border-black'>
                     <div className="flex items-center justify-center">-</div>
@@ -20,16 +20,16 @@ const Player = ({ player, index, handleDeletePlayer, handlePlayerChange }) => {
                 <input
                     type='text'
                     className=' bg-stone-200 w-5/6 pl-4'
-                    value={player.name}
-                    onChange={(e) => handlePlayerChange(index, 'name', e.target.value)} />
+                    value={player.TenCauThu}
+                    onChange={(e) => handlePlayerChange(index, 'TenCauThu', e.target.value)} />
             </div>
             <div className='flex flex-row text-xl'>
                 <p className='w-[222px]'>Loại cầu thủ</p>
                 <select
                     name="playerType"
                     className='bg-stone-200 w-64 pl-4'
-                    value={player.type}
-                    onChange={(e) => handlePlayerChange(index, 'type', e.target.value)}>
+                    value={player.LoaiCauThu}
+                    onChange={(e) => handlePlayerChange(index, 'LoaiCauThu', e.target.value)}>
                     <option value="" disabled>
                         Chọn loại cầu thủ
                     </option>
@@ -39,11 +39,25 @@ const Player = ({ player, index, handleDeletePlayer, handlePlayerChange }) => {
             </div>
             <div className='flex flex-row text-xl justify-between'>
                 <p className='w-64'>Ngày sinh</p>
-                <input
-                    type='date'
-                    className=' bg-stone-200 w-5/6 pl-4'
-                    value={player.birthday}
-                    onChange={(e) => handlePlayerChange(index, 'birthday', e.target.value)} />
+                {player.isDateInputFocused ? (
+                    <input
+                        type='date'
+                        className='bg-stone-200 w-5/6 pl-4'
+                        value={player.NgaySinh}
+                        onChange={(e) => handlePlayerChange(index, 'NgaySinh', e.target.value)}
+                        onBlur={() => handleDateInputBlur(index)}
+                        onFocus={() => handleDateInputFocus(index)}
+                    />
+                ) : (
+                    <input
+                        type='text'
+                        className='bg-stone-200 w-5/6 pl-4'
+                        value={new Date(player.NgaySinh).toLocaleDateString()}
+                        onChange={(e) => handlePlayerChange(index, 'NgaySinh', e.target.value)}
+                        onBlur={() => handleDateInputBlur(index)}
+                        onFocus={() => handleDateInputFocus(index)}
+                    />
+                )}
             </div>
             <div className=' flex flex-row text-xl justify-between'>
                 <p className='w-64'>Tuổi</p>
@@ -58,11 +72,11 @@ const Player = ({ player, index, handleDeletePlayer, handlePlayerChange }) => {
                 <input
                     type='text'
                     className=' bg-stone-200 w-5/6 pl-4'
-                    value={player.note}
-                    onChange={(e) => handlePlayerChange(index, 'note', e.target.value)} />
+                    value={player.GhiChu}
+                    onChange={(e) => handlePlayerChange(index, 'GhiChu', e.target.value)} />
             </div>
         </div>
     )
 }
 
-export default Player
+export default PlayerUpdate
