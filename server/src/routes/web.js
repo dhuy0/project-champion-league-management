@@ -73,6 +73,8 @@ const initWebRoutes = (app) => {
   // POST METHOD--------------
   // Thêm đội bóng và thành viên
   router.post("/reg", homeController.handleReg);
+  // Thêm nhiều thành viên vô đội bóng
+  router.post("/add-multi-player-to-team", homeController.handleAddMultiPlayer);
   // Thêm thành viên vô đội bóng
   router.post("/add-player-to-team", homeController.handleAddPlayerToTeam);
   // Thêm bàn thắng
@@ -83,6 +85,11 @@ const initWebRoutes = (app) => {
   // PUT METHOD--------------
   // Thay đổi thông tin thành viên
   router.put("/update-player-team", homeController.handleUpdatePlayer);
+
+  router.put(
+    "/update-multi-player-team",
+    homeController.handleUpdateMultiPlayer
+  );
   // Thay đổi lịch đấu
   router.put("/update-schedule", homeController.handleUpdateSchedule);
   // Xác nhận kết quả trận đấu
