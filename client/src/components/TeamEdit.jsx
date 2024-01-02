@@ -1,7 +1,7 @@
 import React from 'react'
 import Nav from '../container/Nav'
 import { useEffect, useState } from 'react'
-import Player from '../container/Player'
+import PlayerUpdate from '../container/PlayerUpdate'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import axios from 'axios'
@@ -14,7 +14,7 @@ const TeamEdit = () => {
   const [players, setPlayers] = useState([]);
   const [teamName, setTeamName] = useState('');
   const [stadium, setStadium] = useState('');
-  
+
   const [teamData, setTeamData] = useState({})
   const [rules, setRules] = useState({
     // DoTuoi_Min: "",
@@ -31,12 +31,12 @@ const TeamEdit = () => {
 
   const handlePlayerChange = (index, field, value) => {
     const updatedPlayers = [...players];
-  
-    if (field === "birthday") {
+
+    if (field === 'NgaySinh') {
       const birthday = new Date(value);
       const today = new Date();
       const age = today.getFullYear() - birthday.getFullYear();
-  
+
       if (today.getMonth() < birthday.getMonth() || (today.getMonth() === birthday.getMonth() && today.getDate() < birthday.getDate())) {
         updatedPlayers[index] = { ...updatedPlayers[index], age: age - 1, [field]: value };
       } else {
@@ -45,7 +45,19 @@ const TeamEdit = () => {
     } else {
       updatedPlayers[index] = { ...updatedPlayers[index], [field]: value };
     }
-  
+
+    setPlayers(updatedPlayers);
+  };
+
+  const handleDateInputBlur = (index) => {
+    const updatedPlayers = [...players];
+    updatedPlayers[index].isDateInputFocused = false;
+    setPlayers(updatedPlayers);
+  };
+
+  const handleDateInputFocus = (index) => {
+    const updatedPlayers = [...players];
+    updatedPlayers[index].isDateInputFocused = true;
     setPlayers(updatedPlayers);
   };
 
@@ -59,11 +71,12 @@ const TeamEdit = () => {
 
   const handleAddPlayer = () => {
     const newPlayer = {
-      number: '',
-      name: '',
-      type: '',
-      birthday: '',
-      note: '',
+      CauThuMoi: 'true',
+      MaCauThu: '',
+      TenCauThu: '',
+      LoaiCauThu: '',
+      NgaySinh: '',
+      GhiChu: '',
     };
     if (players.length + 1 <= rules[0]["SoCauThu_Max"]) {
       setPlayers([...players, newPlayer]);
@@ -89,34 +102,34 @@ const TeamEdit = () => {
     for (let i = 0; i < players.length; i++) {
       const player = players[i];
 
-      if (!player.number) {
+      if (!player.MaCauThu) {
+        toast.error(`Cau thu so ${i + 1}: So thu tu bi trong`);
+        return false;
+      }
+
+      if (usedNumbers.has(player.MaCauThu)) {
         toast.error(`Cau thu so ${i + 1}: So thu tu bi trung`);
         return false;
       }
 
-      if (usedNumbers.has(player.number)) {
-        toast.error(`Cau thu so ${i + 1}: ten cau thu bi trung`);
-        return false;
-      }
+      usedNumbers.add(player.MaCauThu);
 
-      usedNumbers.add(player.number);
-
-      if (!player.name) {
+      if (!player.TenCauThu) {
         toast.error(`Cau thu so ${i + 1}: Ten cau thu khong duoc de trong`);
         return false;
       }
 
-      if (!player.type) {
+      if (!player.LoaiCauThu) {
         toast.error(`Cau thu so ${i + 1}: Loai cau thu khong duoc de trong`);
         return false;
       }
 
-      if (!player.birthday) {
+      if (!player.NgaySinh) {
         toast.error(`Cau thu so ${i + 1}: Ngay sinh khong duoc de trong`);
         return false;
       }
 
-      if (!player.note) {
+      if (!player.GhiChu) {
         toast.error(`Cau thu so ${i + 1}: Ghi chu khong duoc de trong`);
         return false;
       }
@@ -136,8 +149,8 @@ const TeamEdit = () => {
     };
     const isValid = validateForm()
     if (isValid) {
-      const newPlayers = players.filter((player) => !player.id);
-      const updatedPlayers = players.filter((player) => player.id);
+      const newPlayers = players.filter((player) => player.CauThuMoi);
+      const updatedPlayers = players.filter((player) => !player.CauThuMoi);
 
       try {
         // await axios.post('api/add-players', {newPlayers});
@@ -168,8 +181,8 @@ const TeamEdit = () => {
   useEffect(() => {
     console.log(">>> check team data: ", teamData)
     if (teamData && teamData.length > 0) {
-    setTeamName(teamData[0]["TenDoiBong"])
-    setStadium(teamData[0]["SanNha"])
+      setTeamName(teamData[0]["TenDoiBong"])
+      setStadium(teamData[0]["SanNha"])
     }
   }, [teamData])
 
@@ -189,11 +202,11 @@ const TeamEdit = () => {
         // Lấy các quy định
         const ruleResponse = await axios.get('http://localhost:8080/get-rule');
         setRules(ruleResponse.data);
-  
+
         // Lấy tên đội bóng và sân đấu
         const teamResponse = await axios.get(`http://localhost:8080/get-team-by-id/${encodeURIComponent(teamId)}`);
         setTeamData(teamResponse.data);
-  
+
         // Lấy danh sách các cầu thủ của đội bóng
         const playerResponse = await axios.get(`http://localhost:8080/get-player-by-team/${encodeURIComponent(teamResponse.data[0]["TenDoiBong"])}`);
         setPlayers(playerResponse.data);
@@ -201,10 +214,10 @@ const TeamEdit = () => {
         console.error('Error fetching team data:', error);
       }
     };
-  
+
     fetchTeamData();
   }, [teamId]);
-  
+
 
   return (
     <div className='flex flex-row h-screen'>
@@ -230,12 +243,14 @@ const TeamEdit = () => {
             Danh sách cầu thủ
           </div>
           {players.map((player, index) => (
-            <Player
+            <PlayerUpdate
               key={index}
               player={player}
               index={index}
               handleDeletePlayer={handleDeletePlayer}
               handlePlayerChange={handlePlayerChange}
+              handleDateInputFocus={handleDateInputFocus}
+              handleDateInputBlur={handleDateInputBlur}
             />
           ))}
           <div>
