@@ -29,6 +29,8 @@ const ScheduleEdit = () => {
   // };
   const [isFocusedDate, setIsFocusedDate] = useState(false);
   const [isFocusedTime, setIsFocusedTime] = useState(false);
+  const [playedTeam, setPlayedTeam] = useState([]);
+  const [playedTeamTournament, setPlayedTeamTournament] = useState([]);
   const { round } = useParams();
   const [matchData, setMatchData] = useState([]);
   const [noList, setNoList] = useState([]);
@@ -44,8 +46,9 @@ const ScheduleEdit = () => {
   });
 
   useEffect(() => {
-    console.log(formData);
-  }, [formData]);
+    console.log("check played team: ", playedTeam);
+  }, [playedTeam]);
+
 
   const handleFocusDate = () => {
     setIsFocusedDate(true);
@@ -85,6 +88,21 @@ const ScheduleEdit = () => {
         axios.get(`http://localhost:8080/get-name-team`).then((response) => {
           setTeamName(response.data);
         });
+        //Lấy danh sách các trận đấu trong cả giải đấu
+        await axios
+          .get("http://localhost:8080/get-name-team-tournament")
+          .then((response) => {
+            setPlayedTeamTournament(response.data)
+            console.log(">>>> get data tournament successfully")
+          });
+        //Lấy danh sách teen các đội bóng đã thi đấu trong vòng này
+        await axios
+          .get(
+            `http://localhost:8080/get-name-team/${encodeURIComponent(round)}`
+          )
+          .then((response) => {
+            setPlayedTeam(response.data);
+          });
         //Lấy thông tin về tất cả trận đấu trong vòng này như cái mockData ở trên
         axios
           .get(
@@ -129,6 +147,11 @@ const ScheduleEdit = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
     // console.log("check Name, Value: ", name, value);
     // console.log("check After Data: ", formData);
+    for (let i = 0; i < teamName.length; i++) {
+      if (formData.TenDoi1 == teamName[i]["TenDoiBong"]) {
+        formData.SanDau = teamName[i]["SanNha"]
+      }
+    }
   };
 
   const validateForm = () => {
@@ -146,12 +169,12 @@ const ScheduleEdit = () => {
     }
 
     if (!teamName.some((team) => team.TenDoiBong === formData.TenDoi1)) {
-      toast.error("Team 1 is not in the database");
+      toast.error("Doi 1 khong co trong co so du lieu");
       return false;
     }
 
     if (!teamName.some((team) => team.TenDoiBong === formData.TenDoi2)) {
-      toast.error("Team 2 is not in the database");
+      toast.error("Doi 2 khong co trong co so du lieu");
       return false;
     }
 
@@ -160,15 +183,69 @@ const ScheduleEdit = () => {
       return false;
     }
 
-    // if (playedTeam.includes(formData.team1)) {
-    //     toast.error("Team 1 is already played in this round");
-    //     return false
-    // }
+    if (playedTeam.some((team) => team.TenDoi1 == formData.TenDoi1 || team.TenDoi2 == formData.TenDoi1)) {
+      toast.error("Doi 1 da thi dau trong vong nay");
+      return false;
+    }
 
-    // if (playedTeam.includes(formData.team2)) {
-    //     toast.error("Team 2 is already played in this round");
-    //     return false
-    // }
+    if (playedTeam.some((team) => team.TenDoi1 == formData.TenDoi2 || team.TenDoi2 == formData.TenDoi2)) {
+      toast.error("Doi 2 da thi dau trong vong nay");
+      return false;
+    }
+
+    let team1PlayedCount = 0;
+    let team2PlayedCount = 0;
+
+    for(var i = 0; i < playedTeamTournament.length; i++) {
+      const team1 = "TenDoi1"
+      const team2 = "TenDoi2"
+      
+      if(formData.TenDoi1 == playedTeamTournament[i][team1]|| formData.TenDoi1 == playedTeamTournament[i][team2]) {
+        team1PlayedCount++;
+        
+      }
+
+      if(formData.TenDoi2 == playedTeamTournament[i][team1]|| formData.TenDoi2 == playedTeamTournament[i][team2]) {
+        team2PlayedCount++;
+        
+      }
+    }
+
+    if(team1PlayedCount == 2) {
+      toast.error("Doi 1 da thi dau 2 lan trong ca giai dau");
+      return false
+    }
+
+    if(team2PlayedCount == 2) {
+      toast.error("Doi 2 da thi dau 2 lan trong ca giai dau");
+      return false
+    }
+
+    //Kiểm tra mỗi đội chỉ được thi đấu trên sân nhà một lần
+    console.log(">>> check team1PlayedCount: ", team1PlayedCount)
+    if(team1PlayedCount == 1) {
+      
+      for(var i = 0; i < playedTeamTournament.length; i++) {
+        const team1 = "TenDoi1"
+        console.log(">>> check playedTeamTournament: ", playedTeamTournament[i][team1])
+        console.log(">>> check formData.TenDoi1: ", formData.TenDoi1)
+        if(playedTeamTournament[i][team1] == formData.TenDoi1) {
+          toast.error("Moi doi chi duoc thi dau tren san nha 1 lan");
+          return false
+        }
+      }
+    }
+
+        //Kiểm tra mỗi đội chỉ được thi đấu trên sân khách một lần
+        if(team2PlayedCount == 1) {
+          for(var i = 0; i < playedTeamTournament.length; i++) {
+            const team2 = "TenDoi2"
+            if(playedTeamTournament[i][team2] == formData.TenDoi2) {
+              toast.error("Moi doi chi duoc thi dau tren san khach 1 lan");
+              return false
+            }
+          }
+        }
 
     if (!formData.SanDau) {
       toast.error("San dau khong duoc trong");
@@ -268,7 +345,7 @@ const ScheduleEdit = () => {
               className=" bg-stone-200 w-5/6"
               name="SanDau"
               value={formData.SanDau}
-              onChange={handleInputChange}
+              // onChange={handleInputChange}
             />
           </div>
           <div className="flex flex-row text-xl justify-between">
@@ -291,7 +368,7 @@ const ScheduleEdit = () => {
               onFocus={handleFocusTime}
               onBlur={handleBlurTime}
               name="Gio"
-              value={isFocusedTime ? formData.Gio : new Date(formData.Gio ).toLocaleTimeString()}
+              value={isFocusedTime ? formData.Gio : new Date(formData.Gio).toLocaleTimeString()}
               onChange={handleInputChange}
             />
           </div>

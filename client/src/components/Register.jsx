@@ -9,7 +9,7 @@ const Register = () => {
   const [players, setPlayers] = useState([]); //Khai báo mảng các cầu thủ
   const [teamName, setTeamName] = useState(""); //Khai báo tên đội
   const [stadium, setStadium] = useState(""); // Khai báo sân đấu
-  const [foreginPLayers, setForeginPLayers] = useState(0); // Số lượng cầu thủ nước ngoài
+  let foreignPlayers = 0; // Số lượng cầu thủ nước ngoài
 
 
 
@@ -128,11 +128,11 @@ const Register = () => {
       }
 
       if (player.type == "Nước ngoài") {
-        setForeginPLayers(foreginPLayers + 1);
+        foreignPlayers++;
       }
     }
 
-    if (foreginPLayers > rules[0]["SoCauThuNuocNgoai_Max"]) {
+    if (foreignPlayers > rules[0]["SoCauThuNuocNgoai_Max"]) {
       toast.error(`So luong cau thu nuoc ngoai vuot qua quy dinh`);
       return false;
     }
@@ -150,7 +150,6 @@ const Register = () => {
 
   const handleSave = () => {
     //Khi ấn lưu, kiểm tra điều kiện và gửi dữ liệu về server
-    console.log(">>> check foreign player cound: ", foreginPLayers)
     const teamData = {
       teamName,
       stadium,
@@ -163,6 +162,7 @@ const Register = () => {
       });
       console.log("Team data to be saved:", teamData);
       toast.success("Dang ky doi bong thanh cong");
+      window.location.reload();
     }
   };
 

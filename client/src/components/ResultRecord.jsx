@@ -7,6 +7,7 @@ import axios from "axios";
 const ResultRecord = () => {
   const [selectedTeam, setSelectedTeam] = useState("");
   const [selectedMatchInfo, setSelectedMatchInfo] = useState({});
+  const [rules, setRules] = useState({}) // Lấy các quy định của giải đấu
   const [matchInfo, setMatchInfo] = useState([
     //   {MaTranDau: "",
     //   VongDau: "",
@@ -57,6 +58,10 @@ const ResultRecord = () => {
   // useEffect(() => {
   //   console.log('check player info: ', selectedPlayerName)
   // }, [selectedPlayerName])
+
+  useEffect(() => {
+    console.log(">>>> check rules: ", rules)
+  }, [rules])
 
   useEffect(() => {
     try {
@@ -114,7 +119,7 @@ const ResultRecord = () => {
         await axios
           .get("http://localhost:8080/get-name-team")
           .then((response) => {
-            console.log(">>> check data: ", response.data);
+            // console.log(">>> check data: ", response.data);
             setTeamName(response.data);
             console.log(">>> check team name: ", teamName);
           })
@@ -128,9 +133,29 @@ const ResultRecord = () => {
         console.error("Loi khi lay data tu server:", error);
       }
     };
-    console.log(">>> check team name: ", teamName);
+
+    //Lấycác quy định hiện tại của giải đấu
+    const fetchRules = async () => {
+      try {
+        await axios
+          .get("http://localhost:8080/get-rule")
+          .then((response) => {
+            setRules(response.data);
+            console.log("get rules successfully")
+          })
+          .catch((error) => {
+            console.error("Loi khi lay data tu server", error);
+          });
+        // const response = await axios.get('your-api-endpoint-for-team-names');
+        //setTeamNames(response.data); // Assuming the response is an array of team names
+        // const testData = ['team1', 'team2', 'team3', 'team4']
+      } catch (error) {
+        console.error("Loi khi lay data tu server:", error);
+      }
+    };
     fetchTeamNames();
     fetchSttList();
+    fetchRules();
   }, []);
 
   // Thêm useEffect để lấy danh sách vòng dựa trên STT khi STT thay đổi
@@ -335,6 +360,11 @@ const ResultRecord = () => {
     if (!scoreData.time) {
       toast.error("Thoi diem khong duoc de trong");
       return false;
+    }
+
+    if(scoreData.time < 0 || scoreData.time > rules[0]["ThoiDiemGhiBan_Max"]) {
+      toast.error("Thoi diem ghi ban khong hop le");
+      return false
     }
 
     return true;

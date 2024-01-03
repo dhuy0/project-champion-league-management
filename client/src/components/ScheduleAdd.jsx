@@ -11,7 +11,7 @@ const ScheduleAdd = () => {
 
   const { round } = useParams();
   const [teamName, setTeamName] = useState([]);
-  const [arrTeamName, setArrTeamName] = useState([]);
+  const [playedTeamTournament, setPlayedTeamTournament] = useState([]);
   const [playedTeam, setPlayedTeam] = useState([]);
   const [formData, setFormData] = useState({
     no: "",
@@ -26,6 +26,15 @@ const ScheduleAdd = () => {
     console.log(">> check team name: ", teamName);
     // console.log(arrTeamName);
   }, [teamName]);
+
+  useEffect(() => {
+    for(let i = 0; i< teamName.length; i++) {
+      if(formData.team1 == teamName[i]["TenDoiBong"]) {
+        formData.pitch = teamName[i]["SanNha"]
+      }
+    }
+    
+  }, [formData.team1])
 
   useEffect(() => {
     // Lấy dữ liệu như danh sách các đội bóng và danh sách các đọi bóng đã thi đấu trong vòng này
@@ -55,6 +64,14 @@ const ScheduleAdd = () => {
           .then((response) => {
             setPlayedTeam(response.data);
           });
+
+          await axios
+          .get("http://localhost:8080/get-name-team-tournament")
+          .then((response) => {
+            setPlayedTeamTournament(response.data)
+            console.log(">>>> get data tournament successfully")
+          });
+
       } catch (error) {
         console.error("Error fetching team names:", error);
       }
@@ -107,6 +124,62 @@ const ScheduleAdd = () => {
       return false;
     }
 
+    let team1PlayedCount = 0;
+    let team2PlayedCount = 0;
+    
+
+    for(var i = 0; i < playedTeamTournament.length; i++) {
+      const team1 = "TenDoi1"
+      const team2 = "TenDoi2"
+      
+      if(formData.team1 == playedTeamTournament[i][team1]|| formData.team1 == playedTeamTournament[i][team2]) {
+        team1PlayedCount++;
+        
+      }
+
+      if(formData.team2 == playedTeamTournament[i][team1]|| formData.team2 == playedTeamTournament[i][team2]) {
+        team2PlayedCount++;
+        
+      }
+    }
+    
+    if(team1PlayedCount == 2) {
+      toast.error("Doi 1 da thi dau 2 lan trong ca giai dau");
+      return false
+    }
+
+    if(team2PlayedCount == 2) {
+      toast.error("Doi 2 da thi dau 2 lan trong ca giai dau");
+      return false
+    }
+    
+    //Kiểm tra mỗi đội chỉ được thi đấu trên sân nhà một lần
+    
+    if(team1PlayedCount == 1) {
+      
+      for(var i = 0; i < playedTeamTournament.length; i++) {
+        const team1 = "TenDoi1"
+        console.log(">>> check playedTeamTournament: ", playedTeamTournament[i][team1])
+        console.log(">>> check formData.TenDoi1: ", formData.team1)
+        if(playedTeamTournament[i][team1] == formData.team1) {
+          toast.error("Moi doi chi duoc thi dau tren san nha 1 lan");
+          return false
+        }
+      }
+    }
+
+   
+    //Kiểm tra mỗi đội chỉ được thi đấu trên sân khách một lần
+    if(team2PlayedCount == 1) {
+      for(var i = 0; i < playedTeamTournament.length; i++) {
+        const team2 = "TenDoi2"
+        if(playedTeamTournament[i][team2] == formData.team2) {
+          toast.error("Moi doi chi duoc thi dau tren san khach 1 lan");
+          return false
+        }
+      }
+    }
+   
     if (!formData.pitch) {
       toast.error("San dau khong duoc trong");
       return false;
@@ -120,6 +193,7 @@ const ScheduleAdd = () => {
       toast.error("Thoi gian khong duoc trong");
       return false;
     }
+   
     return true;
   };
 
@@ -130,15 +204,16 @@ const ScheduleAdd = () => {
         round,
         ...formData,
       };
-
+      
       //Gửi data về cho server
       const isValid = validateForm();
       if (isValid) {
-        // axios.post("http://localhost:8080/add-schedule", dataToSend);
+        
+        axios.post("http://localhost:8080/add-schedule", dataToSend);
         console.log("Data saved successfully");
         console.log(dataToSend);
         toast.success("Them moi thanh cong");
-        // navigate(`/schedule-view/${round}`);
+        navigate(`/schedule-view/${round}`);
       }
     } catch (error) {
       console.error("Error saving data:", error);
@@ -192,7 +267,8 @@ const ScheduleAdd = () => {
               className="pl-4 bg-stone-200 w-5/6"
               name="pitch"
               value={formData.pitch}
-              onChange={handleInputChange}
+              // value={stadium}
+              // onChange={handleInputChange}
             />
           </div>
           <div className="flex flex-row text-xl justify-between">

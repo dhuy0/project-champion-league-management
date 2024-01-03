@@ -14,7 +14,7 @@ const TeamEdit = () => {
   const [players, setPlayers] = useState([]);
   const [teamName, setTeamName] = useState('');
   const [stadium, setStadium] = useState('');
-
+  let foreignPlayers = 0;
   const [teamData, setTeamData] = useState({})
   const [rules, setRules] = useState({
     // DoTuoi_Min: "",
@@ -66,6 +66,13 @@ const TeamEdit = () => {
     const updatedPlayers = [...players];
     updatedPlayers.splice(index, 1);
     setPlayers(updatedPlayers);
+    const idToDelete = players[index]["MaCauThu"]
+    const dataToSend = {
+      idToDelete,
+      teamName
+    }
+    console.log(">>> check delete player: ", dataToSend)
+    axios.post("http://localhost:8080/delete-player-team", {dataToSend})
     console.log('>> check updated player: ', updatedPlayers)
   };
 
@@ -95,6 +102,7 @@ const TeamEdit = () => {
     //   toast.error("San nha khong duoc de trong");
     //   return false;
     // }
+    
 
     const usedNumbers = new Set();
 
@@ -133,9 +141,21 @@ const TeamEdit = () => {
         toast.error(`Cau thu so ${i + 1}: Ghi chu khong duoc de trong`);
         return false;
       }
+
+      console.log(">>> check player foreign: ", player.LoaiCauThu)
+      if (player.LoaiCauThu == "Nước ngoài") {
+        foreignPlayers++;
+        console.log("Check ", foreignPlayers)
+      }
+
+      if (foreignPlayers > rules[0]["SoCauThuNuocNgoai_Max"]) {
+        toast.error(`So luong cau thu nuoc ngoai vuot qua quy dinh`);
+        return false;
+      }
     }
 
     // Nếu không có lỗi, trả về true
+    
     return true;
   };
 
@@ -153,8 +173,12 @@ const TeamEdit = () => {
       const updatedPlayers = players.filter((player) => !player.CauThuMoi);
 
       try {
-        // await axios.post('api/add-players', {newPlayers});
-        console.log(">>>> check new players: ", newPlayers)
+        const dataToSend1 = {
+          teamName,
+          newPlayers
+        }
+        console.log(">>>> check new players: ", dataToSend1)
+        await axios.post('http://localhost:8080/add-multi-player-to-team', {dataToSend1});
       } catch (error) {
         console.error('Error adding new players:', error);
         toast.error('Failed to add new players');
@@ -162,21 +186,24 @@ const TeamEdit = () => {
 
       // Gửi dữ liệu lên API để cập nhật cầu thủ
       try {
-        console.log(">>>> check updated players: ", updatedPlayers)
-        // await axios.post('api/update-players', {updatedPlayers});
+        const dataToSend2 = {
+          teamName,
+          updatedPlayers
+        }
+        console.log(">>>> check updated players: ", dataToSend2)
+        await axios.put('http://localhost:8080/update-multi-player-team', {dataToSend2});
       } catch (error) {
         console.error('Error updating players:', error);
         toast.error('Failed to update players');
       }
 
-      console.log('Team data to be saved:', teamData);
     }
     // You can now send this data to your backend or perform other actions as needed.
   };
 
-  const handleDelete = () => {
-    // axios.post('api', teamId)
-  }
+  // const handleDelete = () => {
+  //   // axios.post('api', teamId)
+  // }
 
   useEffect(() => {
     console.log(">>> check team data: ", teamData)
@@ -264,11 +291,11 @@ const TeamEdit = () => {
                 Lưu
               </div>
             </button>
-            <button onClick={handleDelete} type='button' className='text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
+            {/* <button onClick={handleDelete} type='button' className='text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500'>
               <div className="flex items-center justify-center">
                 Xóa
               </div>
-            </button>
+            </button> */}
           </div>
         </form>
       </div>

@@ -68,8 +68,8 @@ const handleReg = async (req, res) => {
     try {
       const result = await pool
         .request()
-        .input("varName", sql.VarChar(255), data.teamName)
-        .input("varField", sql.VarChar(255), data.stadium)
+        .input("varName", sql.NVarChar(255), data.teamName)
+        .input("varField", sql.NVarChar(255), data.stadium)
         .query(sqlString);
       console.log(result.rowsAffected);
       console.log("Thêm Thành Công");
@@ -96,7 +96,7 @@ const handleReg = async (req, res) => {
     ") AND TenDoiBong = @varTeamName";
   const checkPlayer = await pool
     .request()
-    .input("varTeamName", sql.VarChar(MAX), data.teamName)
+    .input("varTeamName", sql.NVarChar(MAX), data.teamName)
     .query(sqlCheck);
   console.log(checkPlayer.recordset[0].cnt);
   if (checkPlayer.recordset[0].cnt) {
@@ -152,7 +152,14 @@ const handleAddMultiPlayer = async (req, res) => {
   try {
     // Add đội bóng
     const data = req.body;
+    console.log(data.dataToSend1.newPlayers.length);
     console.log(data);
+    
+
+    if(data.dataToSend1.newPlayers.length == 0) {
+      return res.status(200).json({message: "Không có cầu thủ cần thêm vào"})
+    }
+
     var pool = await conn;
     const table = new sql.Table("CauThu");
 
@@ -165,17 +172,17 @@ const handleAddMultiPlayer = async (req, res) => {
     table.columns.add("NgaySinh", sql.Date, { nullable: false });
     table.columns.add("GhiChu", sql.NVarChar(MAX), { nullable: true });
 
-    console.log(stringToDate(data.players[0].birthday));
+    // console.log(stringToDate(data.players[0].birthday));
 
-    data.players.forEach((data) => {
+    data.dataToSend1.newPlayers.forEach((data) => {
       table.rows.add(
-        data.number,
-        req.body.teamName,
-        data.name,
-        data.type,
+        data.MaCauThu,
+        req.body.dataToSend1.teamName,
+        data.TenCauThu,
+        data.LoaiCauThu,
         0,
-        stringToDate(data.birthday),
-        data.note
+        stringToDate(data.NgaySinh),
+        data.GhiChu
       );
     });
     console.log(">>>>> updated data in CAUTHU");
@@ -280,6 +287,10 @@ const handleUpdateMultiPlayer = async (req, res) => {
     const data = req.body;
     var pool = await conn;
 
+    if(data.dataToSend2.updatedPlayers.length == 0) {
+      return res.status(200).json({message: "Không có cầu thủ để update"})
+    }
+
     // Update cầu thủ
     // var sqlString = `INSERT CauThu
     // SET TenCauThu = @varHoTen, TenDoiBong = @varTenDoi, LoaiCauThu = @varLoai, NgaySinh = @varNgaySinh, GhiChu = @varGhiChu
@@ -288,16 +299,16 @@ const handleUpdateMultiPlayer = async (req, res) => {
     var sqlString = `UPDATE CauThu
     SET TenCauThu = @varHoTen, LoaiCauThu = @varLoai, NgaySinh = @varNgaySinh, GhiChu = @varGhiChu
     WHERE MaCauThu = @varId AND TenDoiBong = @varTenDoi`;
-    for (var i = 0; i < data.length; i++) {
-      const date = new Date(data[i].birthDay);
+    for (var i = 0; i < data.dataToSend2.updatedPlayers.length; i++) {
+      const date = new Date(data.dataToSend2.updatedPlayers[i].NgaySinh);
       var result = await pool // var hay const
         .request()
-        .input("varHoTen", sql.NVarChar(MAX), data[i].playerName)
-        .input("varLoai", sql.NVarChar(MAX), data[i].type)
+        .input("varHoTen", sql.NVarChar(MAX), data.dataToSend2.updatedPlayers[i].TenCauThu)
+        .input("varLoai", sql.NVarChar(MAX), data.dataToSend2.updatedPlayers[i].LoaiCauThu)
         .input("varNgaySinh", sql.Date, date)
-        .input("varGhiChu", sql.NVarChar(MAX), data[i].note)
-        .input("varId", sql.VarChar(MAX), data[i].id)
-        .input("varTenDoi", sql.NVarChar(MAX), data[i].teamName) // Client gửi về thêm lần nữa !!!
+        .input("varGhiChu", sql.NVarChar(MAX), data.dataToSend2.updatedPlayers[i].GhiChu)
+        .input("varId", sql.VarChar(MAX), data.dataToSend2.updatedPlayers[i].MaCauThu)
+        .input("varTenDoi", sql.NVarChar(MAX), data.dataToSend2.teamName) // Client gửi về thêm lần nữa !!!
         .query(sqlString);
     }
     console.log(result);
@@ -317,6 +328,8 @@ const handleDeletePlayer = async (req, res) => {
     const data = req.body;
     var pool = await conn;
 
+    console.log(">>>> check delete data", data)
+
     // Update cầu thủ
     // var sqlString = `INSERT CauThu
     // SET TenCauThu = @varHoTen, TenDoiBong = @varTenDoi, LoaiCauThu = @varLoai, NgaySinh = @varNgaySinh, GhiChu = @varGhiChu
@@ -326,8 +339,8 @@ const handleDeletePlayer = async (req, res) => {
 
     const result = await pool
       .request()
-      .input("varId", sql.VarChar(MAX), data.id)
-      .input("varTenDoi", sql.NVarChar(MAX), data.teamName) // Client gửi về thêm lần nữa !!!
+      .input("varId", sql.VarChar(MAX), data.dataToSend.idToDelete)
+      .input("varTenDoi", sql.NVarChar(MAX), data.dataToSend.teamName) // Client gửi về thêm lần nữa !!!
       .query(sqlString);
     console.log(result);
     if (result.rowsAffected > 0) {
@@ -521,6 +534,26 @@ const handleGetRoundFromGameId = async (req, res) => {
   }
 };
 
+const handleGetTeamNameTournament = async (req, res) => {
+  try {
+    var pool = await conn;
+    var sqlString = `SELECT TenDoi1, TenDoi2 FROM TranDau`;
+    const result = await pool
+      .request()
+      // Chỉnh lại biến theo front end
+      .query(sqlString);
+    console.log(result.recordset);
+    if (result.rowsAffected > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json({ message: "đã có lỗi xảy ra" });
+    }
+  } catch (error) {
+    console.log(">>> check error: ", error)
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const handleGetTeamNameFromRound = async (req, res) => {
   try {
     const round = req.params.round;
@@ -545,7 +578,7 @@ const handleGetTeamNameFromRound = async (req, res) => {
 const handleGetTeamName = async (req, res) => {
   try {
     var pool = await conn;
-    var sqlString = `SELECT TenDoiBong FROM DoiBong`;
+    var sqlString = `SELECT TenDoiBong, SanNha FROM DoiBong`;
     const result = await pool
       .request()
       // Chỉnh lại biến theo front end
@@ -847,6 +880,29 @@ const handleGetInfoGameByDate = async (req, res) => {
   }
 };
 
+const handleGetRankingInfoGameByDate = async (req, res) => {
+  try {
+    const date = new Date(req.params.date);
+    var pool = await conn;
+    var sqlString = `SELECT db.MaDoiBong, db.TenDoiBong,  db.SoTranThang, db.SoTranHoa, db.SoTranThua, db.HieuSo, db.Hang
+                      FROM DoiBong db JOIN TranDau td ON db.TenDoiBong = td.TenDoi1 OR db.TenDoiBong = td.TenDoi2
+                      WHERE td.Ngay = @varDate`;
+    const result = await pool
+      .request()
+      .input("varDate", sql.Date, date)
+      .query(sqlString);
+    console.log(result);
+    if (result.rowsAffected > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(500).json({ message: "đã có lỗi xảy ra" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   handleHome,
   handleUserPage,
@@ -878,4 +934,6 @@ module.exports = {
   handleGetTeamById,
   handleUpdateMultiPlayer,
   handleAddMultiPlayer,
+  handleGetTeamNameTournament,
+  handleGetRankingInfoGameByDate,
 };

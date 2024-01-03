@@ -14,13 +14,14 @@ const RankingReport = () => {
             toast.error("Khong duoc de trong ngay")
             return false
         }
+        return true
     }
 
     const handleSearch = () => {
         // Kiểm tra nếu date không rỗng mới gửi yêu cầu
         const isValid = validateForm()
         if (isValid) {
-            axios.get(`http://localhost:8080/get-by-date/${encodeURIComponent(date)}`)
+            axios.get(`http://localhost:8080/get-ranking-game-from-date/${encodeURIComponent(date)}`)
                 .then(response => {
                     setRankingData(response.data);
                     toast.success("Tim kiem thanh cong")
@@ -47,7 +48,7 @@ const RankingReport = () => {
                     <div className='flex flex-row text-xl justify-center items-center gap-16'>
                         <p className=''>Ngày </p>
                         <input
-                            type='text'
+                            type='date'
                             className='bg-stone-200'
                             value={date}
                             onChange={(e) => setDate(e.target.value)} />
@@ -87,14 +88,14 @@ const RankingReport = () => {
                             </thead>
                             <tbody>
                                 {rankingData.map(team => (
-                                    <tr key={team.id}>
-                                        <td>{team.STT}</td>
-                                        <td>{team.DOI}</td>
-                                        <td>{team.THANG}</td>
-                                        <td>{team.HOA}</td>
-                                        <td>{team.THUA}</td>
-                                        <td>{team.HIEUSO}</td>
-                                        <td>{team.HANG}</td>
+                                    <tr key={team.MaDoiBong}>
+                                        <td>{team.MaDoiBong}</td>
+                                        <td>{team.TenDoiBong}</td>
+                                        <td>{team.SoTranThang}</td>
+                                        <td>{team.SoTranHoa}</td>
+                                        <td>{team.SoTranThua}</td>
+                                        <td>{team.HieuSo}</td>
+                                        <td>{team.Hang}</td>
                                     </tr>
                                 ))}
                             </tbody>

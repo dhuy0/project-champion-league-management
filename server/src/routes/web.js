@@ -44,6 +44,8 @@ const initWebRoutes = (app) => {
   );
   // Lấy tên đội bóng trong DoiBong
   router.get("/get-name-team", homeController.handleGetTeamName);
+  // Lấy tất cả đội bóng trong bảng trận đấu
+  router.get("/get-name-team-tournament", homeController.handleGetTeamNameTournament);
   // Lấy tên đội 1 và 2 theo vòng đấu trong trận đấu
   router.get(
     "/get-name-team/:round",
@@ -69,6 +71,11 @@ const initWebRoutes = (app) => {
   router.get(
     "/get-info-game-from-date/:date",
     homeController.handleGetInfoGameByDate
+  );
+  // Lấy bảng xếp hạng theo ngày
+  router.get(
+    "/get-ranking-game-from-date/:date",
+    homeController.handleGetRankingInfoGameByDate
   );
   // POST METHOD--------------
   // Thêm đội bóng và thành viên
@@ -99,7 +106,7 @@ const initWebRoutes = (app) => {
 
   // DELETE METHOD--------------
   // Xóa thành viên ra đội bóng
-  router.delete("/delete-player-team", homeController.handleDeletePlayer);
+  router.post("/delete-player-team", homeController.handleDeletePlayer);
 
   return app.use("/", router);
 };
