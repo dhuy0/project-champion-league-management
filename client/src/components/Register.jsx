@@ -67,19 +67,19 @@ const Register = () => {
     //Kiểm tra số lượng cầu thủ không được vượt quá số lượng cầu thủ tối đa cho phép
     if (players.length + 1 <= rules[0]["SoCauThu_Max"]) {
       setPlayers([...players, newPlayer]);
-    } else toast.error("Da dat so luong cau thu doi da");
+    } else toast.error("Đã đạt số lượng cầu thủ tối đa");
   };
 
   //Kiểm tra các dữ liệu được nhập vào có hợp lệ không
   const validateForm = () => {
     // Kiểm tra các trường input
     if (!teamName) {
-      toast.error("Ten doi khong duoc de trong");
+      toast.error("Tên đội không được để trống");
       return false;
     }
 
     if (!stadium) {
-      toast.error("San dau khong duoc de trong");
+      toast.error("Sân nhà không được để trống");
       return false;
     }
 
@@ -91,34 +91,34 @@ const Register = () => {
       const player = players[i];
 
       if (!player.number) {
-        toast.error(`Cau thu so ${i + 1}: So thu tu khong duoc de trong`);
+        toast.error(`Cầu thủ số ${i + 1}: Số thứ tự không được để trống`);
         return false;
       }
 
       if (usedNumbers.has(player.number)) {
-        toast.error(`Cau thu so ${i + 1}: So thu tu cau thu bi trung`);
+        toast.error(`Cầu thủ số ${i + 1}: Số thứ tự cầu thủ bị trùng`);
         return false;
       }
 
       usedNumbers.add(player.number);
 
       if (!player.name) {
-        toast.error(`Cau thu so ${i + 1}: Ten cau thu khong duoc de trong`);
+        toast.error(`Cầu thủ số ${i + 1}: Tên cầu thủ không được để trống`);
         return false;
       }
 
       if (!player.type) {
-        toast.error(`Cau thu so ${i + 1}: Loai cau thu khong duoc de trong`);
+        toast.error(`Cầu thủ số ${i + 1}: Loại cầu thủ không được để trống`);
         return false;
       }
 
       if (!player.birthday) {
-        toast.error(`Cau thu so ${i + 1}: Ngay sinh khong duoc de trong`);
+        toast.error(`Cầu thủ số ${i + 1}: Ngày sinh không được để trống`);
         return false;
       }
 
       if(player.age < rules[0]["DoTuoi_Min"] || player.age > rules[0]["DoTuoi_Max"]) {
-        toast.error(`Cau thu so ${i + 1}: Tuoi cau thu khong hop le`);
+        toast.error(`Cầu thủ số ${i + 1}: Tuổi cầu thủ không hợp lệ`);
         return false;
       }
 
@@ -133,12 +133,12 @@ const Register = () => {
     }
 
     if (foreignPlayers > rules[0]["SoCauThuNuocNgoai_Max"]) {
-      toast.error(`So luong cau thu nuoc ngoai vuot qua quy dinh`);
+      toast.error(`Số lượng cầu thủ nước ngoài vượt quá quy định`);
       return false;
     }
 
     if (players.length < rules[0]["SoCauThu_Min"]) {
-      toast.error(`Khong du so luong cau thu toi thieu`);
+      toast.error(`Không đủ số lượng cầu thủ tối thiểu`);
       return false
     }
 
@@ -161,7 +161,7 @@ const Register = () => {
         console.log(response);
       });
       console.log("Team data to be saved:", teamData);
-      toast.success("Dang ky doi bong thanh cong");
+      toast.success("Đăng ký đội bóng thành công");
       window.location.reload();
     }
   };

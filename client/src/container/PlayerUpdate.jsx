@@ -9,7 +9,8 @@ const PlayerUpdate = ({ player, index, handleDeletePlayer, handlePlayerChange, h
                     type='text'
                     className=' bg-stone-200 w-1/3 pl-4'
                     value={player.MaCauThu}
-                    onChange={(e) => handlePlayerChange(index, 'MaCauThu', e.target.value)} />
+                    // onChange={(e) => handlePlayerChange(index, 'MaCauThu', e.target.value)} 
+                    />
                 <button type='button' onClick={() => handleDeletePlayer(index)}
                     className='ml-64 bg-white text-2xl rounded-full w-10 h-10 border-solid border-2 border-black'>
                     <div className="flex items-center justify-center">-</div>

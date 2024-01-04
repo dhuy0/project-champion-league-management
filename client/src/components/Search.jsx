@@ -76,12 +76,11 @@ const Search = () => {
             <table className="w-full h-fit border-solid border-2 border-black">
               <thead className="bg-gray-300">
                 <tr>
-                  <th className="font-bold">ID</th>
-                  <th className="font-bold">Tên cầu thủ</th>
-                  <th className="font-bold">Tên đội bóng</th>
-                  <th className="font-bold">Loại</th>
-                  <th className="font-bold">Ngày sinh</th>
-                  <th className="font-bold">Ghi chú</th>
+                  <th className="font-bold">STT</th>
+                  <th className="font-bold">Cầu thủ</th>
+                  <th className="font-bold">Đội</th>
+                  <th className="font-bold">Loại Cầu Thủ</th>
+                  <th className="font-bold">Số Bàn Thắng</th>
                 </tr>
               </thead>
               <tbody>
@@ -91,8 +90,7 @@ const Search = () => {
                     <td>{player.TenCauThu}</td>
                     <td>{player.TenDoiBong}</td>
                     <td>{player.LoaiCauThu}</td>
-                    <td>{new Date(player.NgaySinh).toLocaleDateString()}</td>
-                    <td>{player.GhiChu}</td>
+                    <td>{player.TongSoBanThang}</td>
                   </tr>
                 ))}
               </tbody>

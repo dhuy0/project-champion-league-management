@@ -261,64 +261,64 @@ const ResultRecord = () => {
 
   const validateMatchForm = () => {
     if (!selectedStt) {
-      toast.error("So thu tu khong duoc de trong");
+      toast.error("Số thứ tự không được để trống");
       return false;
     }
     if (!selectedMatchInfo.TenDoi1) {
-      toast.error("Doi 1 khong duoc de trong");
+      toast.error("Đội 1 không được để trống");
       return false;
     }
     if (!selectedMatchInfo.TenDoi2) {
-      toast.error("Doi 2 khong duoc de trong");
+      toast.error("Đội 2 không được để trống");
       return false;
     }
 
     if (
       !teamName.some((team) => team.TenDoiBong === selectedMatchInfo.TenDoi1)
     ) {
-      toast.error("Team 1 is not in the database");
+      toast.error("Đội 1 không có trong cơ sở dữ liệu");
       return false;
     }
 
     if (
       !teamName.some((team) => team.TenDoiBong === selectedMatchInfo.TenDoi2)
     ) {
-      toast.error("Team 2 is not in the database");
+      toast.error("Đội 2 không có trong cơ sở dữ liệu");
       return false;
     }
 
     if (selectedMatchInfo.TenDoi1 === selectedMatchInfo.TenDoi2) {
-      toast.error("Hai doi khong duoc trung nhau");
+      toast.error("Hai đội không được trùng nhau");
       return false;
     }
 
     if (!selectedRound) {
-      toast.error("Vong thi dau khong duoc de trong");
+      toast.error("Vòng thi đấu không được để trống"); 
       return false;
     }
 
     if (!matchData.score1) {
-      toast.error("Ty so doi 1 khong duoc de trong");
+      toast.error("Tỷ số đội 1 không được để trống"); 
       return false;
     }
 
     if (!matchData.score2) {
-      toast.error("Ty so doi 2 khong duoc de trong");
+      toast.error("Tỷ số đội 2 không được để trống"); 
       return false;
     }
 
     if (!selectedMatchInfo.SanDau) {
-      toast.error("San dau khong duoc de trong");
+      toast.error("Sân đấu không được để trống"); 
       return false;
     }
 
     if (!selectedMatchInfo.Ngay) {
-      toast.error("Ngay khong duoc de trong");
+      toast.error("Ngày thi đấu không được để trống"); 
       return false;
     }
 
     if (!selectedMatchInfo.Gio) {
-      toast.error("Thoi gian khong duoc de trong");
+      toast.error("Thời gian không được để trống"); 
       return false;
     }
     return true;
@@ -338,7 +338,7 @@ const ResultRecord = () => {
         await axios.put("http://localhost:8080/update-record", dataToSend);
         // console.log('Section 1 data saved successfully');
         // console.log(matchData)
-        toast.success("Them thanh cong!");
+        toast.success("Thêm thành công!"); 
       }
     } catch (error) {
       console.error("Loi gui du lieu ve server:", error);
@@ -347,30 +347,30 @@ const ResultRecord = () => {
 
   const validateScorerForm = () => {
     if (!selectedPlayerNumber) {
-      toast.error("So thu tu khong duoc de trong");
+      toast.error("Số thứ tự không được để trống"); 
       return false;
     }
     if (!selectedPlayerName) {
-      toast.error("Ten cau thu khong duoc de trong");
+      toast.error("Tên cầu thủ không được để trống"); 
       return false;
     }
     if (!selectedTeam) {
-      toast.error("Doi bong khong duoc de trong");
+      toast.error("Đội bóng không được để trống"); 
       return false;
     }
 
     if (!scoreData.goalType) {
-      toast.error("Loai ban thang khong duoc de trong");
+      toast.error("Loại bàn thắng không được để trống"); 
       return false;
     }
 
     if (!scoreData.time) {
-      toast.error("Thoi diem khong duoc de trong");
+      toast.error("Thời điểm không được để trống"); 
       return false;
     }
 
     if (scoreData.time < 0 || scoreData.time > rules[0]["ThoiDiemGhiBan_Max"]) {
-      toast.error("Thoi diem ghi ban khong hop le");
+      toast.error("Thời điểm ghi bàn không hợp lệ"); 
       return false
     }
 
@@ -404,7 +404,7 @@ const ResultRecord = () => {
           { ...scoreData, index: prevList.length + 1 },
         ]);
         console.log(">>> check data to send: ", dataToSend);
-        toast.success("Them thanh cong!");
+        toast.success("Thêm thành công!"); 
       }
     } catch (error) {
       console.error("Error saving score data:", error);

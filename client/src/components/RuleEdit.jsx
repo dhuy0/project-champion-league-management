@@ -80,33 +80,33 @@ const RuleEdit = () => {
     const validateForm = () => {
         if (!tempForm.DoTuoi_Min || tempForm.DoTuoi_Min < 0) {
             console.log('form data: ', formData[0]["DoTuoi_Min"])
-            toast.error("Do tuoi toi thieu khong hop le");
+            toast.error("Độ tuổi tối thiểu không hợp lệ"); 
             return false
         }
         if (!tempForm.DoTuoi_Max || tempForm.DoTuoi_Max < 0) {
-            toast.error("Do tuoi toi da khong hop le");
+            toast.error("Độ tuổi tối đa không hợp lệ"); 
             return false
         }
 
         if (!tempForm.SoCauThu_Min || tempForm.SoCauThu_Min < 0) {
             console.log('check min players: ', tempForm.SoCauThu_Min)
             console.log('check min players: ', tempForm)
-            toast.error("So cau thu toi thieu khong hop le");
+            toast.error("Số cầu thủ tối thiểu không hợp lệ"); 
             return false
         }
         if (!tempForm.SoCauThu_Max || tempForm.SoCauThu_Max < 0) {
-            toast.error("So cau thu toi da khong hop le");
+            toast.error("Số cầu thủ tối đa không hợp lệ");
             return false
         }
 
         if (tempForm.DoTuoi_Min > tempForm.DoTuoi_Max || tempForm.SoCauThu_Min > tempForm.SoCauThu_Max) {
             console.log("check min max age: ", tempForm.DoTuoi_Min, " - ", tempForm.DoTuoi_Max)
-            toast.error("Toi thieu phai nho hon toi da");
+            toast.error("Tối thiểu phải nhỏ hơn tối đa"); 
             return false
         }
 
         if (!tempForm.SoCauThuNuocNgoai_Max || tempForm.SoCauThuNuocNgoai_Max < 0) {
-            toast.error("So cau thu nuoc ngoai toi da khong hop le");
+            toast.error("Số cầu thủ nước ngoài tối đa không hợp lệ"); 
             return false
         }
         // if (!formData.goalTypes) {
@@ -114,33 +114,33 @@ const RuleEdit = () => {
         //     return false
         // }
         if (!tempForm.ThoiDiemGhiBan_Max || tempForm.ThoiDiemGhiBan_Max < 0) {
-            toast.error("Thoi diem ghi ban toi da khong hop le");
+            toast.error("Thời điểm ghi bàn tối đa không hợp lệ"); 
             return false
         }
         if (!tempForm.DiemSoThang || tempForm.DiemSoThang < 0) {
-            toast.error("Diem so khi thang khong hop le");
+            toast.error("Điểm số khi thắng không hợp lệ"); 
             return false
         }
         if (!tempForm.DiemSoHoa || tempForm.DiemSoHoa < 0) {
-            toast.error("Diem so khi hoa khong hop le");
+            toast.error("Điểm số khi hòa không hợp lệ");
             return false
         }
         if (tempForm.DiemSoThua < 0) {
             console.log('>>> check lose point: ', tempForm.DiemSoThua)
-            toast.error("Diem so khi thua khong hop le");
+            toast.error("Điểm số khi thua không hợp lệ");
             return false
         }
-        // if (!formData.rankingRule) {
-        //     toast.error("Quy tac xep hang khong duoc de trong");
-        //     return false
-        // }
+        if (!formData.QuyTacXepHang) {
+            toast.error("Quy tắc xếp hạng không được để trống");
+            return false
+        }
         //Điều kiện này phải để ở cuối
         if (tempForm.DiemSoThang > tempForm.DiemSoHoa && tempForm.DiemSoHoa > tempForm.DiemSoThua) {
             return true
         }
         else {
-            toast.error("Quy tac tinh diem phai tuan thu: Diem thang > Diem hoa > Diem thua");
-            return false
+            toast.error("Quy tắc tính điểm phải tuân thủ: Điểm thắng > Điểm hòa > Điểm thua");
+            return false 
         }
         return true
     }
@@ -158,7 +158,7 @@ const RuleEdit = () => {
                 axios.put('http://localhost:8080/change-rule', tempForm)
                 console.log('Form data sent successfully!');
                 console.log(tempForm)
-                toast.success("Them thanh cong!");
+                toast.success("Thêm thành công!"); 
             }
 
 

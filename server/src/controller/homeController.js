@@ -170,7 +170,7 @@ const handleAddMultiPlayer = async (req, res) => {
     const test = await pool.request();
     const result = await test.bulk(table);
     console.log(result);
-    if (result.rowsAffected[0] > 0) {
+    if (result.rowsAffected > 0) {
       console.log("Thêm Thành Công");
       return res.status(200).json({ message: "Thêm thành công" });
     } else {
@@ -392,13 +392,15 @@ const handleGetInfoPlayerByName = async (req, res) => {
     const name = req.params.name;
     var pool = await conn;
     var sqlString =
-      "SELECT * FROM CauThu WHERE TenCauThu LIKE '%" + name + "%'";
+      "SELECT * FROM CauThu WHERE TenCauThu LIKE N'%" + name + "%'";
     console.log(sqlString);
     const result = await pool.request().query(sqlString);
+    
     console.log(result);
     if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
+      console.log(">>> tim kiem thanh cong: ", name)
       res.status(404).json({ message: "Không tìm thấy" });
     }
   } catch (error) {
@@ -527,7 +529,9 @@ const handleGetTeamNameTournament = async (req, res) => {
     if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
-      res.status(404).json({ message: "đã có lỗi xảy ra" });
+      console.log(">>>> Đã có lỗi xảy ra")
+      res.status(200).json([])
+      // res.status(404).json({ message: "đã có lỗi xảy ra" });
     }
   } catch (error) {
     console.log(">>> check error: ", error)
@@ -568,7 +572,9 @@ const handleGetTeamName = async (req, res) => {
     if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
-      res.status(500).json({ message: "đã có lỗi xảy ra" });
+      console.log(">>> Đã có lỗi xảy ra")
+      res.status(200).json([]);
+      // res.status(500).json({ message: "đã có lỗi xảy ra" });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -834,7 +840,8 @@ const handleGetIdGameFromRound = async (req, res) => {
     if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
-      res.status(500).json({ message: "đã có lỗi xảy ra" });
+      console.log("Đã có lỗi xảy ra")
+      res.status(200).json([]);
     }
   } catch (error) {
     console.log(error);
@@ -892,7 +899,6 @@ const handleGetRankingInfoGameByDate = async (req, res) => {
 
 module.exports = {
   handleHome,
-  handleUserPage,
   handleReg,
   handleGetInfoPlayerByName,
   handleGetAllInfoPlayer,

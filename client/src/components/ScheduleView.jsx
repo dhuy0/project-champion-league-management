@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const ScheduleView = () => {
   const { round } = useParams();
@@ -14,6 +15,26 @@ const ScheduleView = () => {
 
   const handleRoundChange = (e) => {
     setSelectedRound(e.target.value);
+  };
+
+  const handleEditClick = () => {
+    if (selectedRound) {
+      // Only navigate if a round is selected
+      window.location.href = `/schedule-edit/${selectedRound}`;
+    } else {
+      // Display an error message if no round is selected
+      toast.error("Vui lòng chọn vòng trước khi chỉnh sửa");
+    }
+  };
+
+  const handleAddClick = () => {
+    if (selectedRound) {
+      // Only navigate if a round is selected
+      window.location.href = `/schedule-add/${selectedRound}`;
+    } else {
+      // Display an error message if no round is selected
+      toast.error("Vui lòng chọn vòng trước khi thêm mới");
+    }
   };
 
   useEffect(() => {
@@ -123,18 +144,20 @@ const ScheduleView = () => {
             </table>
           </div>
           <div className="flex justify-center gap-32">
-            <Link to={`/schedule-edit/${selectedRound}`}>
-              <button className="mt-4 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500">
-                <div className="flex items-center justify-center">
-                  Chỉnh sửa
-                </div>
-              </button>
-            </Link>
-            <Link to={`/schedule-add/${selectedRound}`}>
-              <button className="mt-4 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500">
-                <div className="flex items-center justify-center">Thêm mới</div>
-              </button>
-            </Link>
+          <button
+              onClick={handleEditClick}
+              className="mt-4 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500"
+            >
+              <div className="flex items-center justify-center">
+                Chỉnh sửa
+              </div>
+            </button>
+            <button
+              onClick={handleAddClick}
+              className="mt-4 text-xl bg-gray-400 text-gray-100 w-40 h-10 hover:bg-gray-500"
+            >
+              <div className="flex items-center justify-center">Thêm mới</div>
+            </button>
           </div>
         </div>
       </div>

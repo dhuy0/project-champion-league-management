@@ -234,7 +234,7 @@ const ScheduleAdd = () => {
       </div>
       <div className="basis-4/5">
         <header className="bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]">
-          Đăng kí đội bóng
+          Thêm lịch thi đấu
         </header>
         <form className="flex flex-col gap-4 px-8 py-12 mx-32 mt-24 h-1/2 mx-56 border-solid border-2 border-black">
           <div className="flex flex-row text-xl">

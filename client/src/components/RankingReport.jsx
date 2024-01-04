@@ -11,7 +11,7 @@ const RankingReport = () => {
 
     const validateForm = () => {
         if(!date) {
-            toast.error("Khong duoc de trong ngay")
+            toast.error("Ngày không được để trống")
             return false
         }
         return true
@@ -24,7 +24,7 @@ const RankingReport = () => {
             axios.get(`http://localhost:8080/get-ranking-game-from-date/${encodeURIComponent(date)}`)
                 .then(response => {
                     setRankingData(response.data);
-                    toast.success("Tim kiem thanh cong")
+                    toast.success("Tìm kiếm thành công")
                     console.log('>>> check ranking data: ', rankingData)
                 })
                 .catch(error => {
