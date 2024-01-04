@@ -135,7 +135,7 @@ const handleReg = async (req, res) => {
     const test = await pool.request();
     const result = await test.bulk(table);
     console.log(result);
-    if (result.rowsAffected[0] > 0) {
+    if (result.rowsAffected > 0) {
       console.log("Thêm Thành Công");
       return res.status(200).json({ message: "Thêm thành công" });
     } else {
@@ -346,7 +346,8 @@ const handleDeletePlayer = async (req, res) => {
     if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
-      res.status(404).json({ message: "Không có dữ liệu" });
+      res.status(200).json([]);
+      // res.status(404).json({ message: "Không có dữ liệu" });
     }
   } catch (error) {
     console.log(error);

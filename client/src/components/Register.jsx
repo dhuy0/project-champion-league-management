@@ -162,7 +162,7 @@ const Register = () => {
       });
       console.log("Team data to be saved:", teamData);
       toast.success("Dang ky doi bong thanh cong");
-      window.location.reload();
+      // window.location.reload();
     }
   };
 
