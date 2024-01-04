@@ -39,7 +39,7 @@ const SelectTeam = () => {
       <div style={{ flex: '0 0 310px' }}>
         <Nav />
       </div>
-      <div className='basis -4/5 min-w-[1500px] min-h-screen overflow-hidden'>
+      <div className='basis -4/5 min-w-[1500px] min-h-screen overflow-y-auto'>
         <header className='bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]'>
           Chỉnh sửa hồ sơ đội bóng
         </header>

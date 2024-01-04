@@ -171,7 +171,7 @@ const Register = () => {
       <div style={{ flex: '0 0 310px' }}>
         <Nav />
       </div>
-      <div className='basis -4/5 min-w-[1500px] min-h-screen overflow-hidden'>
+      <div className='basis -4/5 min-w-[1500px] min-h-screen overflow-y-auto'>
         {/* ============================ Header ============================ */}
         <header className='bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]'>
           Đăng ký hồ sơ đội bóng
