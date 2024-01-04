@@ -8,7 +8,7 @@ import axios from "axios";
 const ScheduleView = () => {
   const { round } = useParams();
 
-  const [rounds, setRounds] = useState([]);
+  const [rounds, setRounds] = useState([1, 2, 3, 4, 5, 6]);
   const [selectedRound, setSelectedRound] = useState("");
   const [matchData, setMatchData] = useState([]);
 
@@ -18,9 +18,9 @@ const ScheduleView = () => {
 
   useEffect(() => {
     // Lấy tất cả cái vòng có trong cơ sở dữ liệu
-    axios.get("http://localhost:8080/get-round-from-game").then((response) => {
-      setRounds(response.data);
-    });
+    // axios.get("http://localhost:8080/get-round-from-game").then((response) => {
+    //   setRounds(response.data);
+    // });
   }, []);
 
   useEffect(() => {
@@ -83,8 +83,8 @@ const ScheduleView = () => {
                 Chọn vòng
               </option>
               {rounds.map((roundId) => (
-                <option key={roundId.VongDau} value={roundId.VongDau}>
-                  {roundId.VongDau}
+                <option key={roundId} value={roundId}>
+                  {roundId}
                 </option>
               ))}
             </select>

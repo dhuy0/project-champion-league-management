@@ -71,7 +71,7 @@ const handleReg = async (req, res) => {
         .input("varName", sql.NVarChar(255), data.teamName)
         .input("varField", sql.NVarChar(255), data.stadium)
         .query(sqlString);
-      console.log(result.rowsAffected);
+      console.log(result.rowsAffected[0]);
       console.log("Thêm Thành Công");
 
       // } else {
@@ -135,7 +135,7 @@ const handleReg = async (req, res) => {
     const test = await pool.request();
     const result = await test.bulk(table);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       console.log("Thêm Thành Công");
       return res.status(200).json({ message: "Thêm thành công" });
     } else {
@@ -154,10 +154,10 @@ const handleAddMultiPlayer = async (req, res) => {
     const data = req.body;
     console.log(data.dataToSend1.newPlayers.length);
     console.log(data);
-    
 
-    if(data.dataToSend1.newPlayers.length == 0) {
-      return res.status(200).json({message: "Không có cầu thủ cần thêm vào"})
+
+    if (data.dataToSend1.newPlayers.length == 0) {
+      return res.status(200).json({ message: "Không có cầu thủ cần thêm vào" })
     }
 
     var pool = await conn;
@@ -190,7 +190,7 @@ const handleAddMultiPlayer = async (req, res) => {
     const test = await pool.request();
     const result = await test.bulk(table);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       console.log("Thêm Thành Công");
       return res.status(200).json({ message: "Thêm thành công" });
     } else {
@@ -211,7 +211,7 @@ const handleGetAllTeam = async (req, res) => {
 
     const result = await pool.request().query(sqlString);
     console.log(result.recordset);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "Không có dữ liệu" });
@@ -235,7 +235,7 @@ const handleGetTeamById = async (req, res) => {
       .input("varId", sql.Int, parseInt(id))
       .query(sqlString);
     console.log(">>> check team result: ", result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "Không có dữ liệu" });
@@ -271,7 +271,7 @@ const handleUpdatePlayer = async (req, res) => {
       .input("varTenDoi", sql.NVarChar(MAX), data.teamName) // Client gửi về thêm lần nữa !!!
       .query(sqlString);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "Không có dữ liệu" });
@@ -287,8 +287,8 @@ const handleUpdateMultiPlayer = async (req, res) => {
     const data = req.body;
     var pool = await conn;
 
-    if(data.dataToSend2.updatedPlayers.length == 0) {
-      return res.status(200).json({message: "Không có cầu thủ để update"})
+    if (data.dataToSend2.updatedPlayers.length == 0) {
+      return res.status(200).json({ message: "Không có cầu thủ để update" })
     }
 
     // Update cầu thủ
@@ -312,7 +312,7 @@ const handleUpdateMultiPlayer = async (req, res) => {
         .query(sqlString);
     }
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "Không có dữ liệu" });
@@ -343,7 +343,7 @@ const handleDeletePlayer = async (req, res) => {
       .input("varTenDoi", sql.NVarChar(MAX), data.dataToSend.teamName) // Client gửi về thêm lần nữa !!!
       .query(sqlString);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "Không có dữ liệu" });
@@ -379,7 +379,7 @@ const handleAddPlayerToTeam = async (req, res) => {
       .input("varGhiChu", sql.NVarChar(MAX), data.note)
       .query(sqlString);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       // res.status(404).json({ message: "Không có dữ liệu" });
@@ -396,7 +396,7 @@ const handleGetAllInfoPlayer = async (req, res) => {
     var sqlString = `SELECT * FROM CauThu`;
     const result = await pool.request().query(sqlString);
     console.log(result.recordset);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "Không có dữ liệu" });
@@ -415,7 +415,7 @@ const handleGetInfoPlayerByName = async (req, res) => {
     console.log(sqlString);
     const result = await pool.request().query(sqlString);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "Không tìm thấy" });
@@ -437,7 +437,7 @@ const handleGetInfoPlayerByTeam = async (req, res) => {
       .input("varTeam", sql.NVarChar(MAX), team)
       .query(sqlString);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "Không tìm thấy" });
@@ -458,7 +458,7 @@ const handleGetInfoPlayerByDate = async (req, res) => {
     const result = await pool.request().query(sqlString);
     console.log(result);
     console.log(">>>> check date: ", date);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "Không tìm thấy" });
@@ -483,7 +483,7 @@ const handleGetScorerInfoPlayerByDate = async (req, res) => {
       .query(sqlString);
     console.log("check data send to client: ", result);
     console.log(">>>> check date: ", date);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "không có trong cơ sở dữ liệu" });
@@ -503,7 +503,7 @@ const handleGetRoundFromGame = async (req, res) => {
       // Chỉnh lại biến theo front end
       .query(sqlString);
     console.log(result.recordset);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });
@@ -523,7 +523,7 @@ const handleGetRoundFromGameId = async (req, res) => {
       .input("varId", sql.VarChar(MAX), id)
       .query(sqlString);
     console.log(result.recordset);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });
@@ -543,7 +543,7 @@ const handleGetTeamNameTournament = async (req, res) => {
       // Chỉnh lại biến theo front end
       .query(sqlString);
     console.log(result.recordset);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "đã có lỗi xảy ra" });
@@ -565,10 +565,10 @@ const handleGetTeamNameFromRound = async (req, res) => {
       .input("varRound", sql.Int, round)
       .query(sqlString);
     console.log(result.recordset);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
-      res.status(500).json({ message: "đã có lỗi xảy ra" });
+      res.status(200).json([]);
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -584,7 +584,7 @@ const handleGetTeamName = async (req, res) => {
       // Chỉnh lại biến theo front end
       .query(sqlString);
     console.log(result.recordset);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });
@@ -601,7 +601,7 @@ const handleGetInfoGame = async (req, res) => {
     var sqlString = `SELECT DISTINCT(MaTranDau) FROM TranDau`;
     const result = await pool.request().query(sqlString);
     console.log(result.recordset);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });
@@ -623,10 +623,10 @@ const handleGetInfoGameByRound = async (req, res) => {
       // Chỉnh lại biến theo front end
       .query(sqlString);
     console.log(result.recordset);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
-      res.status(500).json({ message: "đã có lỗi xảy ra" });
+      res.status(200).json([]);
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -647,7 +647,7 @@ const handleGetInfoGameByRoundAndId = async (req, res) => {
       .input("varId", sql.VarChar(MAX), id)
       .query(sqlString);
     console.log(result.recordset);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });
@@ -682,7 +682,7 @@ const handleAddSchedule = async (req, res) => {
       .input("varTime", sql.Time(7), date)
       .query(sqlString);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "Không tìm thấy" });
@@ -712,7 +712,7 @@ const handleAddScorer = async (req, res) => {
       .input("varRound", sql.Int, data.round)
       .query(sqlString);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json({ message: "Không tìm thấy" });
@@ -741,7 +741,7 @@ const handleUpdateRecord = async (req, res) => {
       .input("varRound", sql.Int, parseInt(data.VongDau))
       .query(sqlString);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result);
     } else {
       console.log(result);
@@ -758,7 +758,7 @@ const handleUpdateRule = async (req, res) => {
     const data = req.body;
     var pool = await conn;
     var sqlString = `UPDATE QuyDinh
-    SET DoTuoi_Min = @varAgeMin, DoTuoi_Max = @varAgeMax, SoCauThu_Min = @varPlayerMin, SoCauThu_Max = @varPlayerMax, SoCauThuNuocNgoai_Max = @varForeignerMax, ThoiDiemGhiBan_Max = @varTimeMax, DiemSoThang = @varWinScore, DiemSoHoa = @varDrawScore, DiemSoThua = @varLooseScore`;
+    SET DoTuoi_Min = @varAgeMin, DoTuoi_Max = @varAgeMax, SoCauThu_Min = @varPlayerMin, SoCauThu_Max = @varPlayerMax, SoCauThuNuocNgoai_Max = @varForeignerMax, ThoiDiemGhiBan_Max = @varTimeMax, DiemSoThang = @varWinScore, DiemSoHoa = @varDrawScore, DiemSoThua = @varLooseScore, CacLoaiBanThang = @varGoalTypes, QuyTacXepHang = @varRankingRules`;
     const result = await pool
       .request()
       // Chỉnh lại biến theo front end
@@ -771,9 +771,11 @@ const handleUpdateRule = async (req, res) => {
       .input("varWinScore", sql.Int, data.DiemSoThang)
       .input("varDrawScore", sql.Int, data.DiemSoHoa)
       .input("varLooseScore", sql.Int, data.DiemSoThua)
+      .input("varGoalTypes", sql.VarChar(MAX), data.CacLoaiBanThang)
+      .input("varRankingRules", sql.NVarChar(MAX), data.QuyTacXepHang)
       .query(sqlString);
     console.log("check resul: ", result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });
@@ -794,7 +796,7 @@ const handleGetRule = async (req, res) => {
       // Chỉnh lại biến theo front end
       .query(sqlString);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });
@@ -827,7 +829,7 @@ const handleUpdateSchedule = async (req, res) => {
       .input("varRound", sql.Int, data.round)
       .query(sqlString);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });
@@ -848,7 +850,7 @@ const handleGetIdGameFromRound = async (req, res) => {
       .input("varRound", sql.VarChar(MAX), round)
       .query(sqlString);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });
@@ -869,7 +871,7 @@ const handleGetInfoGameByDate = async (req, res) => {
       .input("varDate", sql.Date, date)
       .query(sqlString);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });
@@ -884,7 +886,11 @@ const handleGetRankingInfoGameByDate = async (req, res) => {
   try {
     const date = new Date(req.params.date);
     var pool = await conn;
-    var sqlString = `SELECT db.MaDoiBong, db.TenDoiBong,  db.SoTranThang, db.SoTranHoa, db.SoTranThua, db.HieuSo, db.Hang
+    var check = `SELECT QuyTacXepHang FROM QuyDinh`;
+    const checkSQL = await pool.request().query(check);
+    console.log(">>>> check sql: ", checkSQL.recordset[0]["QuyTacXepHang"])
+    var sortColumn = checkSQL.recordset[0]["QuyTacXepHang"]
+    var sqlString = `SELECT db.MaDoiBong, db.TenDoiBong,  db.SoTranThang, db.SoTranHoa, db.SoTranThua, db.HieuSo, DENSE_RANK() OVER(ORDER BY ${sortColumn} DESC) Hang
                       FROM DoiBong db JOIN TranDau td ON db.TenDoiBong = td.TenDoi1 OR db.TenDoiBong = td.TenDoi2
                       WHERE td.Ngay = @varDate`;
     const result = await pool
@@ -892,7 +898,7 @@ const handleGetRankingInfoGameByDate = async (req, res) => {
       .input("varDate", sql.Date, date)
       .query(sqlString);
     console.log(result);
-    if (result.rowsAffected > 0) {
+    if (result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(500).json({ message: "đã có lỗi xảy ra" });

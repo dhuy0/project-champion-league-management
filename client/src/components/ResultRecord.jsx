@@ -7,6 +7,7 @@ import axios from "axios";
 const ResultRecord = () => {
   const [selectedTeam, setSelectedTeam] = useState("");
   const [selectedMatchInfo, setSelectedMatchInfo] = useState({});
+  const [goalTypes, setGoalTypes] = useState([]);//các loại bàn thắng
   const [rules, setRules] = useState({}) // Lấy các quy định của giải đấu
   const [matchInfo, setMatchInfo] = useState([
     //   {MaTranDau: "",
@@ -60,8 +61,14 @@ const ResultRecord = () => {
   // }, [selectedPlayerName])
 
   useEffect(() => {
-    console.log(">>>> check rules: ", rules)
+    if (rules && rules.length > 0) {
+      console.log(">>>> check rules: ", rules)
+      // Tách chuỗi lấy các loại bàn thắng 
+      const parsedGoalTypes = rules[0]["CacLoaiBanThang"].split(',').map((type) => type.trim());
+      setGoalTypes(parsedGoalTypes);
+    }
   }, [rules])
+
 
   useEffect(() => {
     try {
@@ -216,7 +223,7 @@ const ResultRecord = () => {
 
   const handleScoreChange = (e) => {
     const { name, value } = e.target;
-    if(name == "MaCauThu") {
+    if (name == "MaCauThu") {
       setSelectedPlayerNumber(e.target.value)
       setScoreData({
         goalType: "",
@@ -224,8 +231,8 @@ const ResultRecord = () => {
       })
     }
 
-    if(name == "TenDoi") {
-      setSelectedTeam(e.target.value) 
+    if (name == "TenDoi") {
+      setSelectedTeam(e.target.value)
       setScoreData({
         goalType: "",
         time: ""
@@ -234,8 +241,8 @@ const ResultRecord = () => {
       setSelectedPlayerName("")
     }
 
-    if(name == "player") {
-      setSelectedPlayerName(e.target.value) 
+    if (name == "player") {
+      setSelectedPlayerName(e.target.value)
       setScoreData({
         goalType: "",
         time: ""
@@ -324,7 +331,7 @@ const ResultRecord = () => {
       TySoDoi1: matchData.score1,
       TySoDoi2: matchData.score2,
     };
-    console.log(dataToSend);
+    console.log(">>>> data to send: ", dataToSend);
     try {
       const isValid = validateMatchForm();
       if (isValid) {
@@ -362,7 +369,7 @@ const ResultRecord = () => {
       return false;
     }
 
-    if(scoreData.time < 0 || scoreData.time > rules[0]["ThoiDiemGhiBan_Max"]) {
+    if (scoreData.time < 0 || scoreData.time > rules[0]["ThoiDiemGhiBan_Max"]) {
       toast.error("Thoi diem ghi ban khong hop le");
       return false
     }
@@ -423,7 +430,7 @@ const ResultRecord = () => {
                   name="MaTranDau"
                   value={selectedStt}
                   onChange={(e) => setSelectedStt(e.target.value)}
-                  //disabled={!selectedStt}
+                //disabled={!selectedStt}
                 >
                   <option value="" disabled>
                     Chọn STT
@@ -442,7 +449,7 @@ const ResultRecord = () => {
                   className="pl-4 bg-stone-200 flex-grow"
                   value={matchData.VongDau}
                   onChange={handleRoundChange}
-                  //disabled={!selectedStt} // Disable if STT is not selected
+                //disabled={!selectedStt} // Disable if STT is not selected
                 >
                   <option value="">Chọn vòng</option>
                   {roundList.map((round) => (
@@ -461,7 +468,7 @@ const ResultRecord = () => {
                   className="pl-4 bg-stone-200 flex-grow"
                   name="TenDoi1"
                   value={selectedMatchInfo.TenDoi1}
-                  //onChange={handleMatchChange}
+                //onChange={handleMatchChange}
                 />
               </div>
               <div className="flex flex-row gap-8 w-1/2 justify-between px-16">
@@ -483,7 +490,7 @@ const ResultRecord = () => {
                   className="pl-4 bg-stone-200 flex-grow"
                   name="TenDoi2"
                   value={selectedMatchInfo.TenDoi2}
-                  //onChange={handleMatchChange}
+                //onChange={handleMatchChange}
                 />
               </div>
               <div className="flex flex-row gap-8 w-1/2 justify-between px-16">
@@ -504,7 +511,7 @@ const ResultRecord = () => {
                 className="pl-4 bg-stone-200 flex-grow"
                 name="SanDau"
                 value={selectedMatchInfo.SanDau}
-                //onChange={handleMatchChange}
+              //onChange={handleMatchChange}
               />
             </div>
             <div className="text-xl flex flex-row items-center justify-between pr-16">
@@ -515,7 +522,7 @@ const ResultRecord = () => {
                   className="pl-4 bg-stone-200 flex-grow"
                   name="Ngay"
                   value={new Date(selectedMatchInfo.Ngay).toLocaleDateString()}
-                  //onChange={handleMatchChange}
+                //onChange={handleMatchChange}
                 />
               </div>
               <div className="w-1/2">
@@ -525,7 +532,7 @@ const ResultRecord = () => {
                   className="pl-4 bg-stone-200 flex-grow"
                   name="Gio"
                   value={gioGiamMotGio.toLocaleTimeString()}
-                  //onChange={handleMatchChange}
+                //onChange={handleMatchChange}
                 />
               </div>
 
@@ -596,13 +603,21 @@ const ResultRecord = () => {
             <div className="text-xl flex flex-row justify-between">
               <div className="flex flex-row w-1/2">
                 <p className="w-48">Loại bàn thắng</p>
-                <input
-                  type="text"
+                <select
                   className="pl-4 bg-stone-200 flex-grow"
                   name="goalType"
                   value={scoreData.goalType}
                   onChange={handleScoreChange}
-                />
+                >
+                  <option value="" disabled>
+                    Chọn Loại bàn thắng
+                  </option>
+                  {goalTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="flex flex-row gap-8 w-1/2 justify-between px-16">
                 <p>Thời điểm</p>

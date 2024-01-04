@@ -9,27 +9,32 @@ const RuleEdit = () => {
 
     const [formData, setFormData] = useState({});
     const [tempForm, setTempForm] = useState({});
+    const [rankingOptions, setRankingOptions] = useState([
+        'Diem',
+        'HieuSo',
+        'SoTranThang'
+    ]);
 
 
-    
 
     useEffect(() => {
         if (formData && formData.length > 0) {
             console.log('check form data: ', formData[0]["DiemSoThang"]);
-        setTempForm({
-            DiemSoHoa: formData[0]["DiemSoHoa"],
-            DiemSoThang: formData[0]["DiemSoThang"],
-            DiemSoThua: formData[0]["DiemSoThua"],
-            DoTuoi_Max: formData[0]["DoTuoi_Max"],
-            DoTuoi_Min: formData[0]["DoTuoi_Min"],
-            SoCauThuNuocNgoai_Max: formData[0]["SoCauThuNuocNgoai_Max"],
-            SoCauThu_Max: formData[0]["SoCauThu_Max"],
-            SoCauThu_Min: formData[0]["SoCauThu_Min"],
-            ThoiDiemGhiBan_Max: formData[0]["ThoiDiemGhiBan_Max"],
-            goalTypes: "",
-        })
-        console.log(tempForm)
-    }
+            setTempForm({
+                DiemSoHoa: formData[0]["DiemSoHoa"],
+                DiemSoThang: formData[0]["DiemSoThang"],
+                DiemSoThua: formData[0]["DiemSoThua"],
+                DoTuoi_Max: formData[0]["DoTuoi_Max"],
+                DoTuoi_Min: formData[0]["DoTuoi_Min"],
+                SoCauThuNuocNgoai_Max: formData[0]["SoCauThuNuocNgoai_Max"],
+                SoCauThu_Max: formData[0]["SoCauThu_Max"],
+                SoCauThu_Min: formData[0]["SoCauThu_Min"],
+                ThoiDiemGhiBan_Max: formData[0]["ThoiDiemGhiBan_Max"],
+                CacLoaiBanThang: formData[0]["CacLoaiBanThang"],
+                QuyTacXepHang: formData[0]["QuyTacXepHang"]
+            })
+            console.log(tempForm)
+        }
     }, [formData])
 
     useEffect(() => {
@@ -38,38 +43,38 @@ const RuleEdit = () => {
 
     const fetchData = async () => {
         try {
-          // Use your API endpoint URL
-          // const apiUrl = 'YOUR_API_ENDPOINT_URL'; // Replace with your actual API URL
-          // const response = await axios.get(apiUrl);
-          
-          //Lấy dữ liệu từ server để xem các quy định đã được thiết lập chưa, nếu có thì hiển thị lên màn hình
-          await axios.get('http://localhost:8080/get-rule').then(response => {
-              setFormData(response.data)
-          })
+            // Use your API endpoint URL
+            // const apiUrl = 'YOUR_API_ENDPOINT_URL'; // Replace with your actual API URL
+            // const response = await axios.get(apiUrl);
+
+            //Lấy dữ liệu từ server để xem các quy định đã được thiết lập chưa, nếu có thì hiển thị lên màn hình
+            await axios.get('http://localhost:8080/get-rule').then(response => {
+                setFormData(response.data)
+            })
 
         } catch (error) {
-          // Handle error
-          console.error('Error fetching initial data:', error);
+            // Handle error
+            console.error('Error fetching initial data:', error);
         }
-      };
+    };
 
     useEffect(() => {
         // Fetch initial data from the backend when the component mounts
         fetchData();
-      }, []); 
-    
+    }, []);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         var temp
-        if(name == "goalTypes" || name == "rankingRule") {
+        if (name == "CacLoaiBanThang" || name == "QuyTacXepHang") {
             setTempForm((prevData) => ({ ...prevData, [name]: value }));
         }
         else {
             temp = parseInt(value)
             setTempForm((prevData) => ({ ...prevData, [name]: temp }));
         }
-        
+
     };
 
     const validateForm = () => {
@@ -94,7 +99,7 @@ const RuleEdit = () => {
             return false
         }
 
-        if(tempForm.DoTuoi_Min > tempForm.DoTuoi_Max ||  tempForm.SoCauThu_Min > tempForm.SoCauThu_Max){
+        if (tempForm.DoTuoi_Min > tempForm.DoTuoi_Max || tempForm.SoCauThu_Min > tempForm.SoCauThu_Max) {
             console.log("check min max age: ", tempForm.DoTuoi_Min, " - ", tempForm.DoTuoi_Max)
             toast.error("Toi thieu phai nho hon toi da");
             return false
@@ -130,7 +135,7 @@ const RuleEdit = () => {
         //     return false
         // }
         //Điều kiện này phải để ở cuối
-        if(tempForm.DiemSoThang > tempForm.DiemSoHoa && tempForm.DiemSoHoa > tempForm.DiemSoThua) {
+        if (tempForm.DiemSoThang > tempForm.DiemSoHoa && tempForm.DiemSoHoa > tempForm.DiemSoThua) {
             return true
         }
         else {
@@ -149,13 +154,13 @@ const RuleEdit = () => {
             // await axios.post(apiUrl, formData);
             const isValid = validateForm()
 
-            if(isValid) {
+            if (isValid) {
                 axios.put('http://localhost:8080/change-rule', tempForm)
                 console.log('Form data sent successfully!');
                 console.log(tempForm)
                 toast.success("Them thanh cong!");
             }
-            
+
 
         } catch (error) {
             // Handle error
@@ -244,8 +249,8 @@ const RuleEdit = () => {
                             <input
                                 type='text'
                                 className='pl-4 bg-stone-200 flex-grow'
-                                name='goalTypes'
-                                value={formData.goalTypes}
+                                name='CacLoaiBanThang'
+                                value={tempForm.CacLoaiBanThang}
                                 onChange={handleChange} />
                         </div>
                     </div>
@@ -301,12 +306,18 @@ const RuleEdit = () => {
                             Quy tắc xếp hạng
                         </div>
                         <div className='flex flex-row gap-8 flex-grow'>
-                            <input
-                                type='text'
+                            <select
                                 className='pl-4 bg-stone-200 flex-grow'
-                                name='rankingRule'
-                                value={formData.rankingRule}
-                                onChange={handleChange} />
+                                name='QuyTacXepHang'
+                                value={tempForm.QuyTacXepHang}
+                                onChange={handleChange}
+                            >
+                                {rankingOptions.map((option, index) => (
+                                    <option key={index} value={option}>
+                                        {option}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
                     <div className='flex justify-center'>

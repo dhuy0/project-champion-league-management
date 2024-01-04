@@ -122,10 +122,10 @@ const Register = () => {
         return false;
       }
 
-      if (!player.note) {
-        toast.error(`Cau thu so ${i + 1}: Ghi chu khong duoc de trong`);
-        return false;
-      }
+      // if (!player.note) {
+      //   toast.error(`Cau thu so ${i + 1}: Ghi chu khong duoc de trong`);
+      //   return false;
+      // }
 
       if (player.type == "Nước ngoài") {
         foreignPlayers++;

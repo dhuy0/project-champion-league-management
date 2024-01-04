@@ -137,10 +137,10 @@ const TeamEdit = () => {
         return false;
       }
 
-      if (!player.GhiChu) {
-        toast.error(`Cau thu so ${i + 1}: Ghi chu khong duoc de trong`);
-        return false;
-      }
+      // if (!player.GhiChu) {
+      //   toast.error(`Cau thu so ${i + 1}: Ghi chu khong duoc de trong`);
+      //   return false;
+      // }
 
       console.log(">>> check player foreign: ", player.LoaiCauThu)
       if (player.LoaiCauThu == "Nước ngoài") {
@@ -192,6 +192,7 @@ const TeamEdit = () => {
         }
         console.log(">>>> check updated players: ", dataToSend2)
         await axios.put('http://localhost:8080/update-multi-player-team', {dataToSend2});
+        toast.success('Cap nhat cau thu thanh cong');
       } catch (error) {
         console.error('Error updating players:', error);
         toast.error('Failed to update players');

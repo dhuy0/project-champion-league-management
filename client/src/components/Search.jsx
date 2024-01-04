@@ -91,7 +91,7 @@ const Search = () => {
                     <td>{player.TenCauThu}</td>
                     <td>{player.TenDoiBong}</td>
                     <td>{player.LoaiCauThu}</td>
-                    <td>{player.NgaySinh}</td>
+                    <td>{new Date(player.NgaySinh).toLocaleDateString()}</td>
                     <td>{player.GhiChu}</td>
                   </tr>
                 ))}

@@ -28,13 +28,15 @@ const ScheduleAdd = () => {
   }, [teamName]);
 
   useEffect(() => {
-    for(let i = 0; i< teamName.length; i++) {
-      if(formData.team1 == teamName[i]["TenDoiBong"]) {
-        formData.pitch = teamName[i]["SanNha"]
+    for (let i = 0; i < teamName.length; i++) {
+      console.log(">>>> check form team name doi 1: ", formData.team1);
+      console.log(">>>> check team name: ", teamName[i]["TenDoiBong"]);
+      if (formData.team1 === teamName[i]["TenDoiBong"]) {
+        setFormData((prevData) => ({ ...prevData, pitch: teamName[i]["SanNha"] }));
       }
     }
-    
-  }, [formData.team1])
+  }, [formData.team1, teamName, formData.team2]);
+  
 
   useEffect(() => {
     // Lấy dữ liệu như danh sách các đội bóng và danh sách các đọi bóng đã thi đấu trong vòng này
@@ -51,6 +53,7 @@ const ScheduleAdd = () => {
           .get("http://localhost:8080/get-name-team")
           .then((response) => {
             setTeamName(response.data);
+            console.log(">>> get team name successfully")
             // for (var i = 0; i < teamName.length; i++) {
             //   arrTeamName.push(teamName[i].TenDoiBong);
             // }
@@ -65,6 +68,7 @@ const ScheduleAdd = () => {
             setPlayedTeam(response.data);
           });
 
+          //Lấy danh sách các đội bóng đã thi đấu trong cả giải đấu
           await axios
           .get("http://localhost:8080/get-name-team-tournament")
           .then((response) => {
@@ -95,17 +99,20 @@ const ScheduleAdd = () => {
       return false;
     }
     if (!formData.team2) {
-      toast.error("Doi 1 khong duoc de trong");
+      toast.error("Doi 2 khong duoc de trong");
       return false;
     }
 
     if (!teamName.some((team) => team.TenDoiBong === formData.team1)) {
-      toast.error("Doi 2 khong co trong cow so du lieu");
+      console.log(">>>> check ten doi 1: ", formData.team1)
+      console.log(">>>> check ten doi 2: ", formData.team2)
+      toast.error("Doi 1 khong co trong cow so du lieu");
       return false;
     }
 
     if (!teamName.some((team) => team.TenDoiBong === formData.team2)) {
-      toast.error("Doi 2 khong co trong cow so du lieu");
+      
+      toast.error("Doi 2 khong co trong co so du lieu");
       return false;
     }
 
@@ -207,14 +214,14 @@ const ScheduleAdd = () => {
       
       //Gửi data về cho server
       const isValid = validateForm();
-      if (isValid) {
+      // if (isValid) {
         
         axios.post("http://localhost:8080/add-schedule", dataToSend);
         console.log("Data saved successfully");
         console.log(dataToSend);
         toast.success("Them moi thanh cong");
         navigate(`/schedule-view/${round}`);
-      }
+      // }
     } catch (error) {
       console.error("Error saving data:", error);
     }
@@ -268,7 +275,7 @@ const ScheduleAdd = () => {
               name="pitch"
               value={formData.pitch}
               // value={stadium}
-              // onChange={handleInputChange}
+              onChange={handleInputChange}
             />
           </div>
           <div className="flex flex-row text-xl justify-between">
