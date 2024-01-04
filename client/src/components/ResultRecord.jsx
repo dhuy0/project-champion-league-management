@@ -417,7 +417,7 @@ const ResultRecord = () => {
         <Nav />
       </div>
       <div className="basis-4/5">
-        <header className="bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]">
+        <header className="bg-[#5C8374] text-center py-[18px] font-bold text-white text-[3.175rem]">
           Ghi nhận kết quả
         </header>
         <div className="h-3/4 mx-10 mt-4 flex flex-col gap-4">

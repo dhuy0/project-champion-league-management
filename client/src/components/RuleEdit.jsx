@@ -130,10 +130,10 @@ const RuleEdit = () => {
             toast.error("Điểm số khi thua không hợp lệ");
             return false
         }
-        if (!formData.QuyTacXepHang) {
-            toast.error("Quy tắc xếp hạng không được để trống");
-            return false
-        }
+        // if (!formData.QuyTacXepHang) {
+        //     toast.error("Quy tắc xếp hạng không được để trống");
+        //     return false
+        // }
         //Điều kiện này phải để ở cuối
         if (tempForm.DiemSoThang > tempForm.DiemSoHoa && tempForm.DiemSoHoa > tempForm.DiemSoThua) {
             return true
@@ -174,7 +174,7 @@ const RuleEdit = () => {
                 <Nav />
             </div>
             <div className='basis-4/5'>
-                <header className='bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]'>
+                <header className='bg-[#5C8374] text-center py-[18px] font-bold text-white text-[3.175rem]'>
                     Chỉnh sửa quy định
                 </header>
                 <form className='flex flex-col gap-8 mx-32 my-8 h-4/5 text-xl' onSubmit={handleSubmit}>

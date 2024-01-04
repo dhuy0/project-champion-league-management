@@ -173,7 +173,7 @@ const Register = () => {
       </div>
       <div className="basis-4/5">
         {/* ============================ Header ============================ */}
-        <header className="bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]">
+        <header className="bg-[#5C8374] text-center py-[18px] font-bold text-white text-[3.175rem]">
           Đăng ký đội bóng
         </header>
         {/* ============================ Form đăng ký ============================ */}

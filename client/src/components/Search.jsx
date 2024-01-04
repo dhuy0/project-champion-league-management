@@ -10,7 +10,7 @@ const Search = () => {
 
   const validateForm = () => {
     if (!playerName) {
-      toast.error("Ten cau thu khong duoc de trong");
+      toast.error("Tên cầu thủ không được để trống"); 
       return false;
     }
     return true;
@@ -37,6 +37,8 @@ const Search = () => {
           
         })
         .catch((error) => {
+          toast.error("Không tìm thấy cầu thủ này");
+          setSearchResults([]);
           console.error("Error searching players", error);
         });
     } else {
@@ -51,7 +53,7 @@ const Search = () => {
         <Nav />
       </div>
       <div className="basis-4/5">
-        <header className="bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]">
+        <header className="bg-[#5C8374] text-center py-[18px] font-bold text-white text-[3.175rem]">
           Tra cứu thông tin cầu thủ
         </header>
         <div className="flex flex-col gap-4 mx-32 my-8 h-4/5 pr-">

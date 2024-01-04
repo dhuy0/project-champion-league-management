@@ -156,40 +156,40 @@ const ScheduleEdit = () => {
 
   const validateForm = () => {
     if (!formData.MaTranDau) {
-      toast.error("So thu tu khong duoc de trong");
+      toast.error("Số thứ tự không được để trống"); 
       return false;
     }
     if (!formData.TenDoi1) {
-      toast.error("Doi 1 khong duoc de trong");
+      toast.error("Đội 1 không được để trống"); 
       return false;
     }
     if (!formData.TenDoi2) {
-      toast.error("Doi 2 khong duoc de trong");
+      toast.error("Đội 2 không được để trống");
       return false;
     }
 
     if (!teamName.some((team) => team.TenDoiBong === formData.TenDoi1)) {
-      toast.error("Doi 1 khong co trong co so du lieu");
+      toast.error("Đội 1 không có trong cơ sở dữ liệu"); 
       return false;
     }
 
     if (!teamName.some((team) => team.TenDoiBong === formData.TenDoi2)) {
-      toast.error("Doi 2 khong co trong co so du lieu");
+      toast.error("Đội 2 không có trong cơ sở dữ liệu"); 
       return false;
     }
 
     if (formData.TenDoi1 === formData.TenDoi2) {
-      toast.error("Hai doi khong duoc trung nhau");
+      toast.error("Hai đội không được trùng nhau"); 
       return false;
     }
 
     if (playedTeam.some((team) => team.TenDoi1 == formData.TenDoi1 || team.TenDoi2 == formData.TenDoi1)) {
-      toast.error("Doi 1 da thi dau trong vong nay");
+      toast.error("Đội 1 đã thi đấu trong vòng này"); 
       return false;
     }
 
     if (playedTeam.some((team) => team.TenDoi1 == formData.TenDoi2 || team.TenDoi2 == formData.TenDoi2)) {
-      toast.error("Doi 2 da thi dau trong vong nay");
+      toast.error("Đội 2 đã thi đấu trong vòng này");
       return false;
     }
 
@@ -212,12 +212,12 @@ const ScheduleEdit = () => {
     }
 
     if(team1PlayedCount == 2) {
-      toast.error("Doi 1 da thi dau 2 lan trong ca giai dau");
+      toast.error("Đội 1 đã thi đấu 2 lần trong cả giải đấu"); 
       return false
     }
 
     if(team2PlayedCount == 2) {
-      toast.error("Doi 2 da thi dau 2 lan trong ca giai dau");
+      toast.error("Đội 2 đã thi đấu 2 lần trong cả giải đấu");
       return false
     }
 
@@ -230,7 +230,7 @@ const ScheduleEdit = () => {
         console.log(">>> check playedTeamTournament: ", playedTeamTournament[i][team1])
         console.log(">>> check formData.TenDoi1: ", formData.TenDoi1)
         if(playedTeamTournament[i][team1] == formData.TenDoi1) {
-          toast.error("Moi doi chi duoc thi dau tren san nha 1 lan");
+          toast.error("Mỗi đội chỉ được thi đấu trên sân nhà một lần"); 
           return false
         }
       }
@@ -241,23 +241,23 @@ const ScheduleEdit = () => {
           for(var i = 0; i < playedTeamTournament.length; i++) {
             const team2 = "TenDoi2"
             if(playedTeamTournament[i][team2] == formData.TenDoi2) {
-              toast.error("Moi doi chi duoc thi dau tren san khach 1 lan");
+              toast.error("Mỗi đội chỉ được thi đấu trên sân khách một lần");
               return false
             }
           }
         }
 
     if (!formData.SanDau) {
-      toast.error("San dau khong duoc trong");
+      toast.error("Sân đấu không được trống"); 
       return false;
     }
 
     if (!formData.Ngay) {
-      toast.error("Ngay khong duoc trong");
+      toast.error("Ngày thi đấu không được trống"); 
       return false;
     }
     if (!formData.Gio) {
-      toast.error("Thoi gian khong duoc trong");
+      toast.error("Thời gian không được trống"); 
       return false;
     }
     return true;
@@ -279,7 +279,7 @@ const ScheduleEdit = () => {
         axios.put("http://localhost:8080/update-schedule", dataToSend);
         console.log("Data saved successfully");
         console.log(dataToSend);
-        toast.success("Chinh sua thanh cong");
+        toast.success("Chỉnh sửa thành công"); 
         navigate(`/schedule-view/${round}`);
       }
     } catch (error) {
@@ -293,7 +293,7 @@ const ScheduleEdit = () => {
         <Nav />
       </div>
       <div className="basis-4/5">
-        <header className="bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]">
+        <header className="bg-[#5C8374] text-center py-[18px] font-bold text-white text-[3.175rem]">
           Chỉnh sửa lịch thi đấu
         </header>
         <form className="flex flex-col gap-4 px-8 py-12 mx-32 mt-24 h-1/2 mx-56 border-solid border-2 border-black">

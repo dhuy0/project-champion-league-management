@@ -28,6 +28,8 @@ const RankingReport = () => {
                     console.log('>>> check ranking data: ', rankingData)
                 })
                 .catch(error => {
+                    toast.error("Không tìm thấy dữ liệu")
+                    setRankingData([])
                     console.error('Loi khi lay data tu server', error);
                 });
         }
@@ -40,7 +42,7 @@ const RankingReport = () => {
             </div>
             <div className='basis-4/5'>
                 {/* ============================ Header ============================ */}
-                <header className='bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]'>
+                <header className='bg-[#5C8374] text-center py-[18px] font-bold text-white text-[3.175rem]'>
                     Lập báo cáo giải
                 </header>
                 <div className='flex flex-col gap-4 mx-32 my-8 h-4/5'>

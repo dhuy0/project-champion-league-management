@@ -9,13 +9,13 @@ const Nav = () => {
   }
 
   const getRowClassName = (index) => {
-    return `text-xl font-roboto text-center py-6 ${index === selectedRow ? 'bg-gray-400' : 'bg-gray-300'
-      } pl-4 gap-4 flex flex-row border-b-2 border-black hover:bg-gray-400 cursor-pointer`;
+    return `text-xl font-roboto text-center py-6 ${index === selectedRow ? 'bg-gray-400' : 'bg-[#9EC8B9]'
+      } pl-4 gap-4 flex flex-row border-b-2 border-black hover:bg-[#5C8374] cursor-pointer`;
   };
 
   return (
     <div className="grid grid-cols-1 fixed w-[310px]">
-      <div className='flex flex-row items-center justify-center gap-4 text-2xl font-roboto text-center py-10 bg-gray-600 text-white font-bold'>
+      <div className='flex flex-row items-center justify-center gap-4 text-2xl font-roboto text-center py-10 bg-[#1B4242] text-white font-bold'>
         <i class="ri-trophy-line"></i>
         <p>V - League</p>
       </div>

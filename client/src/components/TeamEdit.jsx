@@ -76,7 +76,7 @@ const TeamEdit = () => {
     axios.post("http://localhost:8080/delete-player-team", {dataToSend})
     console.log('>> check updated player: ', updatedPlayers)
     }
-    else toast.error("Da dat so luong cau thu toi thieu")
+    else toast.error("Đã đạt số lượng cầu thủ tối thiểu") 
   };
 
   const handleAddPlayer = () => {
@@ -91,7 +91,7 @@ const TeamEdit = () => {
     if (players.length + 1 <= rules[0]["SoCauThu_Max"]) {
       setPlayers([...players, newPlayer]);
     }
-    else toast.error("Da dat so luong cau thu toi da")
+    else toast.error("Đã đạt số lượng cầu thủ tối đa")
   };
 
   const validateForm = () => {
@@ -114,29 +114,29 @@ const TeamEdit = () => {
       const player = players[i];
 
       if (!player.MaCauThu) {
-        toast.error(`Cau thu so ${i + 1}: So thu tu bi trong`);
+        toast.error(`Cầu thủ số ${i + 1}: Số thứ tự bị trống`); 
         return false;
       }
 
       if (usedNumbers.has(player.MaCauThu)) {
-        toast.error(`Cau thu so ${i + 1}: So thu tu bi trung`);
+        toast.error(`Cầu thủ số ${i + 1}: Số thứ tự bị trùng`); 
         return false;
       }
 
       usedNumbers.add(player.MaCauThu);
 
       if (!player.TenCauThu) {
-        toast.error(`Cau thu so ${i + 1}: Ten cau thu khong duoc de trong`);
+        toast.error(`Cầu thủ số ${i + 1}: Tên cầu thủ không được để trống`); 
         return false;
       }
 
       if (!player.LoaiCauThu) {
-        toast.error(`Cau thu so ${i + 1}: Loai cau thu khong duoc de trong`);
+        toast.error(`Cầu thủ số ${i + 1}: Loại cầu thủ không được để trống`); 
         return false;
       }
 
       if (!player.NgaySinh) {
-        toast.error(`Cau thu so ${i + 1}: Ngay sinh khong duoc de trong`);
+        toast.error(`Cầu thủ số ${i + 1}: Ngày sinh không được để trống`);
         return false;
       }
 
@@ -152,7 +152,7 @@ const TeamEdit = () => {
       }
 
       if (foreignPlayers > rules[0]["SoCauThuNuocNgoai_Max"]) {
-        toast.error(`So luong cau thu nuoc ngoai vuot qua quy dinh`);
+        toast.error(`Số lượng cầu thủ nước ngoài vượt quá quy định`); 
         return false;
       }
     }
@@ -184,7 +184,7 @@ const TeamEdit = () => {
         await axios.post('http://localhost:8080/add-multi-player-to-team', {dataToSend1});
       } catch (error) {
         console.error('Error adding new players:', error);
-        toast.error('Failed to add new players');
+        toast.error('Thêm cầu thủ thất bại'); 
       }
 
       // Gửi dữ liệu lên API để cập nhật cầu thủ
@@ -195,7 +195,7 @@ const TeamEdit = () => {
         }
         console.log(">>>> check updated players: ", dataToSend2)
         await axios.put('http://localhost:8080/update-multi-player-team', {dataToSend2});
-        toast.success('Cap nhat cau thu thanh cong');
+        toast.success('Cập nhật cầu thủ thành công'); 
       } catch (error) {
         console.error('Error updating players:', error);
         toast.error('Failed to update players');
@@ -256,7 +256,7 @@ const TeamEdit = () => {
         <Nav />
       </div>
       <div className='basis-4/5'>
-        <header className='bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]'>
+        <header className='bg-[#5C8374] text-center py-[18px] font-bold text-white text-[3.175rem]'>
           Chỉnh sửa hồ sơ đội bóng
         </header>
         <form className='flex flex-col gap-4 mx-32 my-8 h-4/5 pr-40'>
