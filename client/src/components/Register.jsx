@@ -167,14 +167,14 @@ const Register = () => {
   };
 
   return (
-    <div className="flex flex-row h-screen">
-      <div className="basis-1/5">
+    <div className='flex flex-row h-screen'>
+      <div style={{ flex: '0 0 310px' }}>
         <Nav />
       </div>
-      <div className="basis-4/5">
+      <div className='basis -4/5 min-w-[1500px] min-h-screen overflow-hidden'>
         {/* ============================ Header ============================ */}
-        <header className="bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]">
-          Đăng ký đội bóng
+        <header className='bg-gray-400 text-center py-4 font-bold text-white text-[3.175rem]'>
+          Đăng ký hồ sơ đội bóng
         </header>
         {/* ============================ Form đăng ký ============================ */}
         <form className="flex flex-col gap-4 mx-32 my-8 h-4/5 pr-40">

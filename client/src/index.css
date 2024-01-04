@@ -17,3 +17,13 @@
     font-weight: 300 ;
     height: 35px;
   }
+
+  body{
+    overflow-x: auto;
+    margin: 0;
+  }
+  /* .basis-4\/5 {
+    flex-basis: 100%;
+  } */
+
+  

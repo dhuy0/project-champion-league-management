@@ -17,6 +17,7 @@ import ScorerList from './components/ScorerList';
 import RuleEdit from './components/RuleEdit';
 import ScheduleAdd from './components/ScheduleAdd';
 
+
 const App = () => {
   // const [data, setData]=useState("")
 
