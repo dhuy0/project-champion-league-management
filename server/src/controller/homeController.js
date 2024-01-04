@@ -28,26 +28,6 @@ const handleHome = (req, res) => {
   return res.render("home.ejs", { name });
 };
 
-const handleUserPage = async (req, res) => {
-  const { id } = req.body;
-  var pool = await conn;
-  var sqlString = "SELECT * FROM GIAOVIEN WHERE magv = " + id;
-  try {
-    const result = await pool.request().query(sqlString);
-    const patient = result.recordset[0];
-    console.log(patient);
-    if (patient) {
-      res.status(200).json(patient);
-    } else {
-      res.status(404).json({ message: "Không tìm thấy thông tin bệnh nhân" });
-    }
-  } catch (error) {
-    console.error("Có lỗi xảy ra khi lấy thông tin bệnh nhân:", error);
-    res
-      .status(500)
-      .json({ message: "Có lỗi xảy ra khi lấy thông tin bệnh nhân" });
-  }
-};
 
 const handleReg = async (req, res) => {
   // Add đội bóng

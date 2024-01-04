@@ -137,7 +137,7 @@ const Register = () => {
       return false;
     }
 
-    if (players.length < rules.minPLayer) {
+    if (players.length < rules[0]["SoCauThu_Min"]) {
       toast.error(`Khong du so luong cau thu toi thieu`);
       return false
     }
@@ -162,7 +162,7 @@ const Register = () => {
       });
       console.log("Team data to be saved:", teamData);
       toast.success("Dang ky doi bong thanh cong");
-      // window.location.reload();
+      window.location.reload();
     }
   };
 

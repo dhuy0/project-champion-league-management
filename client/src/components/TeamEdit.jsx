@@ -63,6 +63,7 @@ const TeamEdit = () => {
 
   const handleDeletePlayer = (index) => {
     // Xử lý delete player
+    if(players.length - 1 >= rules[0]["SoCauThu_Min"]) {
     const updatedPlayers = [...players];
     updatedPlayers.splice(index, 1);
     setPlayers(updatedPlayers);
@@ -74,6 +75,8 @@ const TeamEdit = () => {
     console.log(">>> check delete player: ", dataToSend)
     axios.post("http://localhost:8080/delete-player-team", {dataToSend})
     console.log('>> check updated player: ', updatedPlayers)
+    }
+    else toast.error("Da dat so luong cau thu toi thieu")
   };
 
   const handleAddPlayer = () => {

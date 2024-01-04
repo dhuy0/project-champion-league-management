@@ -214,14 +214,14 @@ const ScheduleAdd = () => {
       
       //Gửi data về cho server
       const isValid = validateForm();
-      // if (isValid) {
+      if (isValid) {
         
         axios.post("http://localhost:8080/add-schedule", dataToSend);
         console.log("Data saved successfully");
         console.log(dataToSend);
         toast.success("Them moi thanh cong");
         navigate(`/schedule-view/${round}`);
-      // }
+      }
     } catch (error) {
       console.error("Error saving data:", error);
     }
