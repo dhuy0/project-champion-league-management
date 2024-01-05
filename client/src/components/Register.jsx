@@ -9,6 +9,7 @@ const Register = () => {
   const [players, setPlayers] = useState([]); //Khai báo mảng các cầu thủ
   const [teamName, setTeamName] = useState(""); //Khai báo tên đội
   const [stadium, setStadium] = useState(""); // Khai báo sân đấu
+  const [teams, setTeams] = useState([]);
   let foreignPlayers = 0; // Số lượng cầu thủ nước ngoài
 
 
@@ -20,6 +21,17 @@ const Register = () => {
     axios.get('http://localhost:8080/get-rule').then((response) => {
       setRules(response.data)
     })
+
+    //Lấy tên các đội bóng đã có trong cơ sở dữ liệu
+    axios
+      .get("http://localhost:8080/get-all-team")
+      .then((response) => {
+        setTeams(response.data);
+        console.log(">>>> get team name successfully");
+      })
+      .catch((error) => {
+        console.error("Error fetching data from API", error);
+      });
   }, [])
 
   useEffect(() => {
@@ -80,6 +92,11 @@ const Register = () => {
 
     if (!stadium) {
       toast.error("Sân nhà không được để trống");
+      return false;
+    }
+
+    if (teams.some((team) => team.TenDoiBong === teamName)) {
+      toast.error("Đội bóng đã tồn tại trong cơ sở dữ liệu"); 
       return false;
     }
 
@@ -162,7 +179,9 @@ const Register = () => {
       });
       console.log("Team data to be saved:", teamData);
       toast.success("Đăng ký đội bóng thành công");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     }
   };
 
