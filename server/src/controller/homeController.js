@@ -38,7 +38,7 @@ const handleReg = async (req, res) => {
   var sqlCheck = `SELECT COUNT(*) as cnt FROM DoiBong WHERE TenDoiBong = @varName`;
   const checkTeam = await pool
     .request()
-    .input("varName", sql.NChar(255), data.teamName)
+    .input("varName", sql.NVarChar(255), data.teamName)
     .query(sqlCheck);
 
   if (!checkTeam.recordset[0].cnt) {
